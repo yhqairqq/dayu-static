@@ -1,9 +1,10 @@
-import { queryModel, delModel, addModel, editModel } from '@/services/model';
+import { queryModel, delModel, addModel, editModel, changeStatus, getColumns } from '@/services/model';
 
 export default {
   namespace: 'model',
 
   state: {
+    fields: [],
     data: {
       list: [],
       pagination: {}
@@ -43,6 +44,22 @@ export default {
       });
       if (callback) callback();
     },
+    *changeStatus({ payload, callback }, { call, put }) {
+      const response = yield call(changeStatus, payload);
+      yield put({
+        type: 'save',
+        payload: response,
+      });
+      if (callback) callback();
+    },
+    *getColumns({ payload, callback }, { call, put }) {
+      const response = yield call(getColumns, payload);
+      yield put({
+        type: 'saveColumns',
+        payload: response.data,
+      });
+      if (callback) callback();
+    }
   },
 
   reducers: {
@@ -52,5 +69,11 @@ export default {
         data: action.payload,
       };
     },
+    saveColumns(state, action) {
+      return {
+        ...state,
+        fields: action.payload
+      }
+    }
   },
 };

@@ -72,12 +72,6 @@ export default [
             name: 'modelmanage',
             component: './PeekData/ModelManage',
           },
-          // 编辑模型
-          {
-            path: '/peekdata/model-edit',
-            name: 'editmodel',
-            component: './PeekData/ModelForm',
-          },
           // 取数管理
           {
             path: '/peekdata/peek-manage',

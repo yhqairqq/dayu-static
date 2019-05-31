@@ -16,6 +16,7 @@ import {
   InputNumber,
   DatePicker,
   Modal,
+  Popconfirm,
   message,
   Badge,
   Divider,
@@ -24,6 +25,7 @@ import {
 } from 'antd';
 import StandardTable from '@/components/StandardTable';
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
+import ModelOptForm from './ModelOptForm';
 
 import styles from './ModelManage.less';
 
@@ -40,60 +42,48 @@ const statusMap = ['success', 'error'];
 const status = ['使用中', '已停用'];
 
 @Form.create()
-@connect(({ model, loading }) => ({
+@connect(({ model, datasource, loading }) => ({
   model,
+  datasource,
   loading: loading.models.model,
 }))
 class ModelManage extends PureComponent {
   state = {
     modalVisible: false,
-    updateModalVisible: false,
     expandForm: false,
-    selectedRows: [],
-    formValues: {},
-    stepFormValues: {}
+    recordValue: {},
+    isEditForm: false, // 是否为编辑数据
+    formValues: {}
   };
 
   // 表格字段列表
   columns = [
+    { title: '模型名称', dataIndex: 'name', },
     {
-      title: '模型名称',
-      dataIndex: 'name',
-    },
-    {
-      title: '模型状态',
-      dataIndex: 'status',
-      filters: [
-        {
-          text: status[0],
-          value: 0,
-        },
-        {
-          text: status[1],
-          value: 1,
-        }
+      title: '模型状态', dataIndex: 'status', filters: [
+        { text: status[0], value: 0, },
+        { text: status[1], value: 1, }
       ],
       render(val) {
         return <Badge status={statusMap[val]} text={status[val]} />;
       },
     },
+    { title: '创建人', dataIndex: 'createdBy' },
+    { title: '描述', dataIndex: 'desc', },
     {
-      title: '创建人',
-      dataIndex: 'createdBy'
-    },
-    {
-      title: '描述',
-      dataIndex: 'desc',
-    },
-    {
-      title: '操作',
-      render: (text, record) => (
+      title: '操作', render: (text, record) => (
         <Fragment>
-          <a>删除</a>
+          <Popconfirm placement="top" title="确定删除该模型？"
+            onConfirm={() => this.handleDelete(record)}>
+            <a>删除</a>
+          </Popconfirm>
           <Divider type="vertical" />
-          <a href="">编辑</a>
+          <a onClick={() => this.handleModalVisible(true, true, record)}>编辑</a>
           <Divider type="vertical" />
-          <a href="">停用</a>
+          <Popconfirm placement="top" title={record.status === 0 ? '确定停用' : '确定启用'}
+            onConfirm={() => this.handleStatus(record)}>
+            <a>{record.status === 0 ? '停用' : '启用'}</a>
+          </Popconfirm>
         </Fragment>
       )
     }
@@ -103,6 +93,9 @@ class ModelManage extends PureComponent {
     const { dispatch } = this.props;
     dispatch({
       type: 'model/fetch'
+    });
+    dispatch({
+      type: 'datasource/fetch'
     });
   }
   // 分页、过滤、排序处理
@@ -141,24 +134,7 @@ class ModelManage extends PureComponent {
       payload: {}
     });
   };
-  // 处理菜单按钮
-  handleMenuClick = e => {
-    const { dispatch } = this.props;
-    const { selectedRows } = this.state;
-    if (selectedRows.length == 0) return;
-    switch (e.key) {
-      case 'remove':
-        break;
-      default:
-        break;
-    }
-  };
-  // 选择行处理
-  handleSelectRows = rows => {
-    this.setState({
-      selectedRows: rows
-    })
-  }
+
   // 查询处理
   handleSearch = e => {
     e.preventDefault();
@@ -179,12 +155,81 @@ class ModelManage extends PureComponent {
     });
   };
 
+  // 删除操作处理
+  handleDelete = (record) => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'model/remove',
+      payload: record.id,
+    });
+    message.success('删除成功');
+    // 重载数据
+    this.reloadData();
+  };
+  // 模型启、停用操作
+  handleStatus = (record) => {
+    const { dispatch } = this.props;
+    const status = record.status === 0 ? 1 : 0;
+    dispatch({
+      type: 'model/changeStatus',
+      payload: {
+        status: status,
+        modelId: record.id
+      },
+    });
+    message.success('操作成功');
+    // 重载数据
+    this.reloadData();
+  };
+
+  handleModalVisible = (flag, isEdit, record) => {
+    const { dispatch } = this.props; 
+    this.setState({
+      modalVisible: !!flag,
+      isEditForm: !!isEdit,
+      recordValue: record || {},
+    });
+  }
+
+  handleAdd = fields => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'model/add',
+      payload: fields,
+    });
+
+    message.success('添加成功');
+    this.handleModalVisible();
+    // 重载数据
+    this.reloadData();
+  };
+
+  handleUpdate = fields => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'model/update',
+      payload: fields,
+    });
+
+    message.success('修改成功');
+    this.handleModalVisible();
+    // 重载数据
+    this.reloadData();
+  };
+
+  // 重新加载数据
+  reloadData = () => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'model/fetch',
+      payload: {},
+    });
+  };
+
   // 查询表单
   renderForm() {
     const { expandForm } = this.state;
-    const {
-      form: { getFieldDecorator },
-    } = this.props;
+    const { form: { getFieldDecorator } } = this.props;
     return (
       <Form onSubmit={this.handleSearch} layout="inline">
         <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
@@ -223,14 +268,12 @@ class ModelManage extends PureComponent {
     const {
       model: { data },
       loading } = this.props;
-    const { selectedRows, modalVisible, updateModalVisible, stepFormValues } = this.state;
-    const menu = (
-      <Menu onClick={this.handleMenuClick} selectedKeys={[]}>
-        <Menu.Item key="remove">删除</Menu.Item>
-        <Menu.Item key="openAll">全部启用</Menu.Item>
-        <Menu.Item key="stopAll">全部停用</Menu.Item>
-      </Menu>
-    );
+    const { modalVisible, recordValue, isEditForm } = this.state;
+    const parentMethods = {
+      handleAdd: this.handleAdd,
+      handleModalVisible: this.handleModalVisible,
+      handleUpdate: this.handleUpdate
+    }
 
     return (
       <PageHeaderWrapper
@@ -241,22 +284,12 @@ class ModelManage extends PureComponent {
           <div className={styles.modelManage}>
             <div className={styles.modelManageForm}>{this.renderForm()}</div>
             <div className={styles.modelManageOperator}>
-              <Button icon="plus" type="primary">
+              <Button icon="plus" type="primary" onClick={() => this.handleModalVisible(true)}>
                 新建
             </Button>
-              {selectedRows.length > 0 && (
-                <span>
-                  <Button>批量操作</Button>
-                  <Dropdown overlay={menu}>
-                    <Button>
-                      更多操作<Icon type="down" />
-                    </Button>
-                  </Dropdown>
-                </span>
-              )}
             </div>
             <StandardTable
-              selectedRows={selectedRows}
+              disabledSelected={true}
               loading={loading}
               data={data}
               columns={this.columns}
@@ -266,6 +299,12 @@ class ModelManage extends PureComponent {
             />
           </div>
         </Card>
+        <ModelOptForm
+          {...parentMethods}
+          isEdit={isEditForm}
+          values={recordValue}
+          modalVisible={modalVisible}
+        />
       </PageHeaderWrapper>
     );
   }

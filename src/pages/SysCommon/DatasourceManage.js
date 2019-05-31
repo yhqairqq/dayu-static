@@ -316,10 +316,11 @@ class DatasourceManage extends PureComponent {
   // 数据源启、停用操作
   handleStatus = (record) => {
     const { dispatch } = this.props;
+    const status = record.status === 0 ? 1 : 0;
     dispatch({
       type: 'datasource/changeStatus',
       payload: {
-        status: record.status,
+        status: status,
         dsId: record.id
       },
     });

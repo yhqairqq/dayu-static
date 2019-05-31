@@ -68,3 +68,29 @@ export async function queryDatasource(params) {
     }
   })
 }
+
+/**
+ * 查询所有数据源简单信息
+ * @param {*} params 
+ */
+export async function queryAllSimpleDatasource(params) {
+  return request(PRE_URL + '/getAllSimple', {
+    method: 'POST',
+    data: {
+      params: params
+    }
+  })
+}
+
+/**
+ * 根据数据源Id获取下面的所有表信息
+ * @param {*} dsId  数据源Id
+ */
+export async function getTables(dsId) {
+  return request(PRE_URL + '/getTables', {
+    method: 'POST',
+    data: {
+      dsId: dsId
+    }
+  })
+}
