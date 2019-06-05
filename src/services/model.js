@@ -1,4 +1,5 @@
 import request from '@/utils/request';
+import { async } from 'q';
 
 const PRE_URL = "/peekdata/model";
 
@@ -63,6 +64,17 @@ export async function queryModel(params) {
   })
 }
 
+/**
+ * 获取所有模型列表
+ */
+export async function queryAllModel() {
+  return request(PRE_URL + '/getAllModels', {
+    method: 'POST',
+    data: {
+    }
+  })
+}
+
 
 /**
  * 获取表字段列表 
@@ -73,6 +85,19 @@ export async function getColumns(params) {
     method: 'POST',
     data: {
       ...params
+    }
+  })
+}
+
+/**
+ * 根据模型Id获取字段列表
+ * @param {*} modelId Long
+ */
+export async function getModelMeta(modelId) {
+  return request(PRE_URL + '/getColumnsByModelId', {
+    method: 'POST',
+    data: {
+      modelId: modelId
     }
   })
 }

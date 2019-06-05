@@ -1,10 +1,21 @@
-import { queryModel, delModel, addModel, editModel, changeStatus, getColumns } from '@/services/model';
+import {
+  queryAllModel,
+  queryModel,
+  delModel,
+  addModel,
+  editModel,
+  changeStatus,
+  getColumns,
+  getModelMeta,
+} from '@/services/model';
 
 export default {
   namespace: 'model',
 
   state: {
-    fields: [],
+    fields: [],    // 某张数据表的字段列表
+    allModels: [], // 所有模型列表
+    modelMetas: [], // 某个模型的字段列表
     data: {
       list: [],
       pagination: {}
@@ -12,18 +23,31 @@ export default {
   },
 
   effects: {
+    *fetchAll({ payload }, { call, put }) {
+      const response = yield call(queryAllModel, payload);
+      yield put({
+        type: 'saveAllModels',
+        payload: response.data,
+      });
+    },
     *fetch({ payload }, { call, put }) {
       const response = yield call(queryModel, payload);
-      const { data } = response
       yield put({
         type: 'save',
+        payload: response.data,
+      });
+    },
+    *fetchModelMeta({ payload }, { call, put }) {
+      const response = yield call(getModelMeta, payload);
+      yield put({
+        type: 'saveModelMetas',
         payload: response.data,
       });
     },
     *add({ payload, callback }, { call, put }) {
       const response = yield call(addModel, payload);
       yield put({
-        type: 'save',
+        type: 'optSuccess',
         payload: response,
       });
       if (callback) callback();
@@ -31,7 +55,7 @@ export default {
     *remove({ payload, callback }, { call, put }) {
       const response = yield call(delModel, payload);
       yield put({
-        type: 'save',
+        type: 'optSuccess',
         payload: response,
       });
       if (callback) callback();
@@ -39,7 +63,7 @@ export default {
     *update({ payload, callback }, { call, put }) {
       const response = yield call(editModel, payload);
       yield put({
-        type: 'save',
+        type: 'optSuccess',
         payload: response,
       });
       if (callback) callback();
@@ -47,7 +71,7 @@ export default {
     *changeStatus({ payload, callback }, { call, put }) {
       const response = yield call(changeStatus, payload);
       yield put({
-        type: 'save',
+        type: 'optSuccess',
         payload: response,
       });
       if (callback) callback();
@@ -73,6 +97,18 @@ export default {
       return {
         ...state,
         fields: action.payload
+      }
+    },
+    saveAllModels(state, action) {
+      return {
+        ...state,
+        allModels: action.payload
+      }
+    },
+    saveModelMetas(state, action) {
+      return {
+        ...state,
+        modelMetas: action.payload
       }
     }
   },

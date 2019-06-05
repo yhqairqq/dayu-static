@@ -5,6 +5,7 @@ import {
   addDatasource,
   editDatasource,
   changeStatus,
+  getDataTypes,
   getTables,
 } from '@/services/datasource';
 
@@ -14,6 +15,7 @@ export default {
     simpleDatasources: [], // 所有数据源简单信息
     tables: [], // 某个数据源下的表列表
     tableColumns: [], // 某个表下面的所有字段
+    dataTypes: [], // 数据类型
     data: {
       list: [],
       pagination: {}
@@ -76,6 +78,13 @@ export default {
       });
       if (callback) callback();
     },
+    *getDataTypes({payload}, {call, put}) {
+      const response = yield call(getDataTypes, payload);
+      yield put({
+        type: 'saveDataTypes',
+        payload: response.data,
+      });
+    }
   },
 
   reducers: {
@@ -95,6 +104,12 @@ export default {
       return {
         ...state,
         tables: action.payload
+      }
+    },
+    saveDataTypes(state, action) {
+      return {
+        ...state,
+        dataTypes: action.payload
       }
     }
   },

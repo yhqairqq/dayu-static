@@ -25,9 +25,9 @@ import {
 } from 'antd';
 import StandardTable from '@/components/StandardTable';
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
-import ModelOptForm from './ModelOptForm';
+import ModelOptForm from './form/ModelOptForm';
 
-import styles from './ModelManage.less';
+import styles from './PeekData.less';
 
 const FormItem = Form.Item;
 const { Step } = Steps;
@@ -68,7 +68,7 @@ class ModelManage extends PureComponent {
         return <Badge status={statusMap[val]} text={status[val]} />;
       },
     },
-    { title: '创建人', dataIndex: 'createdBy' },
+    { title: '创建人', dataIndex: 'creator' },
     { title: '描述', dataIndex: 'desc', },
     {
       title: '操作', render: (text, record) => (
@@ -183,7 +183,7 @@ class ModelManage extends PureComponent {
   };
 
   handleModalVisible = (flag, isEdit, record) => {
-    const { dispatch } = this.props; 
+    const { dispatch } = this.props;
     this.setState({
       modalVisible: !!flag,
       isEditForm: !!isEdit,
@@ -281,9 +281,9 @@ class ModelManage extends PureComponent {
         content='管理取数模型，设置模型规则~'
       >
         <Card bordered={false}>
-          <div className={styles.modelManage}>
-            <div className={styles.modelManageForm}>{this.renderForm()}</div>
-            <div className={styles.modelManageOperator}>
+          <div className={styles.peekDataManage}>
+            <div className={styles.peekDataManageForm}>{this.renderForm()}</div>
+            <div className={styles.peekDataManageOperator}>
               <Button icon="plus" type="primary" onClick={() => this.handleModalVisible(true)}>
                 新建
             </Button>
@@ -299,12 +299,14 @@ class ModelManage extends PureComponent {
             />
           </div>
         </Card>
-        <ModelOptForm
-          {...parentMethods}
-          isEdit={isEditForm}
-          values={recordValue}
-          modalVisible={modalVisible}
-        />
+        {modalVisible && (
+          <ModelOptForm
+            {...parentMethods}
+            isEdit={isEditForm}
+            values={recordValue}
+            modalVisible={modalVisible}
+          />
+        )}
       </PageHeaderWrapper>
     );
   }

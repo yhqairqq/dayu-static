@@ -28,7 +28,6 @@ import PageHeaderWrapper from '@/components/PageHeaderWrapper';
 
 import styles from './DatasourceManage.less';
 import FormItem from 'antd/lib/form/FormItem';
-import { reject } from 'q';
 
 const { Option } = Select;
 
@@ -45,7 +44,7 @@ const DATASOURCE_TYPE = [
   },
   {
     type: 'ElasticSearch',
-    driver: ''
+    driver: 'org.elasticsearch.xpack.sql.jdbc.EsDriver'
   }
 ]
 
@@ -83,6 +82,7 @@ const CreateForm = Form.create()(props => {
   return (
     <Modal
       destroyOnClose
+      style={{ top: 20 }}
       title={isEdit ? '修改数据源' : '新增数据源'}
       visible={modalVisible}
       onOk={okHandle}
@@ -391,7 +391,6 @@ class DatasourceManage extends PureComponent {
       form: { getFieldDecorator },
       user: { list },
     } = this.props;
-    console.log(list)
     return (
       <Form key="search_form" onSubmit={this.handleSearch} layout="inline">
         <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
@@ -422,11 +421,11 @@ class DatasourceManage extends PureComponent {
             <FormItem key="createdBy" label="创建人">
               {getFieldDecorator('createdBy')(
                 <Select placeholder="请选择数据源创建人">
-                {
-                  list.map((item, index) => (
-                    <Option value={item.id} key={item.id}>{item.nickname}</Option>
-                  ))
-                }
+                  {
+                    list.map((item, index) => (
+                      <Option value={item.id} key={item.id}>{item.nickname}</Option>
+                    ))
+                  }
                 </Select>
               )}
             </FormItem>

@@ -23,7 +23,7 @@ import {
   Table,
 } from 'antd';
 import StandardTable from '@/components/StandardTable';
-import { resolve } from 'path';
+import FieldOptForm from './FieldOptForm';
 
 const FormItem = Form.Item;
 const { Step } = Steps;
@@ -36,7 +36,7 @@ const { TextArea } = Input;
   datasource,
   loading: loading.models.datasource,
 }))
-class ModelOptForm extends PureComponent {
+class ModelOptForm extends React.Component {
   static defaultProps = {
     values: {},
     isEdit: false,
@@ -46,17 +46,22 @@ class ModelOptForm extends PureComponent {
   };
   constructor(props) {
     super(props);
-
+    const { values } = props;
+    let modelId = values.id
+    if (!modelId) {
+      modelId = 0;
+    }
     this.state = {
+      editFieldModelVisible: false,
+      editField: {},
       formVals: {
-        name: props.values.name,
-        datasourceId: props.values.datasourceId,
-        tableName: props.values.tableName,
-        desc: props.values.desc,
-        fields: []
+        modelId,
+        name: values.name,
+        datasourceId: values.datasourceId,
+        tableName: values.tableName,
+        desc: values.desc,
+        fields: values.fields,
       },
-      datasources: [], // 数据源
-      tableNames: [],  // 数据表
       currentStep: 0
     };
     this.formLayout = {
@@ -69,15 +74,21 @@ class ModelOptForm extends PureComponent {
   componentDidMount() {
     const { dispatch } = this.props;
     const { formVals } = this.state;
+
     dispatch({
       type: 'datasource/fetchAll'
     });
-    // 拉取相应的
+    // 拉取相应的数据源
     if (formVals.datasourceId) {
       dispatch({
         type: 'datasource/fetchTables',
         payload: formVals.datasourceId
       })
+    }
+
+    // 拉取已设置的字段信息
+    if (formVals.tableName) {
+      this.handleTableChange(formVals.tableName);
     }
   };
 
@@ -114,6 +125,9 @@ class ModelOptForm extends PureComponent {
     form.validateFields((err, fieldsValue) => {
       if (err) return;
       const formVals = { ...oldValue, ...fieldsValue };
+      if (!formVals.fields || formVals.fields.length <= 0) {
+        formVals.fields = fields;
+      }
       this.setState(
         {
           formVals,
@@ -122,11 +136,6 @@ class ModelOptForm extends PureComponent {
           if (currentStep < 1) {
             this.forward();
           } else {
-            form.resetFields();
-            if (!formVals.fields) {
-              formVals.fields = fields;
-            }
-            console.log(formVals)
             if (isEdit) {
               handleUpdate(formVals);
             } else {
@@ -139,23 +148,19 @@ class ModelOptForm extends PureComponent {
   };
   // 取消处理
   cancelHandle = () => {
-    const { handleModalVisible, form } = this.props;
-
+    const { handleModalVisible, values, form } = this.props;
     form.resetFields();
-    this.setState({
-      formVals: {}
-    })
-    handleModalVisible();
+    handleModalVisible(false, false, values);
   }
 
   // 处理数据源变更操作
   handleDtChange = (value) => {
     const { dispatch } = this.props;
+    const { formVals } = this.state;
+    formVals.datasourceId = value;
     this.setState({
-      formVals: {
-        datasourceId: value
-      }
-    });
+      formVals
+    })
     dispatch({
       type: 'datasource/fetchTables',
       payload: value
@@ -166,10 +171,15 @@ class ModelOptForm extends PureComponent {
   handleTableChange = (value) => {
     const { dispatch } = this.props;
     const { formVals } = this.state;
+    formVals.tableName = value;
+    formVals.fields = []; // 表变更了，字段需要变更
+    this.setState({
+      formVals
+    })
     dispatch({
       type: 'model/getColumns',
       payload: {
-        modelId: formVals.id,
+        modelId: formVals.modelId,
         tableName: value,
         datasourceId: formVals.datasourceId
       }
@@ -206,8 +216,10 @@ class ModelOptForm extends PureComponent {
     const {
       form,
       datasource: { simpleDatasources, tables },
-      model: { fields }
     } = this.props;
+    const {
+      formVals: { fields }
+    } = this.state;
     if (currentStep == 1) {
       // 业务表字段显示信息
       const columns = [
@@ -222,11 +234,7 @@ class ModelOptForm extends PureComponent {
           title: '操作', key: 'action',
           render: (text, record) => (
             <Fragment>
-              <Popconfirm placement="top" title="确定删除该字段？">
-                <a>删除</a>
-              </Popconfirm>
-              <Divider type="vertical" />
-              <a>编辑</a>
+              <a onClick={() => this.setState({ editFieldModelVisible: true, editField: record })}>编辑</a>
             </Fragment>
           )
         }
@@ -253,7 +261,9 @@ class ModelOptForm extends PureComponent {
           rules: [{ required: true, message: '请选择数据源' }],
           initialValue: formVals.datasourceId,
         })(
-          <Select placeholder="请选择数据源" style={{ width: '100%' }} onChange={(value) => this.handleDtChange(value)}>
+          <Select placeholder="请选择数据源" style={{ width: '100%' }}
+            disabled={formVals.modelId !== 0}
+            onChange={(value) => this.handleDtChange(value)}>
             {
               simpleDatasources.map((item, index) => (
                 <Option value={item.id} key={item.id}>{item.name}</Option>
@@ -267,9 +277,11 @@ class ModelOptForm extends PureComponent {
           rules: [{ required: true, message: '请选择业务表' }],
           initialValue: formVals.tableName,
         })(
-          <Select placeholder="请选择业务表" style={{ width: '100%' }} onChange={(value) => this.handleTableChange(value)}>
+          <Select placeholder="请选择业务表" style={{ width: '100%' }}
+            disabled={formVals.modelId !== 0}
+            onChange={(value) => this.handleTableChange(value)}>
             {
-              tables.map((item, index) => (
+              tables && tables.map((item, index) => (
                 <Option key={item.name} value={item.name}>{item.name}</Option>
               ))
             }
@@ -284,28 +296,63 @@ class ModelOptForm extends PureComponent {
     ];
   };
 
+  handleFieldModalVisible = (flag, record) => {
+    const { dispatch } = this.props;
+    this.setState({
+      editFieldModelVisible: !!flag,
+      editField: record || {},
+    });
+  };
+
+  handleFieldUpdate = fields => {
+    const { formVals } = this.state;
+
+    let tmp = formVals.fields;
+    const { name, showName, dataType, groupName } = fields;
+    for (let i = 0; i < tmp.length; i++) {
+      if (tmp[i].name === name) {
+        tmp[i].showName = showName;
+        tmp[i].dataType = dataType;
+        tmp[i].groupName = groupName;
+        break;
+      }
+    }
+    formVals.fields = tmp;
+    this.setState({
+      formVals
+    });
+    message.success('修改成功');
+    this.handleFieldModalVisible();
+  }
   render() {
-    const { isEdit, modalVisible, values } = this.props;
+    const { isEdit, modalVisible, handleModalVisible, values } = this.props;
     const { currentStep, formVals } = this.state;
 
     return (
       <Modal
         destroyOnClose
         maskClosable={false}
-        width={700}
+        width={800}
         style={{ top: 20 }}
         bodyStyle={{ padding: '10px 40px' }}
         title={isEdit ? '修改模型' : '新增模型'}
         visible={modalVisible}
         footer={this.renderFooter(currentStep)}
-        onCancel={() => this.cancelHandle()}
-        afterClose={() => this.cancelHandle()}
+        onCancel={() => handleModalVisible(false, false, values)}
+        afterClose={() => handleModalVisible()}
       >
         <Steps style={{ marginBottom: 15 }} size="small" current={currentStep}>
           <Step title="数据源选择" />
           <Step title="字段修改" />
         </Steps>
         {this.renderContent(currentStep, formVals)}
+        {/* 修改字段模式框 */}
+        <FieldOptForm
+          values={this.state.editField}
+          modalVisible={this.state.editFieldModelVisible}
+          handleModalVisible={this.handleFieldModalVisible}
+          handleUpdate={this.handleFieldUpdate}
+        />
       </Modal>
     )
   }

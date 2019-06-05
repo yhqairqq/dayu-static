@@ -75,7 +75,8 @@ export default [
           // 取数管理
           {
             path: '/peekdata/peek-manage',
-            name: 'peekmanage'
+            name: 'peekmanage',
+            component: './PeekData/PeekManage'
           },
         ]
       },

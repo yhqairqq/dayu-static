@@ -94,3 +94,14 @@ export async function getTables(dsId) {
     }
   })
 }
+
+/**
+ * 获取支持的数据类型列表
+ */
+export async function getDataTypes() {
+  return request(PRE_URL + '/getDataTypes', {
+    method: 'POST',
+    data: {
+    }
+  })
+}
