@@ -69,16 +69,28 @@ const request = extend({
   prefix: process.env.apiUrl, // 服务器请求前缀
   errorHandler, // 默认错误处理
   credentials: 'include', // 默认请求是否带上cookie,
-  // 统一的的头信息
+  // 统一的的头信息(固定不可变的)
   headers: {
-    'X-Token': 'aabbccddeeff'
   },
   // 每一个请求都会携带的参数
   params: {
     // uuid: 'xx-xxin-xx-xx'
   }
 });
-
+request.interceptors.request.use((url, options) => {
+  const { headers } = options;
+  // 向header中添加token
+  let nHeaders = {
+    ...headers,
+    token: localStorage.getItem('token')
+  }
+  return (
+    {
+      url,
+      options: { ...options, headers: nHeaders }
+    }
+  )
+})
 /**
 *对于状态码实际是 200 的错误
 */
@@ -95,14 +107,28 @@ request.interceptors.response.use(async (response, options) => {
     });
     return;
   }
-  
+
   const ret = await response.clone().json();
-  const {state, data, message} = ret
+  const { state, data, message, code } = ret
   if (state !== 0) {
-    notification.error({
-      message: `请求错误 : ${url}`,
-      description: message,
-    });
+    if (code == 401) {
+      notification.error({
+        message: '未登录或登录已过期，请重新登录。',
+      });
+      // @HACK
+      /* eslint-disable no-underscore-dangle */
+      if (!url.endsWith('/user/login')) {
+        window.g_app._store.dispatch({
+          type: 'login/logout',
+        });
+      }
+      return;
+    } else {
+      notification.error({
+        message: `请求错误 : ${url}`,
+        description: message,
+      });
+    }
   }
   return response;
 })

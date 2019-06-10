@@ -26,7 +26,7 @@ export default [
       {
         path: '/',
         redirect: '/dashboard/analysis',
-        authority: ['admin', 'user']
+        // authority: ['admin', 'user']
       },
       // dashboard
       {

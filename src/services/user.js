@@ -8,6 +8,17 @@ export async function query() {
 
 export async function queryCurrent() {
   return request(PRE_URL + '/getCurrent', {
-    method: 'POST'
+    method: 'POST',
+  });
+}
+
+/**
+ * 登录
+ * @param {*} params 
+ */
+export async function accountLogin(params) {
+  return request(PRE_URL + '/login', {
+    method: 'POST',
+    data: params,
   });
 }

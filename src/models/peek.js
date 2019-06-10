@@ -6,6 +6,7 @@ import {
   sendData2Me,
   countSize,
   previewData,
+  getRuleByPeekId,
 } from '@/services/peek'
 
 export default {
@@ -15,7 +16,8 @@ export default {
     data: {
       list: [],
       pagination: {}
-    }
+    },
+    rules: [],
   },
 
   effects: {
@@ -23,6 +25,13 @@ export default {
       const response = yield call(queryPeek, payload);
       yield put({
         type: 'save',
+        payload: response.data,
+      });
+    },
+    *getRuleByPeekId({ payload }, { call, put }) {
+      const response = yield call(getRuleByPeekId, payload);
+      yield put({
+        type: 'saveRules',
         payload: response.data,
       });
     },
@@ -41,20 +50,20 @@ export default {
         payload: response.data,
       });
 
-      if (callback) callback();
+      if (callback) callback(response.data);
     },
     *previewData({ payload, callback }, { call, put }) {
       const response = yield call(previewData, payload);
       yield put({
-        type: 'save',
+        type: 'saveOptSuccess',
         payload: response.data,
       });
-      if (callback) callback();
+      if (callback) callback(response.data);
     },
     *add({ payload, callback }, { call, put }) {
       const response = yield call(addPeek, payload);
       yield put({
-        type: 'save',
+        type: 'saveOptSuccess',
         payload: response,
       });
       if (callback) callback();
@@ -62,7 +71,7 @@ export default {
     *remove({ payload, callback }, { call, put }) {
       const response = yield call(delPeek, payload);
       yield put({
-        type: 'save',
+        type: 'saveOptSuccess',
         payload: response,
       });
       if (callback) callback();
@@ -70,7 +79,7 @@ export default {
     *update({ payload, callback }, { call, put }) {
       const response = yield call(editPeek, payload);
       yield put({
-        type: 'save',
+        type: 'saveOptSuccess',
         payload: response,
       });
       if (callback) callback();
@@ -84,6 +93,12 @@ export default {
         data: action.payload,
       };
     },
+    saveRules(state, action) {
+      return {
+        ...state,
+        rules: action.payload
+      }
+    }
   }
 
 }

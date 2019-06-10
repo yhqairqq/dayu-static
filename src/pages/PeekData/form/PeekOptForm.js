@@ -30,12 +30,24 @@ const { Option } = Select;
 const { TextArea } = Input;
 const Search = Input.Search;
 
-
-
 import RuleShow from './RuleShow';
+import PreviewDataModal from './PreviewDataModal';
 
+const ALL_RULES = [
+  { label: '等于', value: 'equals' },
+  { label: '等于(不分别大小写)', value: 'equalsIgnoreCase' },
+  { label: '不等于', value: 'notEquals' },
+  { label: '大于', value: 'gt' },
+  { label: '大于等于', value: 'gte' },
+  { label: '小于', value: 'lt' },
+  { label: '小于等于', value: 'lte' },
+  { label: '包含', value: 'includes' },
+  { label: '不包含', value: 'notIncludes' },
+  { label: '以字符开始', value: 'startWith' },
+  { label: '以字符结束', value: 'endWith' },
+]
 const RULES = {
-  String: [
+  VARCHAR: [
     { label: '等于', value: 'equals' },
     { label: '等于(不分别大小写)', value: 'equalsIgnoreCase' },
     { label: '包含', value: 'includes' },
@@ -43,7 +55,7 @@ const RULES = {
     { label: '以字符开始', value: 'startWith' },
     { label: '以字符结束', value: 'endWith' },
   ],
-  Integer: [
+  INTEGER: [
     { label: '等于', value: 'equals' },
     { label: '不等于', value: 'notEquals' },
     { label: '大于', value: 'gt' },
@@ -51,23 +63,24 @@ const RULES = {
     { label: '小于', value: 'lt' },
     { label: '小于等于', value: 'lte' },
   ],
-  Date: [
+  DATE: [
     { label: '等于', value: 'equals' },
     { label: '大于', value: 'gt' },
     { label: '大于等于', value: 'gte' },
     { label: '小于', value: 'lt' },
     { label: '小于等于', value: 'lte' },
   ],
-  Other: [
+  OTHER: [
     { label: '等于', value: 'equals' },
     { label: '不等于', value: 'notEquals' },
   ]
 }
 
 @Form.create()
-@connect(({ model, loading }) => ({
+@connect(({ model, peek, loading }) => ({
   model,
-  loading: loading.models.model,
+  peek,
+  loading: loading.models.peek,
 }))
 class PeekOptForm extends React.Component {
   static defaultProps = {
@@ -80,11 +93,24 @@ class PeekOptForm extends React.Component {
 
   constructor(props) {
     super(props);
-    const { values } = props;
+    const { values: { id, fields: fieldsTmp, name, modelId } } = props;
+    let peekId = 0;
+    if (id) {
+      peekId = id;
+    }
+
+    // 切分返回字段
+    let fields = [];
+    if (fieldsTmp) {
+      fields = fieldsTmp.split(",");
+    }
+
     this.state = {
       formVals: {
-        name: values.name,
-        modelId: values.modelId
+        peekId,
+        name: name,
+        modelId: modelId,
+        fields,
       },
       selectedMeta: {},
       curRules: [],
@@ -92,6 +118,10 @@ class PeekOptForm extends React.Component {
       userSetRules: [],
       currentStep: 0,
       needFileds: [],
+      // 预览相关
+      previewDataModalVisable: false,
+      previewData: [],
+      previewColumns: []
     };
 
     this.formLayout = {
@@ -102,6 +132,18 @@ class PeekOptForm extends React.Component {
 
   componentDidMount() {
     const { dispatch } = this.props;
+    const { formVals } = this.state;
+
+    // 获取模型的字段列表
+    if (formVals.modelId) {
+      this.handleModelChange(formVals.modelId);
+    }
+    if (formVals.peekId !== 0) {
+      dispatch({
+        type: 'peek/getRuleByPeekId',
+        payload: formVals.peekId
+      })
+    }
   };
 
   backward = () => {
@@ -135,6 +177,7 @@ class PeekOptForm extends React.Component {
             formVals.rules = userSetRules;
             const fields = formVals.fields;
             const fieldNames = [];
+            debugger;
             if (fields) {
               fields.map((field) => {
                 fieldNames.push(field.key);
@@ -157,25 +200,64 @@ class PeekOptForm extends React.Component {
     form.resetFields();
     handleModalVisible(false, false, values);
   }
-  
+
   // 统计条数
   countSizeHandle = () => {
     const { dispatch } = this.props;
+    const { formVals: { modelId }, userSetRules } = this.state;
+
     dispatch({
       type: 'peek/countSize',
-      payload: value
-    }, () => {
-      console.log('--countSize success')
-    })
+      payload: {
+        modelId,
+        rules: userSetRules
+      },
+      callback: (size) => {
+        Modal.success({
+          title: '统计数据',
+          content: '根据规则查询出数据条数： ' + size,
+        });
+      }
+    });
   }
   // 预览数据
   previewDataHandle = () => {
     const { dispatch } = this.props;
+    const { formVals: { modelId, fields: fieldArr }, userSetRules } = this.state;
+
+    let fields = "";
+    if (fieldArr) {
+      let tmp = []
+      for (let i = 0; i < fieldArr.length; i++) {
+        tmp.push(fieldArr[i].key);
+      }
+      fields = tmp.join(',');
+    }
     dispatch({
       type: 'peek/previewData',
-      payload: value
-    }, () => {
-      console.log('--previewData success')
+      payload: {
+        modelId,
+        fields,
+        rules: userSetRules
+      },
+      callback: (data) => {
+        if (data && data.rowSize > 0) {
+          let columns = [];
+          for (let i = 0; i < data.columns.length; i++) {
+            const tmp = data.columns[i];
+            columns.push({
+              title: tmp,
+              dataIndex: tmp,
+              key: tmp
+            });
+          }
+          this.setState({
+            previewColumns: columns,
+            previewData: data.rows,
+            previewDataModalVisable: true
+          })
+        }
+      }
     })
   }
 
@@ -208,7 +290,7 @@ class PeekOptForm extends React.Component {
     } else {
       this.setState({
         selectedMeta: value,
-        curRules: RULES.Other
+        curRules: RULES.OTHER
       })
     }
   }
@@ -240,6 +322,7 @@ class PeekOptForm extends React.Component {
       msg = '非法的规则';
       errortext = '有条件为空';
     }
+    debugger;
     if (!isNull) {
       for (let i = 0; i < userSetRules.length; i++) {
         const tmp = userSetRules[i];
@@ -255,7 +338,7 @@ class PeekOptForm extends React.Component {
     if (!isHave && !isNull) {
       userSetRules.push({
         metaId: selectedMeta.id,
-        name: selectedMeta.name,
+        fieldName: selectedMeta.name,
         showName: selectedMeta.showName,
         ruleLabel: selectedRule.label,
         rule: selectedRule.value,
@@ -282,6 +365,11 @@ class PeekOptForm extends React.Component {
       userSetRules
     })
   }
+  handlePreviewDataModalVisable = () => {
+    this.setState({
+      previewDataModalVisable: false
+    })
+  }
 
   // 底部按钮
   renderFooter = currentStep => {
@@ -297,7 +385,7 @@ class PeekOptForm extends React.Component {
       item.push(
         <div style={{ display: 'inline', marginRight: 40 }}>
           <Button key="static" onClick={() => this.countSizeHandle()}>
-            统计条数
+            统计数据
           </Button>
           <Button key="preview" onClick={() => this.previewDataHandle()}>
             预览
@@ -323,23 +411,90 @@ class PeekOptForm extends React.Component {
     console.log(fieldId)
   }
 
+  getRuleLabel = (value) => {
+    for (let i = 0; i < ALL_RULES.length; i++) {
+      if (ALL_RULES[i].value === value) {
+        return ALL_RULES[i].label;
+      }
+    }
+    return value;
+  }
+
   renderContent = (currentStep, formVals) => {
     const {
       form,
-      model: { allModels, modelMetas }
+      model: { allModels, modelMetas },
+      peek: { rules: oldRules },
     } = this.props;
     const {
       curRules, userSetRules, needFileds
     } = this.state;
+    if (currentStep === 0) {
+
+      // 旧的值添加到state中
+      let deafultRules = [];
+      if ((oldRules && oldRules.length > 0) && (!userSetRules || userSetRules.length == 0)) {
+        for (let i = 0; i < oldRules.length; i++) {
+          for (let j = 0; j < modelMetas.length; j++) {
+            if (oldRules[i].fieldName === modelMetas[j].name) {
+              const ruleLabel = this.getRuleLabel(oldRules[i].rule);
+              deafultRules.push({
+                metaId: oldRules[i].metaId,
+                fieldName: oldRules[i].fieldName,
+                showName: modelMetas[j].showName,
+                ruleLabel,
+                rule: oldRules[i].rule,
+                value: oldRules[i].value
+              });
+              break;
+            }
+          }
+        }
+        this.setState({
+          userSetRules: deafultRules
+        })
+      }
+    }
     if (currentStep === 1) {
+      const { fields } = formVals;
+      let defaultValue = [];
+      if (needFileds.length <= 0) {
+        if (fields && fields.length > 0) {
+          // 判断fields中的对象是普通类型还是Object
+          const tmp = fields[0];
+          let isObject = typeof tmp === 'object';
+          let strFields;
+          if (isObject) {
+            strFields = [];
+            for (let i = 0; i < fields.length; i++) {
+              strFields.push(fields[i].key);
+            }
+          } else {
+            strFields = fields;
+          }
+
+          for (let i = 0; i < modelMetas.length; i++) {
+            if (strFields.indexOf(modelMetas[i].name) > -1) {
+              defaultValue.push({
+                key: modelMetas[i].name,
+                label: modelMetas[i].showName
+              })
+            }
+          }
+        }
+      } else {
+        defaultValue = needFileds;
+      }
+
       return [
         <FormItem key="fields" {...this.formLayout} label="选择数据字段">
           {form.getFieldDecorator('fields', {
             rules: [{ required: true, message: '选择数据字段' }],
-            initialValue: formVals.fields,
+            initialValue: defaultValue,
           })(
             <Select placeholder="选择数据字段" style={{ width: '100%' }}
               onChange={(value) => { this.needFieldChange(value) }}
+              defaultValue={defaultValue}
               labelInValue={true}
               maxTagCount={3}
               mode="multiple"
@@ -355,7 +510,7 @@ class PeekOptForm extends React.Component {
         <div>
           <span>已选字段：</span>
           {
-            needFileds.map((field, index) => (
+            defaultValue.map((field, index) => (
               <Tag style={{ marginTop: 5 }} key={index}>
                 {field.label}
               </Tag>
@@ -408,6 +563,7 @@ class PeekOptForm extends React.Component {
           initialValue: formVals.modelId,
         })(
           <Select placeholder="选择模型" style={{ width: '100%' }}
+            disabled={formVals.peekId !== 0}
             onChange={(value) => this.handleModelChange(value)}>
             {
               allModels.map((item, index) => (
@@ -422,7 +578,7 @@ class PeekOptForm extends React.Component {
 
   render() {
     const { isEdit, modalVisible, handleModalVisible, values } = this.props;
-    const { currentStep, formVals } = this.state;
+    const { currentStep, formVals, previewData, previewColumns, previewDataModalVisable } = this.state;
 
     return (
       <Modal
@@ -443,6 +599,11 @@ class PeekOptForm extends React.Component {
           <Step title="设置筛选条件" />
         </Steps>
         {this.renderContent(currentStep, formVals)}
+        <PreviewDataModal
+          data={previewData}
+          modalVisible={previewDataModalVisable}
+          handleModalVisible={() => this.handlePreviewDataModalVisable()}
+          columns={previewColumns} />
       </Modal>
     )
   }

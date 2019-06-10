@@ -69,15 +69,15 @@ class PeekManage extends React.Component {
           <Divider type="vertical" />
           <a onClick={() => this.handleModalVisible(true, record, true)}>编辑</a>
           <Divider type="vertical" />
-          <Popconfirm placement="top" title='导出'
+          <Popconfirm placement="top" title='导出数据到邮箱'
             onConfirm={() => this.exportData(record)}>
             <a>导出</a>
           </Popconfirm>
-          <Divider type="vertical" />
-          <Popconfirm placement="top" title='确定推送'
+          {/* <Divider type="vertical" />
+           <Popconfirm placement="top" title='确定推送'
             onConfirm={() => this.sendData2Me(record)}>
             <a>推送</a>
-          </Popconfirm>
+          </Popconfirm> */}
         </Fragment>
       )
     }
@@ -116,7 +116,7 @@ class PeekManage extends React.Component {
   }
 
   exportData = (record) => {
-    
+
   }
 
   handleAdd = fields => {
@@ -128,6 +128,31 @@ class PeekManage extends React.Component {
 
     message.success('添加成功');
     this.handleModalVisible();
+    // 重载数据
+    this.reloadData();
+  };
+
+  handleUpdate = fields => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'peek/update',
+      payload: fields,
+    });
+
+    message.success('修改成功');
+    this.handleModalVisible();
+    // 重载数据
+    this.reloadData();
+  };
+
+  // 删除操作处理
+  handleDelete = (record) => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'peek/remove',
+      payload: record.id,
+    });
+    message.success('删除成功');
     // 重载数据
     this.reloadData();
   };
@@ -267,11 +292,14 @@ class PeekManage extends React.Component {
             />
           </div>
         </Card>
-        <PeekOptForm
-          {...parentMethods}
-          isEdit={isEditForm}
-          recordValue={recordValue}
-          modalVisible={modalVisible} />
+        {modalVisible && (
+          <PeekOptForm
+            {...parentMethods}
+            isEdit={isEditForm}
+            values={recordValue}
+            modalVisible={modalVisible}
+          />
+        )}
       </PageHeaderWrapper>
     )
   }

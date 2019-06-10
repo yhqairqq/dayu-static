@@ -76,7 +76,7 @@ export async function countSize(params) {
   return request(PRE_URL + '/countSize', {
     method: 'POST',
     data: {
-      params
+      ...params
     }
   })
 }
@@ -89,7 +89,20 @@ export async function previewData(params) {
   return request(PRE_URL + '/previewData', {
     method: 'POST',
     data: {
-      params
+      ...params
+    }
+  })
+}
+
+/**
+ * 根据取数Id获取规则
+ * @param {*} peekId 
+ */
+export async function getRuleByPeekId(peekId) {
+  return request(PRE_URL + '/getRuleByPeekId', {
+    method: 'POST',
+    data: {
+      peekId
     }
   })
 }
