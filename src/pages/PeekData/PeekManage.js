@@ -116,7 +116,16 @@ class PeekManage extends React.Component {
   }
 
   exportData = (record) => {
-
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'peek/sendData2Me',
+      payload: record.id,
+      callback: () => {
+        notification.info({
+          message: '请到你的邮箱中去查看导出数据',
+        });
+      }
+    });
   }
 
   handleAdd = fields => {

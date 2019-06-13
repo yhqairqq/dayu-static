@@ -43,10 +43,12 @@ const errorHandler = error => {
     });
     return;
   }
-  notification.error({
-    message: `请求错误 ${status}: ${url}`,
-    description: errortext,
-  });
+  if (url) {
+    notification.error({
+      message: `请求错误 ${status}: ${url}`,
+      description: errortext,
+    });
+  }
   // environment should not be used
   if (status === 403) {
     router.push('/exception/403');
@@ -124,10 +126,12 @@ request.interceptors.response.use(async (response, options) => {
       }
       return;
     } else {
-      notification.error({
-        message: `请求错误 : ${url}`,
-        description: message,
-      });
+      if (url) {
+        notification.error({
+          message: `请求错误 : ${url}`,
+          description: message,
+        });
+      }
     }
   }
   return response;

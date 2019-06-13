@@ -36,9 +36,9 @@ export default {
       });
     },
     *sendData2Me({ payload, callback }, { call, put }) {
-      const response = yield call(queryPeek, payload);
+      const response = yield call(sendData2Me, payload);
       yield put({
-        type: 'save',
+        type: 'saveStatus',
         payload: response.data,
       });
       if (callback) callback();
