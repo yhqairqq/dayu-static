@@ -28,7 +28,7 @@
 ### 使用命令行
 ```bash
 $ git clone https://github.com/ant-design/ant-design-pro.git --depth=1
-$ cd data-static
+$ cd ladon-static
 $ npm install
 $ npm start         # 访问 http://localhost:8000
 ```
@@ -37,8 +37,8 @@ $ npm start         # 访问 http://localhost:8000
 
 ```bash
 # preview 
-$ docker pull antdesign/data-static
-$ docker run -p 80:80 antdesign/data-static
+$ docker pull antdesign/ladon-static
+$ docker run -p 80:80 antdesign/ladon-static
 # open http://localhost
 
 # dev 

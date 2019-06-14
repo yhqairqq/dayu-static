@@ -122,7 +122,6 @@ const CreateForm = Form.create()(props => {
       </FormItem>
       <FormItem key="username" {...formLayout} label="用户名">
         {form.getFieldDecorator('username', {
-          rules: [{ required: true, message: '请输入数据源登录用户名！' }],
           initialValue: recordValue.username
         })(<Input placeholder="请输入用户名" />)}
       </FormItem>
