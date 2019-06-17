@@ -106,3 +106,14 @@ export async function getRuleByPeekId(peekId) {
     }
   })
 }
+
+/**
+ * 获取所有数据类型的对就有效规则
+ */
+export async function getDataTypeRules() {
+  return request(PRE_URL + '/getDataTypeRules', {
+    method: 'POST',
+    data: {
+    }
+  })
+}

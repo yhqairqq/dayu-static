@@ -33,19 +33,6 @@ const Search = Input.Search;
 import RuleShow from './RuleShow';
 import PreviewDataModal from './PreviewDataModal';
 
-const ALL_RULES = [
-  { label: '等于', value: 'equals' },
-  { label: '等于(不分别大小写)', value: 'equalsIgnoreCase' },
-  { label: '不等于', value: 'notEquals' },
-  { label: '大于', value: 'gt' },
-  { label: '大于等于', value: 'gte' },
-  { label: '小于', value: 'lt' },
-  { label: '小于等于', value: 'lte' },
-  { label: '包含', value: 'includes' },
-  { label: '不包含', value: 'notIncludes' },
-  { label: '以字符开始', value: 'startWith' },
-  { label: '以字符结束', value: 'endWith' },
-]
 const RULES = {
   VARCHAR: [
     { label: '等于', value: 'equals' },
@@ -144,6 +131,10 @@ class PeekOptForm extends React.Component {
         payload: formVals.peekId
       })
     }
+    dispatch({
+      type: 'peek/getDataTypeRules',
+      payload: {}
+    })
   };
 
   backward = () => {
@@ -177,7 +168,6 @@ class PeekOptForm extends React.Component {
             formVals.rules = userSetRules;
             const fields = formVals.fields;
             const fieldNames = [];
-            debugger;
             if (fields) {
               fields.map((field) => {
                 fieldNames.push(field.key);
@@ -275,22 +265,24 @@ class PeekOptForm extends React.Component {
   // 处理字符筛选变更
   handleMetaChange = (index) => {
     const {
-      model: { modelMetas }
+      model: { modelMetas },
+      peek: { dataTypeRules }
     } = this.props;
     let value = {};
     if (index > -1 && index < modelMetas.length) {
       value = modelMetas[index];
     }
     const dataType = value.dataType;
-    if (RULES.hasOwnProperty(dataType)) {
+    console.log(dataType);
+    if (dataTypeRules.hasOwnProperty(dataType)) {
       this.setState({
         selectedMeta: value,
-        curRules: RULES[dataType]
+        curRules: dataTypeRules[dataType]
       })
     } else {
       this.setState({
         selectedMeta: value,
-        curRules: RULES.OTHER
+        curRules: dataTypeRules['OBJECT']
       })
     }
   }
@@ -322,7 +314,6 @@ class PeekOptForm extends React.Component {
       msg = '非法的规则';
       errortext = '有条件为空';
     }
-    debugger;
     if (!isNull) {
       for (let i = 0; i < userSetRules.length; i++) {
         const tmp = userSetRules[i];
@@ -412,9 +403,15 @@ class PeekOptForm extends React.Component {
   }
 
   getRuleLabel = (value) => {
-    for (let i = 0; i < ALL_RULES.length; i++) {
-      if (ALL_RULES[i].value === value) {
-        return ALL_RULES[i].label;
+    const {
+      peek: { dataTypeRules }
+    } = this.props;
+    const ALL_RULES = dataTypeRules['ALL_RULES'];
+    if (ALL_RULES) {
+      for (let i = 0; i < ALL_RULES.length; i++) {
+        if (ALL_RULES[i].value === value) {
+          return ALL_RULES[i].label;
+        }
       }
     }
     return value;
@@ -450,10 +447,10 @@ class PeekOptForm extends React.Component {
             }
           }
         }
-        this.setState({
-          userSetRules: deafultRules
-        })
       }
+      // this.setState({
+      //   userSetRules: deafultRules
+      // })
     }
     if (currentStep === 1) {
       const { fields } = formVals;
@@ -527,7 +524,8 @@ class PeekOptForm extends React.Component {
           >
             {
               modelMetas.map((item, index) => (
-                <Option value={index} key={index}>{item.showName}</Option>
+                <Option value={index} key={index}>
+                  {item.showName}</Option>
               ))
             }
           </Select>

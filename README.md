@@ -33,6 +33,18 @@ $ npm install
 $ npm start         # 访问 http://localhost:8000
 ```
 
+### 构建
+###### 当项目开发完毕，只需要运行一行命令就可以打包应用：
+```bash
+$ npm run build
+```
+
+### 分析构建文件体积
+###### 如果构建文件很大，你可以通过analyze命令构建并分析依赖模块的体积分布，从而优化你的代码。
+```bash
+$ npm run analyze
+```
+
 ### 使用 docker
 
 ```bash

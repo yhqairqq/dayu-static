@@ -229,6 +229,12 @@ class ModelOptForm extends React.Component {
         },
         { title: '显示名称', dataIndex: 'showName', key: 'showName', editable: true },
         { title: '数据类型', dataIndex: 'dataType', key: 'dataType' },
+        {
+          title: '是否可用', dataIndex: 'disable', key: 'disable',
+          render: (text, record) => (
+            <a>可用</a>
+        )
+        },
         { title: '所属分组', dataIndex: 'groupName', key: 'groupName' },
         {
           title: '操作', key: 'action',

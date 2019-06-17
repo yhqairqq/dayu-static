@@ -7,6 +7,7 @@ import {
   countSize,
   previewData,
   getRuleByPeekId,
+  getDataTypeRules,
 } from '@/services/peek'
 
 export default {
@@ -18,6 +19,7 @@ export default {
       pagination: {}
     },
     rules: [],
+    dataTypeRules: {}
   },
 
   effects: {
@@ -32,6 +34,13 @@ export default {
       const response = yield call(getRuleByPeekId, payload);
       yield put({
         type: 'saveRules',
+        payload: response.data,
+      });
+    },
+    *getDataTypeRules({ payload }, { call, put }) {
+      const response = yield call(getDataTypeRules, payload);
+      yield put({
+        type: 'saveDataRules',
         payload: response.data,
       });
     },
@@ -97,6 +106,12 @@ export default {
       return {
         ...state,
         rules: action.payload
+      }
+    },
+    saveDataRules(state, action) {
+      return {
+        ...state,
+        dataTypeRules: action.payload
       }
     }
   }

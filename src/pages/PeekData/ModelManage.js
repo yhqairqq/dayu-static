@@ -47,7 +47,7 @@ const status = ['使用中', '已停用'];
   datasource,
   loading: loading.models.model,
 }))
-class ModelManage extends PureComponent {
+class ModelManage extends React.Component {
   state = {
     modalVisible: false,
     expandForm: false,

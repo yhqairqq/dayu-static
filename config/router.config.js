@@ -46,6 +46,29 @@ export default [
           }
         ],
       },
+      // 系统管理 
+      {
+        path: '/system',
+        icon: 'profile',
+        name: '系统管理',
+        routes: [
+          {
+            path: '/system/user-manage',
+            name: '用户管理',
+            component: './System/UserManage'
+          },
+          {
+            path: '/system/role-manage',
+            name: '角色管理',
+            component: './System/RoleManage'
+          },
+          {
+            path: '/system/res-manage',
+            name: '用户管理',
+            component: './System/ResManage'
+          }
+        ]
+      },
       // 基础信息管理
       {
         path: '/common',
@@ -78,6 +101,29 @@ export default [
             name: 'peekmanage',
             component: './PeekData/PeekManage'
           },
+        ]
+      },
+      // 日志埋点管理
+      {
+        path: '/cerebrum',
+        icon: 'profile',
+        name: '埋点管理',
+        routes: [
+          // 应用管理
+          {
+            path: '/cerebrum/app-manage',
+            name: '埋点应用管理'
+          },
+          // 埋点管理
+          {
+            path: '/cerebrum/anchor-manage',
+            name: '埋点管理'
+          },
+          // 日志上传策略
+          {
+            path: '/cerebrum/trans-strategy',
+            name: '上传策略管理'
+          }
         ]
       },
       {
