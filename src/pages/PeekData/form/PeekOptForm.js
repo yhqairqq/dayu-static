@@ -30,38 +30,11 @@ const { Option } = Select;
 const { TextArea } = Input;
 const Search = Input.Search;
 
+import {
+  getRuleByPeekId
+} from '@/services/peek'
 import RuleShow from './RuleShow';
 import PreviewDataModal from './PreviewDataModal';
-
-const RULES = {
-  VARCHAR: [
-    { label: '等于', value: 'equals' },
-    { label: '等于(不分别大小写)', value: 'equalsIgnoreCase' },
-    { label: '包含', value: 'includes' },
-    { label: '不包含', value: 'notIncludes' },
-    { label: '以字符开始', value: 'startWith' },
-    { label: '以字符结束', value: 'endWith' },
-  ],
-  INTEGER: [
-    { label: '等于', value: 'equals' },
-    { label: '不等于', value: 'notEquals' },
-    { label: '大于', value: 'gt' },
-    { label: '大于等于', value: 'gte' },
-    { label: '小于', value: 'lt' },
-    { label: '小于等于', value: 'lte' },
-  ],
-  DATE: [
-    { label: '等于', value: 'equals' },
-    { label: '大于', value: 'gt' },
-    { label: '大于等于', value: 'gte' },
-    { label: '小于', value: 'lt' },
-    { label: '小于等于', value: 'lte' },
-  ],
-  OTHER: [
-    { label: '等于', value: 'equals' },
-    { label: '不等于', value: 'notEquals' },
-  ]
-}
 
 @Form.create()
 @connect(({ model, peek, loading }) => ({
@@ -126,9 +99,16 @@ class PeekOptForm extends React.Component {
       this.handleModelChange(formVals.modelId);
     }
     if (formVals.peekId !== 0) {
-      dispatch({
-        type: 'peek/getRuleByPeekId',
-        payload: formVals.peekId
+      // 获取已设置规则信息
+      getRuleByPeekId(formVals.peekId).then(val=>{
+        if (val) {
+          const {state, data} = val;
+          if (state === 0) {
+            this.setState({
+              userSetRules: data
+            })
+          }
+        }
       })
     }
     dispatch({
@@ -426,32 +406,7 @@ class PeekOptForm extends React.Component {
     const {
       curRules, userSetRules, needFileds
     } = this.state;
-    if (currentStep === 0) {
-
-      // 旧的值添加到state中
-      let deafultRules = [];
-      if ((oldRules && oldRules.length > 0) && (!userSetRules || userSetRules.length == 0)) {
-        for (let i = 0; i < oldRules.length; i++) {
-          for (let j = 0; j < modelMetas.length; j++) {
-            if (oldRules[i].fieldName === modelMetas[j].name) {
-              const ruleLabel = this.getRuleLabel(oldRules[i].rule);
-              deafultRules.push({
-                metaId: oldRules[i].metaId,
-                fieldName: oldRules[i].fieldName,
-                showName: modelMetas[j].showName,
-                ruleLabel,
-                rule: oldRules[i].rule,
-                value: oldRules[i].value
-              });
-              break;
-            }
-          }
-        }
-      }
-      // this.setState({
-      //   userSetRules: deafultRules
-      // })
-    }
+    
     if (currentStep === 1) {
       const { fields } = formVals;
       let defaultValue = [];
