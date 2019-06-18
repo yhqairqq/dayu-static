@@ -213,17 +213,18 @@ class PeekOptForm extends React.Component {
       callback: (data) => {
         if (data && data.rowSize > 0) {
           let columns = [];
-          for (let i = 0; i < data.columns.length; i++) {
-            const tmp = data.columns[i];
+          const { columns: oldColumns, showNameOfColumns, rows} = data;
+          for (let i = 0; i < oldColumns.length; i++) {
+            const tmp = oldColumns[i];
             columns.push({
-              title: tmp,
+              title: showNameOfColumns[tmp],
               dataIndex: tmp,
               key: tmp
             });
           }
           this.setState({
             previewColumns: columns,
-            previewData: data.rows,
+            previewData: rows,
             previewDataModalVisable: true
           })
         }

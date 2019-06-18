@@ -30,7 +30,7 @@ class PreviewDataModal extends React.Component {
         title="数据预览"
         visible={modalVisible}
         onCancel={() => handleModalVisible()}
-        afterClose={() => handleModalVisible()}
+        onOk={() => handleModalVisible()}
       >
         {
           data.length <= 0 ?
