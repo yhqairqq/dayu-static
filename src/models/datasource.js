@@ -48,37 +48,29 @@ export default {
     },
     *add({ payload, callback }, { call, put }) {
       const response = yield call(addDatasource, payload);
-      yield put({
-        type: 'save',
-        payload: response,
-      });
-      if (callback) callback();
+      if (response && response.state === 0) {
+        if (callback) callback();
+      }
     },
     *remove({ payload, callback }, { call, put }) {
       const response = yield call(delDatasource, payload);
-      yield put({
-        type: 'save',
-        payload: response,
-      });
-      if (callback) callback();
+      if (response && response.state === 0) {
+        if (callback) callback();
+      }
     },
     *update({ payload, callback }, { call, put }) {
       const response = yield call(editDatasource, payload);
-      yield put({
-        type: 'save',
-        payload: response,
-      });
-      if (callback) callback();
+      if (response && response.state === 0) {
+        if (callback) callback();
+      }
     },
     *changeStatus({ payload, callback }, { call, put }) {
       const response = yield call(changeStatus, payload);
-      yield put({
-        type: 'save',
-        payload: response,
-      });
-      if (callback) callback();
+      if (response && response.state === 0) {
+        if (callback) callback();
+      }
     },
-    *getDataTypes({payload}, {call, put}) {
+    *getDataTypes({ payload }, { call, put }) {
       const response = yield call(getDataTypes, payload);
       yield put({
         type: 'saveDataTypes',

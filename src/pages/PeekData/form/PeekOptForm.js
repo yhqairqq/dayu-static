@@ -475,7 +475,7 @@ class PeekOptForm extends React.Component {
       return [
         <Divider type="horizontal" />,
         <div>
-          <Select key="rule_select" placeholder="选择筛选条件" style={{ width: 180, marginLeft: 5 }}
+          <Select key="rule_select" placeholder="选择筛选条件" style={{ width: 250, marginLeft: 5 }}
             onChange={(value) => this.handleMetaChange(value)}
           >
             {
@@ -485,7 +485,7 @@ class PeekOptForm extends React.Component {
               ))
             }
           </Select>
-          <Select placeholder="筛选规则" style={{ width: 140, marginLeft: 5 }}
+          <Select placeholder="筛选规则" style={{ width: 170, marginLeft: 5 }}
             onChange={(value) => this.handleRuleChange(value)}
           >
             {
@@ -497,7 +497,7 @@ class PeekOptForm extends React.Component {
           <Search
             placeholder="输入值"
             enterButton="添加规则"
-            style={{ width: 320, marginLeft: 5 }}
+            style={{ width: 220, marginLeft: 5 }}
             onSearch={value => this.handleAddRule(value)}
           />
         </div>,

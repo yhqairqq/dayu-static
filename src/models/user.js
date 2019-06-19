@@ -30,28 +30,20 @@ export default {
     // 添加用户
     *add({ payload, callback }, { call, put }) {
       const response = yield call(addUser, payload);
-      yield put({
-        type: 'optSuccess',
-        payload: response,
-      });
-      if (callback) callback();
+      if (response && response.state === 0) {
+        if (callback) callback();
+      }
     },
     // 删除用户
     *remove({ payload, callback }, { call, put }) {
       const response = yield call(delUser, payload);
-      yield put({
-        type: 'optSuccess',
-        payload: response,
-      });
-      if (callback) callback();
+      if (response && response.state === 0) {
+        if (callback) callback();
+      }
     },
     // 重置密码
     *resetPwd({payload, callback}, {call, put}) {
       const response = yield call(resetPwd, payload);
-      yield put({
-        type: 'optSuccess',
-        payload: response,
-      });
       if (response && response.state === 0) {
         if (callback) callback();
       }
@@ -59,11 +51,9 @@ export default {
     // 更新用户信息
     *update({ payload, callback }, { call, put }) {
       const response = yield call(editUser, payload);
-      yield put({
-        type: 'optSuccess',
-        payload: response,
-      });
-      if (callback) callback();
+      if (response && response.state === 0) {
+        if (callback) callback();
+      }
     },
     *fetch(_, { call, put }) {
       const response = yield call(queryAll);

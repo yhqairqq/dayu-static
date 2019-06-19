@@ -117,12 +117,13 @@ class UserManage extends React.Component {
     dispatch({
       type: 'user/add',
       payload: fields,
+      callback: () => {
+        message.success('添加成功');
+        this.handleModalVisible();
+        // 重载数据
+        this.reloadData();
+      }
     });
-
-    message.success('添加成功');
-    this.handleModalVisible();
-    // 重载数据
-    this.reloadData();
   };
 
   handleUpdate = fields => {
@@ -145,16 +146,17 @@ class UserManage extends React.Component {
     dispatch({
       type: 'user/remove',
       payload: record.id,
+      callback: () => {
+        message.success('删除成功');
+        // 重载数据
+        this.reloadData();
+      }
     });
-    message.success('删除成功');
-    // 重载数据
-    this.reloadData();
   };
 
   // 重置密码
   resetPwd = (record) => {
     const { dispatch } = this.props;
-    console.log('--->')
     dispatch({
       type: 'user/resetPwd',
       payload: record.id,
@@ -194,6 +196,34 @@ class UserManage extends React.Component {
       });
     });
   }
+
+  // 分页、过滤、排序处理
+  handleStandardTableChange = (pagination, filtersArg, sorter) => {
+    const { dispatch } = this.props;
+    const { formValues } = this.state;
+    const filters = Object.keys(filtersArg).reduce((obj, key) => {
+      const newObj = { ...obj };
+      newObj[key] = getValue(filtersArg[key]);
+      return newObj;
+    }, {});
+
+    const params = {
+      ...formValues,
+      ...filters
+    };
+    if (sorter.field) {
+      params.sorter = `${sorter.field}_${sorter.order}`;
+    }
+    dispatch({
+      type: 'user/fetchByParams',
+      payload: {
+        params,
+        currentPage: pagination.current,
+        pageSize: pagination.pageSize
+      }
+    });
+  }
+
   // 查询表单
   renderForm() {
     const { form: { getFieldDecorator } } = this.props;
@@ -256,6 +286,7 @@ class UserManage extends React.Component {
               data={data}
               columns={this.columns}
               rowKey={record => record.id}
+              onChange={this.handleStandardTableChange}
             />
           </div>
         </Card>

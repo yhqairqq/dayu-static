@@ -50,7 +50,7 @@ export async function queryPeek(params) {
   return request(PRE_URL + '/getByPage', {
     method: 'POST',
     data: {
-      params: params
+     ...params
     }
   })
 }

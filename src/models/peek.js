@@ -23,19 +23,25 @@ export default {
   },
 
   effects: {
-    *fetch({ payload }, { call, put }) {
+    *fetch({ payload, callback }, { call, put }) {
       const response = yield call(queryPeek, payload);
       yield put({
         type: 'save',
         payload: response.data,
       });
+      if (response && response.state === 0) {
+        if (callback) callback();
+      }
     },
-    *getRuleByPeekId({ payload }, { call, put }) {
+    *getRuleByPeekId({ payload, callback }, { call, put }) {
       const response = yield call(getRuleByPeekId, payload);
       yield put({
         type: 'saveRules',
         payload: response.data,
       });
+      if (response && response.state === 0) {
+        if (callback) callback();
+      }
     },
     *getDataTypeRules({ payload }, { call, put }) {
       const response = yield call(getDataTypeRules, payload);
@@ -46,52 +52,39 @@ export default {
     },
     *sendData2Me({ payload, callback }, { call, put }) {
       const response = yield call(sendData2Me, payload);
-      yield put({
-        type: 'saveStatus',
-        payload: response.data,
-      });
-      if (callback) callback();
+      if (response && response.state === 0) {
+        if (callback) callback();
+      }
     },
     *countSize({ payload, callback }, { call, put }) {
       const response = yield call(countSize, payload);
-      yield put({
-        type: 'saveCountSize',
-        payload: response.data,
-      });
-
-      if (callback) callback(response.data);
+      if (response && response.state === 0) {
+        if (callback) callback(response.data);
+      }
     },
     *previewData({ payload, callback }, { call, put }) {
       const response = yield call(previewData, payload);
-      yield put({
-        type: 'saveOptSuccess',
-        payload: response.data,
-      });
-      if (callback) callback(response.data);
+      if (response && response.state === 0) {
+        if (callback) callback(response.data);
+      }
     },
     *add({ payload, callback }, { call, put }) {
       const response = yield call(addPeek, payload);
-      yield put({
-        type: 'saveOptSuccess',
-        payload: response,
-      });
-      if (callback) callback();
+      if (response && response.state === 0) {
+        if (callback) callback();
+      }
     },
     *remove({ payload, callback }, { call, put }) {
       const response = yield call(delPeek, payload);
-      yield put({
-        type: 'saveOptSuccess',
-        payload: response,
-      });
-      if (callback) callback();
+      if (response && response.state === 0) {
+        if (callback) callback();
+      }
     },
     *update({ payload, callback }, { call, put }) {
       const response = yield call(editPeek, payload);
-      yield put({
-        type: 'saveOptSuccess',
-        payload: response,
-      });
-      if (callback) callback();
+      if (response && response.state === 0) {
+        if (callback) callback();
+      }
     },
   },
 

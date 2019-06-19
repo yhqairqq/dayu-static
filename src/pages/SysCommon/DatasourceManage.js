@@ -257,8 +257,6 @@ class DatasourceManage extends PureComponent {
     }, {});
 
     const params = {
-      currentPage: pagination.current,
-      pageSize: pagination.pageSize,
       ...formValues,
       ...filters,
     };
@@ -268,7 +266,11 @@ class DatasourceManage extends PureComponent {
 
     dispatch({
       type: 'datasource/fetch',
-      payload: params,
+      payload: {
+        params,
+        currentPage: pagination.current,
+        pageSize: pagination.pageSize,
+      }
     });
   };
 
@@ -322,10 +324,12 @@ class DatasourceManage extends PureComponent {
         status: status,
         dsId: record.id
       },
+      callback: () => {
+        message.success('操作成功');
+        // 重载数据
+        this.reloadData();
+      }
     });
-    message.success('操作成功');
-    // 重载数据
-    this.reloadData();
   }
 
   // 删除操作处理
@@ -334,10 +338,12 @@ class DatasourceManage extends PureComponent {
     dispatch({
       type: 'datasource/remove',
       payload: record.id,
+      callback: () => {
+        message.success('删除成功');
+        // 重载数据
+        this.reloadData();
+      }
     });
-    message.success('删除成功');
-    // 重载数据
-    this.reloadData();
   }
 
   handleModalVisible = (flag, record, isEdit) => {
@@ -354,12 +360,13 @@ class DatasourceManage extends PureComponent {
     dispatch({
       type: 'datasource/add',
       payload: fields,
+      callback: () => {
+        message.success('添加成功');
+        this.handleModalVisible();
+        // 重载数据
+        this.reloadData();
+      }
     });
-
-    message.success('添加成功');
-    this.handleModalVisible();
-    // 重载数据
-    this.reloadData();
   };
 
   handleUpdate = fields => {
@@ -367,12 +374,13 @@ class DatasourceManage extends PureComponent {
     dispatch({
       type: 'datasource/update',
       payload: fields,
+      callback: () => {
+        message.success('修改成功');
+        this.handleModalVisible();
+        // 重载数据
+        this.reloadData();
+      }
     });
-
-    message.success('修改成功');
-    this.handleModalVisible();
-    // 重载数据
-    this.reloadData();
   };
 
   // 重新加载数据
@@ -380,7 +388,7 @@ class DatasourceManage extends PureComponent {
     const { dispatch } = this.props;
     dispatch({
       type: 'datasource/fetch',
-      payload: this.formValues,
+      payload: {},
     });
   }
 

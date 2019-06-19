@@ -45,7 +45,7 @@ const errorHandler = error => {
   }
   if (url) {
     notification.error({
-      message: `请求错误 ${status}: ${url}`,
+      message: `请求错误 ${status}`,
       description: errortext,
     });
   }
@@ -128,7 +128,7 @@ request.interceptors.response.use(async (response, options) => {
     } else {
       if (url) {
         notification.error({
-          message: `请求错误 : ${url}`,
+          message: `请求错误`,
           description: message,
         });
       }

@@ -109,8 +109,6 @@ class ModelManage extends React.Component {
     }, {});
 
     const params = {
-      currentPage: pagination.current,
-      pageSize: pagination.pageSize,
       ...formValues,
       ...filters
     };
@@ -119,7 +117,11 @@ class ModelManage extends React.Component {
     }
     dispatch({
       type: 'model/fetch',
-      payload: params
+      payload: {
+        params,
+        currentPage: pagination.current,
+        pageSize: pagination.pageSize,
+      }
     });
   }
   // 重置查询表单
@@ -161,10 +163,12 @@ class ModelManage extends React.Component {
     dispatch({
       type: 'model/remove',
       payload: record.id,
+      callback: () => {
+        message.success('删除成功');
+        // 重载数据
+        this.reloadData();
+      }
     });
-    message.success('删除成功');
-    // 重载数据
-    this.reloadData();
   };
   // 模型启、停用操作
   handleStatus = (record) => {
@@ -174,12 +178,14 @@ class ModelManage extends React.Component {
       type: 'model/changeStatus',
       payload: {
         status: status,
-        modelId: record.id
+        modelId: record.id,
+        callback: () => {
+          message.success('操作成功');
+          // 重载数据
+          this.reloadData();
+        }
       },
     });
-    message.success('操作成功');
-    // 重载数据
-    this.reloadData();
   };
 
   handleModalVisible = (flag, isEdit, record) => {
@@ -196,12 +202,13 @@ class ModelManage extends React.Component {
     dispatch({
       type: 'model/add',
       payload: fields,
+      callback: () => {
+        message.success('添加成功');
+        this.handleModalVisible();
+        // 重载数据
+        this.reloadData();
+      }
     });
-
-    message.success('添加成功');
-    this.handleModalVisible();
-    // 重载数据
-    this.reloadData();
   };
 
   handleUpdate = fields => {
@@ -209,12 +216,13 @@ class ModelManage extends React.Component {
     dispatch({
       type: 'model/update',
       payload: fields,
+      callback: () => {
+        message.success('修改成功');
+        this.handleModalVisible();
+        // 重载数据
+        this.reloadData();
+      }
     });
-
-    message.success('修改成功');
-    this.handleModalVisible();
-    // 重载数据
-    this.reloadData();
   };
 
   // 重新加载数据

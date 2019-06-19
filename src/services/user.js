@@ -21,7 +21,7 @@ export async function queryUsers(params) {
   return request(PRE_URL + '/getByPage', {
     method: 'POST',
     data: {
-      params: params
+      ...params
     }
   })
 }

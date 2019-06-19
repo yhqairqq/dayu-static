@@ -133,12 +133,13 @@ class PeekManage extends React.Component {
     dispatch({
       type: 'peek/add',
       payload: fields,
+      callback: () => {
+        message.success('添加成功');
+        this.handleModalVisible();
+        // 重载数据
+        this.reloadData();
+      }
     });
-
-    message.success('添加成功');
-    this.handleModalVisible();
-    // 重载数据
-    this.reloadData();
   };
 
   handleUpdate = fields => {
@@ -146,12 +147,13 @@ class PeekManage extends React.Component {
     dispatch({
       type: 'peek/update',
       payload: fields,
+      callback: () => {
+        message.success('修改成功');
+        this.handleModalVisible();
+        // 重载数据
+        this.reloadData();
+      }
     });
-
-    message.success('修改成功');
-    this.handleModalVisible();
-    // 重载数据
-    this.reloadData();
   };
 
   // 删除操作处理
@@ -160,10 +162,12 @@ class PeekManage extends React.Component {
     dispatch({
       type: 'peek/remove',
       payload: record.id,
+      callback: () => {
+        message.success('删除成功');
+        // 重载数据
+        this.reloadData();
+      }
     });
-    message.success('删除成功');
-    // 重载数据
-    this.reloadData();
   };
 
   // 重新加载数据
@@ -213,6 +217,33 @@ class PeekManage extends React.Component {
       });
     });
   };
+
+  // 分页、过滤、排序处理
+  handleStandardTableChange = (pagination, filtersArg, sorter) => {
+    const { dispatch } = this.props;
+    const { formValues } = this.state;
+    const filters = Object.keys(filtersArg).reduce((obj, key) => {
+      const newObj = { ...obj };
+      newObj[key] = getValue(filtersArg[key]);
+      return newObj;
+    }, {});
+
+    const params = {
+      ...formValues,
+      ...filters
+    };
+    if (sorter.field) {
+      params.sorter = `${sorter.field}_${sorter.order}`;
+    }
+    dispatch({
+      type: 'peek/fetch',
+      payload: {
+        params,
+        currentPage: pagination.current,
+        pageSize: pagination.pageSize,
+      }
+    });
+  }
 
   // 查询form表单
   renderForm() {
@@ -298,6 +329,7 @@ class PeekManage extends React.Component {
               rowKey={record => record.id}
               disabledSelected={true}
               columns={this.columns}
+              onChange={this.handleStandardTableChange}
             />
           </div>
         </Card>

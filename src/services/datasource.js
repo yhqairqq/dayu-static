@@ -64,7 +64,7 @@ export async function queryDatasource(params) {
   return request(PRE_URL + '/getByPage', {
     method: 'POST',
     data: {
-      params: params
+      ...params
     }
   })
 }

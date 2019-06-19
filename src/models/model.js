@@ -46,35 +46,27 @@ export default {
     },
     *add({ payload, callback }, { call, put }) {
       const response = yield call(addModel, payload);
-      yield put({
-        type: 'optSuccess',
-        payload: response,
-      });
-      if (callback) callback();
+      if (response && response.state === 0) {
+        if (callback) callback();
+      }
     },
     *remove({ payload, callback }, { call, put }) {
       const response = yield call(delModel, payload);
-      yield put({
-        type: 'optSuccess',
-        payload: response,
-      });
-      if (callback) callback();
+      if (response && response.state === 0) {
+        if (callback) callback();
+      }
     },
     *update({ payload, callback }, { call, put }) {
       const response = yield call(editModel, payload);
-      yield put({
-        type: 'optSuccess',
-        payload: response,
-      });
-      if (callback) callback();
+      if (response && response.state === 0) {
+        if (callback) callback();
+      }
     },
     *changeStatus({ payload, callback }, { call, put }) {
       const response = yield call(changeStatus, payload);
-      yield put({
-        type: 'optSuccess',
-        payload: response,
-      });
-      if (callback) callback();
+      if (response && response.state === 0) {
+        if (callback) callback();
+      }
     },
     *getColumns({ payload, callback }, { call, put }) {
       const response = yield call(getColumns, payload);
@@ -82,7 +74,9 @@ export default {
         type: 'saveColumns',
         payload: response.data,
       });
-      if (callback) callback();
+      if (response && response.state === 0) {
+        if (callback) callback();
+      }
     }
   },
 
