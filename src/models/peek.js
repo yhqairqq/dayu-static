@@ -53,7 +53,7 @@ export default {
     *sendData2Me({ payload, callback }, { call, put }) {
       const response = yield call(sendData2Me, payload);
       if (response && response.state === 0) {
-        if (callback) callback();
+        if (callback) callback(response.data);
       }
     },
     *countSize({ payload, callback }, { call, put }) {

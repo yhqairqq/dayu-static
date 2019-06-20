@@ -73,11 +73,6 @@ class PeekManage extends React.Component {
             onConfirm={() => this.exportData(record)}>
             <a>导出</a>
           </Popconfirm>
-          {/* <Divider type="vertical" />
-           <Popconfirm placement="top" title='确定推送'
-            onConfirm={() => this.sendData2Me(record)}>
-            <a>推送</a>
-          </Popconfirm> */}
         </Fragment>
       )
     }
@@ -107,23 +102,13 @@ class PeekManage extends React.Component {
     });
   };
 
-  sendData2Me = (record) => {
-    const { dispatch } = this.props;
-    dispatch({
-      type: 'peek/sendData2Me',
-      payload: record.id,
-    });
-  }
-
   exportData = (record) => {
     const { dispatch } = this.props;
     dispatch({
       type: 'peek/sendData2Me',
       payload: record.id,
-      callback: () => {
-        notification.info({
-          message: '请到你的邮箱中去查看导出数据',
-        });
+      callback: (msg) => {
+        message.success(msg);
       }
     });
   }
