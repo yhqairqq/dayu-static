@@ -309,7 +309,9 @@ class DatasourceManage extends PureComponent {
 
       dispatch({
         type: 'datasource/fetch',
-        payload: values,
+        payload: {
+          params: values
+        },
       });
     });
   };

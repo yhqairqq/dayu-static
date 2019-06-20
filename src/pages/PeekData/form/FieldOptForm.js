@@ -110,6 +110,17 @@ class FieldOptForm extends React.Component {
               initialValue: values.showName,
             })(<Input />)}
           </Form.Item>
+          <Form.Item label="是否可用">
+            {form.getFieldDecorator('display', {
+              rules: [{ required: true, message: '显示名称不能为空', }],
+              initialValue: values.display,
+            })(
+              <Select key="display">
+                  <Option key={0} value={0}>显示</Option>
+                  <Option key={1} value={1}>隐藏</Option>
+              </Select>
+            )}
+          </Form.Item>
           <Form.Item label="数据类型">
             {form.getFieldDecorator('dataType', {
               rules: [{ required: true, message: '显示名称不能为空', }],

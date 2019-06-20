@@ -192,7 +192,9 @@ class UserManage extends React.Component {
 
       dispatch({
         type: 'user/fetchByParams',
-        payload: values,
+        payload: {
+          params: values
+        },
       });
     });
   }

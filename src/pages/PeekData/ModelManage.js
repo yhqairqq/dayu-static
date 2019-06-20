@@ -152,7 +152,9 @@ class ModelManage extends React.Component {
       });
       dispatch({
         type: 'model/fetch',
-        payload: values
+        payload: {
+          params: values
+        }
       });
     });
   };

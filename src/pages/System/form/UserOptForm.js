@@ -113,7 +113,6 @@ class UserOptForm extends React.Component {
         </FormItem>
         <FormItem key="position" {...this.formLayout} label="职位">
           {form.getFieldDecorator('position', {
-            rules: [{ required: false, message: '请输入职位名！', min: 3, max: 20 }],
             initialValue: values.position
           })(<Input placeholder="请输入" />)}
         </FormItem>

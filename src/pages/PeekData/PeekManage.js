@@ -213,7 +213,9 @@ class PeekManage extends React.Component {
 
       dispatch({
         type: 'peek/fetch',
-        payload: values,
+        payload: {
+          params: values
+        },
       });
     });
   };

@@ -1,6 +1,6 @@
 import request from '@/utils/request';
 
-const PRE_URL = "/user";
+const PRE_URL = "/sys/user";
 
 export async function query() {
   return request(PRE_URL + '/users');
