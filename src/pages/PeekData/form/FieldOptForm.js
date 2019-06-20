@@ -116,8 +116,8 @@ class FieldOptForm extends React.Component {
               initialValue: values.display,
             })(
               <Select key="display">
-                  <Option key={0} value={0}>显示</Option>
-                  <Option key={1} value={1}>隐藏</Option>
+                  <Option key={0} value={0}>隐藏</Option>
+                  <Option key={1} value={1}>显示</Option>
               </Select>
             )}
           </Form.Item>

@@ -181,12 +181,12 @@ class ModelManage extends React.Component {
       payload: {
         status: status,
         modelId: record.id,
-        callback: () => {
-          message.success('操作成功');
-          // 重载数据
-          this.reloadData();
-        }
       },
+      callback: () => {
+        message.success('操作成功');
+        // 重载数据
+        this.reloadData();
+      }
     });
   };
 

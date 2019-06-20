@@ -232,8 +232,8 @@ class ModelOptForm extends React.Component {
         {
           title: '是否可用', dataIndex: 'disable', key: 'disable',
           render: (text, record) => (
-            <a>可用</a>
-        )
+            <a>{record.display === 1 ? '显示' : '隐藏'}</a>
+          )
         },
         { title: '所属分组', dataIndex: 'groupName', key: 'groupName' },
         {
@@ -314,10 +314,11 @@ class ModelOptForm extends React.Component {
     const { formVals } = this.state;
 
     let tmp = formVals.fields;
-    const { name, showName, dataType, groupName } = fields;
+    const { name, showName, dataType, groupName, display } = fields;
     for (let i = 0; i < tmp.length; i++) {
       if (tmp[i].name === name) {
         tmp[i].showName = showName;
+        tmp[i].display = display;
         tmp[i].dataType = dataType;
         tmp[i].groupName = groupName;
         break;
