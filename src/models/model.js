@@ -13,12 +13,12 @@ export default {
   namespace: 'model',
 
   state: {
-    fields: [],    // 某张数据表的字段列表
+    fields: [], // 某张数据表的字段列表
     allModels: [], // 所有模型列表
     modelMetas: [], // 某个模型的字段列表
     data: {
       list: [],
-      pagination: {}
+      pagination: {},
     },
   },
 
@@ -39,6 +39,7 @@ export default {
     },
     *fetchModelMeta({ payload }, { call, put }) {
       const response = yield call(getModelMeta, payload);
+      console.log('fetchModelMeta:', payload);
       yield put({
         type: 'saveModelMetas',
         payload: response.data,
@@ -77,7 +78,7 @@ export default {
       if (response && response.state === 0) {
         if (callback) callback();
       }
-    }
+    },
   },
 
   reducers: {
@@ -90,20 +91,20 @@ export default {
     saveColumns(state, action) {
       return {
         ...state,
-        fields: action.payload
-      }
+        fields: action.payload,
+      };
     },
     saveAllModels(state, action) {
       return {
         ...state,
-        allModels: action.payload
-      }
+        allModels: action.payload,
+      };
     },
     saveModelMetas(state, action) {
       return {
         ...state,
-        modelMetas: action.payload
-      }
-    }
+        modelMetas: action.payload,
+      };
+    },
   },
 };
