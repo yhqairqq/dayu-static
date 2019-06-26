@@ -50,7 +50,7 @@ class SelectFieldStep extends React.Component {
 
   handleDeleteFields = key => {
     const { selectedFields = [] } = this.props;
-    this.props.onFormValueChange('fields', selectedFields.filter(item => item.key !== key));
+    this.progitps.onFormValueChange('fields', selectedFields.filter(item => item !== key));
   };
 
   render() {
