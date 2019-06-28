@@ -14,6 +14,7 @@ export interface StandardTableProps {
     extra?: TableCurrentDataSource<any>
   ) => void;
   loading?: boolean;
+  disabledSelected?:boolean;
 }
 
 export default class StandardTable extends React.Component<StandardTableProps, any> {}

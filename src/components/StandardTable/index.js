@@ -15,7 +15,7 @@ function initTotalList(columns) {
 class StandardTable extends PureComponent {
   constructor(props) {
     super(props);
-    const { columns, disabledSelected = true } = props;
+    const { columns } = props;
     const needTotalList = initTotalList(columns);
 
     this.state = {

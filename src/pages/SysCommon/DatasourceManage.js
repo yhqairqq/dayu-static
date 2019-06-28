@@ -1,7 +1,5 @@
 import React, { PureComponent, Fragment } from 'react';
-import dva, { connect } from 'dva';
-import moment, { isDate } from 'moment';
-import router from 'umi/router';
+import { connect } from 'dva';
 import {
   Row,
   Col,
@@ -11,149 +9,23 @@ import {
   Select,
   Icon,
   Button,
-  Dropdown,
-  Menu,
-  InputNumber,
-  DatePicker,
   Modal,
   message,
   Popconfirm,
   Badge,
-  Divider,
-  Steps,
-  Radio,
+  Divider
 } from 'antd';
 import StandardTable from '@/components/StandardTable';
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
 
+import DsOptForm from './form/DsOptForm';
 import styles from './DatasourceManage.less';
-import FormItem from 'antd/lib/form/FormItem';
 
+const FormItem = Form.Item;
 const { Option } = Select;
 
 const statusMap = ['success', 'error']
 const status = ['使用中', '已停用']
-const DATASOURCE_TYPE = [
-  {
-    type: 'MySQL',
-    driver: 'com.mysql.jdbc.Driver',
-  },
-  {
-    type: 'PostgreSQL',
-    driver: 'org.postgresql.Driver',
-  },
-  {
-    type: 'ElasticSearch',
-    driver: 'org.elasticsearch.xpack.sql.jdbc.EsDriver'
-  }
-]
-
-const CreateForm = Form.create()(props => {
-  const { modalVisible, recordValue, isEdit = false, form, handleAdd, handleUpdate, handleModalVisible } = props;
-  const okHandle = () => {
-    form.validateFields((err, fieldsValue) => {
-      if (err) return;
-      form.resetFields();
-      if (isEdit) {
-        fieldsValue.dsId = recordValue.id
-        handleUpdate(fieldsValue);
-      } else {
-        handleAdd(fieldsValue);
-      }
-    });
-  };
-
-  const formLayout = {
-    labelCol: { span: 7 },
-    wrapperCol: { span: 15 },
-  };
-
-  // 数据源修改
-  function handleDtChange(value) {
-    let driverStr = '';
-    for (let i = 0; i < DATASOURCE_TYPE.length; i++) {
-      if (DATASOURCE_TYPE[i].type === value) {
-        driverStr = DATASOURCE_TYPE[i].driver;
-        break;
-      }
-    }
-    recordValue.jdbcDriver = driverStr;
-  }
-  return (
-    <Modal
-      destroyOnClose
-      style={{ top: 20 }}
-      title={isEdit ? '修改数据源' : '新增数据源'}
-      visible={modalVisible}
-      onOk={okHandle}
-      onCancel={() => handleModalVisible()}
-    >
-      <FormItem key="name" {...formLayout} label="数据源名称">
-        {form.getFieldDecorator('name', {
-          rules: [{ required: true, message: '请输入至少三个字符的规则描述！', min: 3, max: 20 }],
-          initialValue: recordValue.name
-        })(<Input placeholder="请输入" />)}
-      </FormItem>
-      <FormItem key="type" {...formLayout} label="数据源类型">
-        {form.getFieldDecorator('type', {
-          rules: [{ required: true, message: '数据源类型必须选择' }],
-          initialValue: recordValue.type
-        })(
-          <Select style={{ width: '100%' }} placeholder="请选择数据源类型" onChange={handleDtChange}>
-            {
-              DATASOURCE_TYPE.map((item, index) => (
-                <Option value={item.type} key={index}>{item.type}</Option>
-              ))
-            }
-          </Select>
-        )}
-      </FormItem>
-      <FormItem key="jdbcDriver" {...formLayout} label="JDBC驱动">
-        {form.getFieldDecorator('jdbcDriver', {
-          rules: [{ required: true, message: '请输入数据源驱动！' }],
-          initialValue: recordValue.jdbcDriver
-        })(<Input placeholder="请输入数据源驱动" />)}
-      </FormItem>
-      <FormItem key="jdbcUrl" {...formLayout} label="JDBC URL">
-        {form.getFieldDecorator('jdbcUrl', {
-          rules: [{ required: true, message: '请输入数据源URL！' }],
-          initialValue: recordValue.jdbcUrl
-        })(<Input placeholder="请输入数据源URL" />)}
-      </FormItem>
-      <FormItem key="username" {...formLayout} label="用户名">
-        {form.getFieldDecorator('username', {
-          initialValue: recordValue.username
-        })(<Input placeholder="请输入用户名" />)}
-      </FormItem>
-      <FormItem key="password" {...formLayout} label="密码">
-        {form.getFieldDecorator('password', {
-          initialValue: recordValue.password
-        })(<Input placeholder="请输入密码" />)}
-      </FormItem>
-      <FormItem key="timeout" {...formLayout} label="连接池超时时间(分)">
-        {form.getFieldDecorator('timeout', {
-          initialValue: recordValue.tiemout || 1
-        })(
-          <Select style={{ width: '100%' }} placeholder="请选择超时时间">
-            <Option value="1" key="1">1</Option>
-            <Option value="5" key="5">5</Option>
-            <Option value="10" key="10">10</Option>
-            <Option value="15" key="15">15</Option>
-            <Option value="30" key="30">30</Option>
-            <Option value="40" key="40">40</Option>
-            <Option value="50" key="50">50</Option>
-            <Option value="60" key="60">60</Option>
-          </Select>
-        )}
-      </FormItem>
-      <FormItem key="testSql" {...formLayout} label="连接测试sql">
-        {form.getFieldDecorator('testSql', {
-          initialValue: recordValue.testSql
-        })(<Input placeholder="SELECT 1" />)}
-      </FormItem>
-    </Modal>
-  );
-});
 
 @Form.create()
 @connect(({ datasource, user, loading }) => ({
@@ -244,6 +116,10 @@ class DatasourceManage extends PureComponent {
     dispatch({
       type: 'user/fetch'
     });
+    // 拉取支持的数据源类型
+    dispatch({
+      type: 'datasource/fetchAllDsTypes'
+    })
   }
 
   handleStandardTableChange = (pagination, filtersArg, sorter) => {
@@ -399,6 +275,7 @@ class DatasourceManage extends PureComponent {
     const {
       form: { getFieldDecorator },
       user: { list },
+      datasource: { allTypes },
     } = this.props;
     return (
       <Form key="search_form" onSubmit={this.handleSearch} layout="inline">
@@ -408,7 +285,7 @@ class DatasourceManage extends PureComponent {
               {getFieldDecorator('type')(
                 <Select placeholder="请选择数据类型">
                   {
-                    DATASOURCE_TYPE.map((item, index) => (
+                    allTypes.map((item, index) => (
                       <Option value={item.type} key={index}>{item.type}</Option>
                     ))
                   }
@@ -497,10 +374,10 @@ class DatasourceManage extends PureComponent {
             />
           </div>
         </Card>
-        <CreateForm
+        <DsOptForm
           {...parentMethods}
           isEdit={isEditForm}
-          recordValue={recordValue}
+          values={recordValue}
           modalVisible={modalVisible} />
       </PageHeaderWrapper>
     );

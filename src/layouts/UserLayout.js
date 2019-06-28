@@ -1,5 +1,4 @@
 import React, { Component, Fragment } from 'react';
-import { formatMessage } from 'umi-plugin-react/locale';
 import { connect } from 'dva';
 import Link from 'umi/link';
 import { Icon } from 'antd';

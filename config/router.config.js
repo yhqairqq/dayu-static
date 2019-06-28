@@ -31,17 +31,17 @@ export default [
       // dashboard
       {
         path: '/dashboard',
-        name: 'dashboard',
+        name: '仪表盘',
         icon: 'dashboard',
         routes: [
           {
             path: '/dashboard/analysis',
-            name: 'analysis',
+            name: '分析页',
             component: './Dashboard/Analysis',
           },
           {
             path: '/dashboard/monitor',
-            name: 'monitor',
+            name: '监控页',
             component: './Dashboard/Monitor',
           }
         ],
@@ -64,7 +64,7 @@ export default [
           },
           {
             path: '/system/res-manage',
-            name: '用户管理',
+            name: '资源管理',
             component: './System/ResManage'
           }
         ]
@@ -73,12 +73,12 @@ export default [
       {
         path: '/common',
         icon: 'profile',
-        name: 'common',
+        name: '基础信息管理',
         routes: [
           // 数据源管理
           {
             path: '/common/datasource-manage',
-            name: 'datasource',
+            name: '数据源管理',
             component: './SysCommon/DatasourceManage',
           }
         ]
@@ -87,18 +87,18 @@ export default [
       {
         path: '/peekdata',
         icon: 'funnel-plot',
-        name: 'peekdata',
+        name: '自助取数',
         routes: [
           // 模型管理
           {
             path: '/peekdata/model-manage',
-            name: 'modelmanage',
+            name: '模型管理',
             component: './PeekData/ModelManage',
           },
           // 取数管理
           {
             path: '/peekdata/peek-manage',
-            name: 'peekmanage',
+            name: '取数管理',
             component: './PeekData/PeekManage'
           },
         ]

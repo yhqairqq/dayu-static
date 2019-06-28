@@ -28,28 +28,28 @@ export default {
       })
     },
     // 添加用户
-    *add({ payload, callback }, { call, put }) {
+    *add({ payload, callback }, { call }) {
       const response = yield call(addUser, payload);
       if (response && response.state === 0) {
         if (callback) callback();
       }
     },
     // 删除用户
-    *remove({ payload, callback }, { call, put }) {
+    *remove({ payload, callback }, { call }) {
       const response = yield call(delUser, payload);
       if (response && response.state === 0) {
         if (callback) callback();
       }
     },
     // 重置密码
-    *resetPwd({payload, callback}, {call, put}) {
+    *resetPwd({payload, callback}, {call}) {
       const response = yield call(resetPwd, payload);
       if (response && response.state === 0) {
         if (callback) callback();
       }
     },
     // 更新用户信息
-    *update({ payload, callback }, { call, put }) {
+    *update({ payload, callback }, { call }) {
       const response = yield call(editUser, payload);
       if (response && response.state === 0) {
         if (callback) callback();

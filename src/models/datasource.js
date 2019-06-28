@@ -7,11 +7,13 @@ import {
   changeStatus,
   getDataTypes,
   getTables,
+  getAllDsTypes
 } from '@/services/datasource';
 
 export default {
   namespace: 'datasource',
   state: {
+    allTypes: [], // 所有支持的数据类型
     simpleDatasources: [], // 所有数据源简单信息
     tables: [], // 某个数据源下的表列表
     tableColumns: [], // 某个表下面的所有字段
@@ -38,6 +40,16 @@ export default {
         payload: data,
       });
     },
+    *fetchAllDsTypes({ payload, callback }, { call, put }) {
+      const resp = yield call(getAllDsTypes, payload);
+      yield put({
+        type: 'saveAllTypes',
+        payload: resp.data,
+      });
+      if (resp && resp.state === 0) {
+        if (callback) callback();
+      }
+    },
     *fetch({ payload }, { call, put }) {
       const response = yield call(queryDatasource, payload);
       const { data } = response
@@ -46,25 +58,25 @@ export default {
         payload: data,
       });
     },
-    *add({ payload, callback }, { call, put }) {
+    *add({ payload, callback }, { call }) {
       const response = yield call(addDatasource, payload);
       if (response && response.state === 0) {
         if (callback) callback();
       }
     },
-    *remove({ payload, callback }, { call, put }) {
+    *remove({ payload, callback }, { call }) {
       const response = yield call(delDatasource, payload);
       if (response && response.state === 0) {
         if (callback) callback();
       }
     },
-    *update({ payload, callback }, { call, put }) {
+    *update({ payload, callback }, { call }) {
       const response = yield call(editDatasource, payload);
       if (response && response.state === 0) {
         if (callback) callback();
       }
     },
-    *changeStatus({ payload, callback }, { call, put }) {
+    *changeStatus({ payload, callback }, { call }) {
       const response = yield call(changeStatus, payload);
       if (response && response.state === 0) {
         if (callback) callback();
@@ -102,6 +114,12 @@ export default {
       return {
         ...state,
         dataTypes: action.payload
+      }
+    },
+    saveAllTypes(state, action) {
+      return {
+        ...state,
+        allTypes: action.payload
       }
     }
   },
