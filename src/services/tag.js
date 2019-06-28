@@ -53,3 +53,9 @@ export async function query(params) {
     },
   });
 }
+
+export async function queryAll() {
+  return request(PRE_URL + '/listAll', {
+    method: 'GET',
+  });
+}

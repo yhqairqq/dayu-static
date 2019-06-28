@@ -13,10 +13,11 @@ class SelectFieldStep extends React.Component {
   static defaultProps = {
     values: {},
     isEdit: false,
+    tagList: [],
   };
 
   state = {
-    selectedGroup: '全部',
+    selectedGroup: -1,
     searchValue: '',
     selectedField: undefined,
   };
@@ -50,11 +51,11 @@ class SelectFieldStep extends React.Component {
 
   handleDeleteFields = key => {
     const { selectedFields = [] } = this.props;
-    this.progitps.onFormValueChange('fields', selectedFields.filter(item => item !== key));
+    this.props.onFormValueChange('fields', selectedFields.filter(item => item !== key));
   };
 
   render() {
-    const { modelMetas = [], selectedFields = [], formLayout, groups } = this.props;
+    const { modelMetas = [], selectedFields = [], formLayout, tagList } = this.props;
     const { selectedGroup, searchValue, selectedField } = this.state;
     const selectedFieldObjs = modelMetas.filter(item =>
       selectedFields.some(fieldName => fieldName === item.name)
@@ -68,9 +69,9 @@ class SelectFieldStep extends React.Component {
             value={selectedGroup}
             onChange={this.onGroupChange}
           >
-            {groups.map(item => (
-              <Option value={item} key={item}>
-                {item}
+            {tagList.map(item => (
+              <Option value={item.id} key={item.id}>
+                {item.name}
               </Option>
             ))}
           </Select>
@@ -88,7 +89,7 @@ class SelectFieldStep extends React.Component {
             notFoundContent={null}
           >
             {modelMetas
-              .filter(item => selectedGroup === '全部' || item.groupName === selectedGroup)
+              .filter(item => selectedGroup === -1 || item.tagId === selectedGroup)
               .filter(item => searchValue.length === 0 || item.showName.indexOf(searchValue) > -1)
               .filter(item => selectedFields.every(fieldName => fieldName !== item.name))
               .map(item => (

@@ -38,9 +38,10 @@ import SelectFieldStep from './SelectFieldStep';
 import SelectFilterStep from './SelectFilterStep';
 
 @Form.create()
-@connect(({ model, peek, loading }) => ({
+@connect(({ model, peek, loading, tag }) => ({
   model,
   peek,
+  tag,
   loading: loading.models.peek,
 }))
 class PeekOptForm extends React.Component {
@@ -109,6 +110,11 @@ class PeekOptForm extends React.Component {
     }
     dispatch({
       type: 'peek/getDataTypeRules',
+      payload: {},
+    });
+
+    dispatch({
+      type: 'tag/fetchAll',
       payload: {},
     });
   }
@@ -302,15 +308,14 @@ class PeekOptForm extends React.Component {
       peek: { rules: oldRules, dataTypeRules },
     } = this.props;
 
-    const groupFieldMap = _.groupBy(modelMetas, 'groupName');
-    const groups = ['全部', ..._.keys(groupFieldMap)];
+    const tagList = [{ id: -1, name: '全部' }, ...this.props.tag.tagList];
     const { fields, rules } = formVals;
     if (currentStep === 1) {
       return (
         <SelectFieldStep
           selectedFields={fields}
           formLayout={this.formLayout}
-          groups={groups}
+          tagList={tagList}
           modelMetas={modelMetas}
           onFormValueChange={this.onFormValueChange}
         />
@@ -318,7 +323,7 @@ class PeekOptForm extends React.Component {
     } else if (currentStep === 2) {
       return (
         <SelectFilterStep
-          groups={groups}
+          tagList={tagList}
           onFormValueChange={this.onFormValueChange}
           modelMetas={modelMetas}
           rules={rules}

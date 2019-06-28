@@ -8,6 +8,7 @@ export default {
       list: [],
       pagination: {},
     },
+    tagList: [],
   },
 
   effects: {
@@ -20,6 +21,14 @@ export default {
       if (response && response.state === 0) {
         if (callback) callback();
       }
+    },
+
+    *fetchAll({ payload, callback }, { call, put }) {
+      const response = yield call(TagService.queryAll, payload);
+      yield put({
+        type: 'saveTagList',
+        payload: response.data,
+      });
     },
 
     *saveTag({ payload, callback }, { call, put }) {
@@ -35,55 +44,6 @@ export default {
         if (callback) callback();
       }
     },
-
-    // *getRuleByPeekId({ payload, callback }, { call, put }) {
-    //   const response = yield call(getRuleByPeekId, payload);
-    //   yield put({
-    //     type: 'saveRules',
-    //     payload: response.data,
-    //   });
-    //   if (response && response.state === 0) {
-    //     if (callback) callback();
-    //   }
-    // },
-    // *getDataTypeRules({ payload }, { call, put }) {
-    //   const response = yield call(getDataTypeRules, payload);
-    //   yield put({
-    //     type: 'saveDataRules',
-    //     payload: response.data,
-    //   });
-    // },
-    // *sendData2Me({ payload, callback }, { call, put }) {
-    //   const response = yield call(sendData2Me, payload);
-    //   if (response && response.state === 0) {
-    //     if (callback) callback(response.data);
-    //   }
-    // },
-    // *countSize({ payload, callback }, { call, put }) {
-    //   const response = yield call(countSize, payload);
-    //   if (response && response.state === 0) {
-    //     if (callback) callback(response.data);
-    //   }
-    // },
-    // *previewData({ payload, callback }, { call, put }) {
-    //   const response = yield call(previewData, payload);
-    //   if (response && response.state === 0) {
-    //     if (callback) callback(response.data);
-    //   }
-    // },
-    // *add({ payload, callback }, { call, put }) {
-    //   const response = yield call(addPeek, payload);
-    //   if (response && response.state === 0) {
-    //     if (callback) callback();
-    //   }
-    // },
-
-    // *update({ payload, callback }, { call, put }) {
-    //   const response = yield call(editPeek, payload);
-    //   if (response && response.state === 0) {
-    //     if (callback) callback();
-    //   }
-    // },
   },
 
   reducers: {
@@ -91,6 +51,12 @@ export default {
       return {
         ...state,
         data: action.payload,
+      };
+    },
+    saveTagList(state, action) {
+      return {
+        ...state,
+        tagList: action.payload,
       };
     },
     saveRules(state, action) {

@@ -1,74 +1,61 @@
-import React, { PureComponent, Fragment } from 'react';
-import dva, { connect } from 'dva';
+import React from 'react';
+import { connect } from 'dva';
 import {
-  Row,
-  Col,
-  Card,
+  Button,
+  Divider,
   Form,
   Input,
-  Select,
-  Icon,
-  Button,
-  Dropdown,
-  Menu,
-  InputNumber,
-  DatePicker,
   Modal,
-  message,
-  Popconfirm,
-  Badge,
-  Divider,
+  Select,
+  Spin,
   Steps,
-  Radio,
+  Switch,
   Table,
+  message,
 } from 'antd';
-import StandardTable from '@/components/StandardTable';
-import FieldOptForm from './FieldOptForm';
-
+import _ from 'lodash';
 const FormItem = Form.Item;
 const { Step } = Steps;
 const { Option } = Select;
 const { TextArea } = Input;
 
+import styles from '../PeekData.less';
+
 @Form.create()
-@connect(({ model, datasource, loading }) => ({
+@connect(({ model, datasource, tag, loading }) => ({
   model,
   datasource,
-  loading: loading.models.datasource,
+  tag,
+  dsLoading: loading.models.datasource,
+  tagLoading: loading.models.tag,
+  modelLoading: loading.models.model,
 }))
 class ModelOptForm extends React.Component {
   static defaultProps = {
-    values: {},
-    isEdit: false,
-    handleAdd: () => { },
-    handleUpdate: () => { },
-    handleModalVisible: () => { }
+    record: {},
+    handleAdd: () => {},
+    handleUpdate: () => {},
+    handleModalVisible: () => {},
   };
   constructor(props) {
     super(props);
-    const { values } = props;
-    let modelId = values.id
-    if (!modelId) {
-      modelId = 0;
-    }
+    const { record } = props;
     this.state = {
-      editFieldModelVisible: false,
-      editField: {},
       formVals: {
-        modelId,
-        name: values.name,
-        datasourceId: values.datasourceId,
-        tableName: values.tableName,
-        desc: values.desc,
-        fields: values.fields,
+        modelId: record.id,
+        name: record.name,
+        datasourceId: record.datasourceId,
+        tableName: record.tableName,
+        desc: record.desc,
+        fields: [],
       },
-      currentStep: 0
+      currentStep: 0,
     };
     this.formLayout = {
       labelCol: { span: 7 },
       wrapperCol: { span: 13 },
     };
-  };
+  }
 
   // 在render()方法之后立即执行
   componentDidMount() {
@@ -76,33 +63,23 @@ class ModelOptForm extends React.Component {
     const { formVals } = this.state;
 
     dispatch({
-      type: 'datasource/fetchAll'
+      type: 'datasource/fetchAll',
     });
-    // 拉取相应的数据源
-    if (formVals.datasourceId) {
-      dispatch({
-        type: 'datasource/fetchTables',
-        payload: formVals.datasourceId
-      })
-    }
 
-    // 拉取已设置的字段信息
+    //拉取字段类型
+    dispatch({
+      type: 'datasource/getDataTypes',
+    });
+
+    //拉取字段类型
+    dispatch({
+      type: 'tag/fetchAll',
+    });
+
+    //拉取已设置的字段信息
     if (formVals.tableName) {
       this.handleTableChange(formVals.tableName);
     }
-  };
-
-  okHandle = () => {
-    form.validateFields((err, fieldsValues) => {
-      if (err) return;
-      form.resetFields();
-      if (isEdit) {
-        fieldsValues.modelId = recordValue.id;
-        handleUpdate(fieldsValues);
-      } else {
-        handleAdd(fieldsValues);
-      }
-    })
   }
 
   backward = () => {
@@ -119,162 +96,206 @@ class ModelOptForm extends React.Component {
     });
   };
 
-  handleNext = currentStep => {
-    const { form, handleUpdate, handleAdd, isEdit, model: { fields } } = this.props;
-    const { formVals: oldValue } = this.state;
+  handleNext = () => {
+    const { form } = this.props;
     form.validateFields((err, fieldsValue) => {
       if (err) return;
-      const formVals = { ...oldValue, ...fieldsValue };
-      if (!formVals.fields || formVals.fields.length <= 0) {
-        formVals.fields = fields;
-      }
-      this.setState(
-        {
-          formVals,
+      const { formVals } = this.state;
+      this.setState({
+        formVals: {
+          ...formVals,
+          ...fieldsValue,
         },
-        () => {
-          if (currentStep < 1) {
-            this.forward();
-          } else {
-            if (isEdit) {
-              handleUpdate(formVals);
-            } else {
-              handleAdd(formVals);
-            }
-          }
-        }
-      );
+      });
+      this.forward();
     });
   };
+
+  handleSave = () => {
+    const { form, handleUpdate, handleAdd } = this.props;
+    const { formVals } = this.state;
+    const { fields } = formVals;
+
+    const hasErrorField = fields.some(item => item.showName == null || item.showName.length === 0);
+    if (hasErrorField) {
+      message.error('存在显示名称为空的记录,请检查!');
+      return;
+    }
+
+    form.validateFields((err, fieldsValue) => {
+      if (err) return;
+      const newFormValues = { ...formVals, ...fieldsValue, fields };
+      this.setState({
+        formVals: newFormValues,
+      });
+      if (!!newFormValues.modelId) {
+        handleUpdate(newFormValues);
+      } else {
+        handleAdd(newFormValues);
+      }
+    });
+  };
+
   // 取消处理
   cancelHandle = () => {
     const { handleModalVisible, values, form } = this.props;
     form.resetFields();
     handleModalVisible(false, false, values);
-  }
+  };
 
   // 处理数据源变更操作
-  handleDtChange = (value) => {
+  handleDtChange = value => {
     const { dispatch } = this.props;
     const { formVals } = this.state;
     formVals.datasourceId = value;
     this.setState({
-      formVals
-    })
+      formVals,
+    });
     dispatch({
       type: 'datasource/fetchTables',
-      payload: value
-    })
-  }
+      payload: value,
+    });
+  };
 
   // 处理数据表变更操作
-  handleTableChange = (value) => {
+  handleTableChange = value => {
     const { dispatch } = this.props;
     const { formVals } = this.state;
-    formVals.tableName = value;
-    formVals.fields = []; // 表变更了，字段需要变更
-    this.setState({
-      formVals
-    })
-    dispatch({
-      type: 'model/getColumns',
-      payload: {
-        modelId: formVals.modelId,
-        tableName: value,
-        datasourceId: formVals.datasourceId
+    this.setState(
+      {
+        formVals: {
+          ...formVals,
+          fields: [],
+          schemaList: [],
+        },
+      },
+      () => {
+        dispatch({
+          type: 'model/getColumnsAndSchemas',
+          payload: {
+            modelId: formVals.modelId,
+            tableName: value,
+            datasourceId: formVals.datasourceId,
+          },
+          callback: data => {
+            const { fields = [], schemas = [] } = data;
+            const { tagList } = this.props.tag;
+            const { formVals } = this.state;
+            this.setState({
+              formVals: {
+                ...formVals,
+                fields: this.processData(fields, schemas, tagList),
+              },
+            });
+          },
+        });
       }
-    })
-  }
+    );
+  };
+
+  processData = (fields, schemaList) => {
+    const { tagList } = this.getModalData();
+    const { formVals } = this.state;
+    const isEdit = !!formVals.modelId;
+    //匹配标签
+    const DEFAULT_TAG = tagList.find(item => item.defaulted === 1);
+    const schemaMap = schemaList.reduce((a, b) => {
+      a[b['fieldName']] = b;
+      return a;
+    }, {});
+    fields.forEach(item => {
+      if (!isEdit) {
+        const findTag = tagList.find(tag => item.name.startsWith(tag.rule)) || DEFAULT_TAG;
+        item['tagId'] = findTag.id;
+        const schema = schemaMap[item.name] || {};
+        item['showName'] = schema.comments || '';
+      }
+      item['_orderName'] = item.showName;
+    });
+    return fields;
+  };
+
+  onFieldPropChange = (record, prop, mapper = e => e) => value => {
+    const { formVals } = this.state;
+    const { fields = [] } = formVals;
+    const newFields = fields.map(item => {
+      if (item.name === record.name) {
+        item[prop] = mapper(value);
+      }
+      return item;
+    });
+    this.setState({
+      formVals: {
+        ...formVals,
+        fields: newFields,
+      },
+    });
+  };
 
   // 底部按钮
   renderFooter = currentStep => {
-    if (currentStep === 1) {
-      return [
-        <Button key="back" style={{ float: 'left' }} onClick={this.backward}>
+    return (
+      <div className={styles.modelOptFormFooter}>
+        <Button
+          key="back"
+          className={(currentStep == 1).toString()}
+          style={{ float: 'left' }}
+          onClick={this.backward}
+        >
           上一步
-        </Button>,
-        <Button key="cancel" onClick={() => this.cancelHandle()}>
+        </Button>
+        <Button key="cancel" className="true" onClick={() => this.cancelHandle()}>
           取消
-        </Button>,
-        <Button key="submit" type="primary" onClick={() => this.handleNext(currentStep)}>
+        </Button>
+        <Button
+          key="forward"
+          className={(currentStep == 0).toString()}
+          type="primary"
+          onClick={() => this.handleNext(currentStep)}
+        >
+          下一步
+        </Button>
+        <Button
+          key="save"
+          className={(currentStep == 1).toString()}
+          type="primary"
+          onClick={() => this.handleSave()}
+        >
           保存
-        </Button>,
-      ]
-    }
-    return [
-      <Button key="cancel" onClick={() => this.cancelHandle()}>
-        取消
-      </Button>,
-      <Button key="forward" type="primary" onClick={() => this.handleNext(currentStep)}>
-        下一步
-      </Button>
-    ]
+        </Button>
+      </div>
+    );
   };
 
-  // 表单
-  renderContent = (currentStep, formVals) => {
+  renderChooseDsStep = () => {
     const {
       form,
       datasource: { simpleDatasources, tables },
     } = this.props;
-    const {
-      formVals: { fields }
-    } = this.state;
-    if (currentStep == 1) {
-      // 业务表字段显示信息
-      const columns = [
-        {
-          title: '字段名', dataIndex: 'name', key: 'name',
-          sorter: (a, b) => a.name.localeCompare(b.name)
-        },
-        { title: '显示名称', dataIndex: 'showName', key: 'showName', editable: true },
-        { title: '数据类型', dataIndex: 'dataType', key: 'dataType' },
-        {
-          title: '是否可用', dataIndex: 'disable', key: 'disable',
-          render: (text, record) => (
-            <a>{record.display === 1 ? '显示' : '隐藏'}</a>
-          )
-        },
-        { title: '所属分组', dataIndex: 'groupName', key: 'groupName' },
-        {
-          title: '操作', key: 'action',
-          render: (text, record) => (
-            <Fragment>
-              <a onClick={() => this.setState({ editFieldModelVisible: true, editField: record })}>编辑</a>
-            </Fragment>
-          )
-        }
-      ]
-      return [
-        <Divider type="horizontal" />,
-        <Table
-          size="small"
-          dataSource={fields}
-          columns={columns}
-          rowKey={record => record.id}
-        />
-      ]
-    }
+    const { formVals } = this.state;
     return [
       <FormItem key="name" {...this.formLayout} label="模型名称">
         {form.getFieldDecorator('name', {
           rules: [{ required: true, message: '请输入模型名称！' }],
           initialValue: formVals.name,
-        })(<Input placeholder="请输入" />)}
+        })(<Input placeholder="请输入模型名称" />)}
       </FormItem>,
       <FormItem key="datasourceId" {...this.formLayout} label="数据源">
         {form.getFieldDecorator('datasourceId', {
           rules: [{ required: true, message: '请选择数据源' }],
           initialValue: formVals.datasourceId,
         })(
-          <Select placeholder="请选择数据源" style={{ width: '100%' }}
-            disabled={formVals.modelId !== 0}
-            onChange={(value) => this.handleDtChange(value)}>
-            {
-              simpleDatasources.map((item, index) => (
-                <Option value={item.id} key={item.id}>{item.name}</Option>
-              ))
-            }
+          <Select
+            placeholder="请选择数据源"
+            style={{ width: '100%' }}
+            disabled={!!formVals.modelId}
+            onChange={value => this.handleDtChange(value)}
+          >
+            {simpleDatasources.map((item, index) => (
+              <Option value={item.id} key={item.id}>
+                {item.name}
+              </Option>
+            ))}
           </Select>
         )}
       </FormItem>,
@@ -283,14 +304,18 @@ class ModelOptForm extends React.Component {
           rules: [{ required: true, message: '请选择业务表' }],
           initialValue: formVals.tableName,
         })(
-          <Select placeholder="请选择业务表" style={{ width: '100%' }}
-            disabled={formVals.modelId !== 0}
-            onChange={(value) => this.handleTableChange(value)}>
-            {
-              tables && tables.map((item, index) => (
-                <Option key={item.name} value={item.name}>{item.name}</Option>
-              ))
-            }
+          <Select
+            placeholder="请选择业务表"
+            style={{ width: '100%' }}
+            disabled={!!formVals.modelId}
+            onChange={value => this.handleTableChange(value)}
+          >
+            {tables &&
+              tables.map((item, index) => (
+                <Option key={item.name} value={item.name}>
+                  {item.name}
+                </Option>
+              ))}
           </Select>
         )}
       </FormItem>,
@@ -298,70 +323,127 @@ class ModelOptForm extends React.Component {
         {form.getFieldDecorator('desc', {
           initialValue: formVals.desc,
         })(<TextArea rows={4} placeholder="请输入至少五个字符" />)}
-      </FormItem>
+      </FormItem>,
     ];
   };
 
-  handleFieldModalVisible = (flag, record) => {
-    const { dispatch } = this.props;
-    this.setState({
-      editFieldModelVisible: !!flag,
-      editField: record || {},
-    });
+  renderFieldStep = () => {
+    const {
+      formVals: { fields },
+    } = this.state;
+    const { dataTypes } = this.props.datasource;
+    const { tagList } = this.props.tag;
+    const columns = [
+      {
+        title: '字段名',
+        dataIndex: 'name',
+        key: 'name',
+        width: '35%',
+        sorter: (a, b) => a.name.localeCompare(b.name),
+        render: text => (
+          <div style={{ wordWrap: 'break-word', wordBreak: 'break-all' }}>{text}</div>
+        ),
+      },
+      {
+        title: '显示名称',
+        dataIndex: 'showName',
+        key: 'showName',
+        width: '25%',
+        sorter: (a, b) => a._orderName.localeCompare(b._orderName),
+        render: (text, record) => (
+          <Input
+            value={text}
+            onChange={this.onFieldPropChange(record, 'showName', e => e.target.value)}
+          />
+        ),
+      },
+      {
+        title: '数据类型',
+        dataIndex: 'dataType',
+        key: 'dataType',
+        width: '20%',
+        render: (text, record) => (
+          <Select
+            style={{ width: '100%' }}
+            value={text}
+            onChange={this.onFieldPropChange(record, 'dataType')}
+          >
+            {dataTypes.map(item => (
+              <Select.Option key={item} value={item}>
+                {item}
+              </Select.Option>
+            ))}
+          </Select>
+        ),
+      },
+      {
+        title: '是否可用',
+        dataIndex: 'display',
+        key: 'display',
+        width: '10%',
+        render: (text, record) => (
+          <Switch
+            checkedChildren="是"
+            unCheckedChildren="否"
+            checked={text !== 0}
+            onChange={this.onFieldPropChange(record, 'display', val => (val ? 1 : 0))}
+          />
+        ),
+      },
+      {
+        title: '所属标签',
+        dataIndex: 'tagId',
+        width: '15%',
+        render: (text, record) => (
+          <Select value={text} onChange={this.onFieldPropChange(record, 'tagId')}>
+            {tagList.map(item => (
+              <Select.Option key={item.id} value={item.id}>
+                {item.name}
+              </Select.Option>
+            ))}
+          </Select>
+        ),
+      },
+    ];
+    return [
+      <Divider type="horizontal" />,
+      <Table width="100%" size="small" dataSource={fields} columns={columns} rowKey="name" />,
+    ];
   };
 
-  handleFieldUpdate = fields => {
-    const { formVals } = this.state;
-
-    let tmp = formVals.fields;
-    const { name, showName, dataType, groupName, display } = fields;
-    for (let i = 0; i < tmp.length; i++) {
-      if (tmp[i].name === name) {
-        tmp[i].showName = showName;
-        tmp[i].display = display;
-        tmp[i].dataType = dataType;
-        tmp[i].groupName = groupName;
-        break;
-      }
-    }
-    formVals.fields = tmp;
-    this.setState({
-      formVals
-    });
-    message.success('修改成功');
-    this.handleFieldModalVisible();
-  }
   render() {
-    const { isEdit, modalVisible, handleModalVisible, values } = this.props;
-    const { currentStep, formVals } = this.state;
-
+    const {
+      modalVisible,
+      handleModalVisible,
+      record,
+      dsLoading,
+      tagLoading,
+      modelLoading,
+    } = this.props;
+    const { currentStep } = this.state;
     return (
       <Modal
         destroyOnClose
         maskClosable={false}
-        width={800}
+        width={1000}
         style={{ top: 20 }}
         bodyStyle={{ padding: '10px 40px' }}
-        title={isEdit ? '修改模型' : '新增模型'}
+        title={!!record.id ? '修改模型' : '新增模型'}
         visible={modalVisible}
         footer={this.renderFooter(currentStep)}
-        onCancel={() => handleModalVisible(false, false, values)}
+        onCancel={() => handleModalVisible(false, false, record)}
         afterClose={() => handleModalVisible()}
       >
-        <Steps style={{ marginBottom: 15 }} size="small" current={currentStep}>
-          <Step title="数据源选择" />
-          <Step title="字段修改" />
-        </Steps>
-        {this.renderContent(currentStep, formVals)}
-        {/* 修改字段模式框 */}
-        <FieldOptForm
-          values={this.state.editField}
-          modalVisible={this.state.editFieldModelVisible}
-          handleModalVisible={this.handleFieldModalVisible}
-          handleUpdate={this.handleFieldUpdate}
-        />
+        <Spin spinning={dsLoading || modelLoading || tagLoading}>
+          <Steps style={{ marginBottom: 15 }} size="small" current={currentStep}>
+            <Step title="数据源选择" />
+            <Step title="字段修改" />
+          </Steps>
+          {currentStep === 0 && this.renderChooseDsStep()}
+          {currentStep === 1 && this.renderFieldStep()}
+        </Spin>
       </Modal>
-    )
+    );
   }
 }
 

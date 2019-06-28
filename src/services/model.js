@@ -1,17 +1,17 @@
 import request from '@/utils/request';
 import { async } from 'q';
 
-const PRE_URL = "/peekdata/model";
+const PRE_URL = '/peekdata/model';
 
 /**
  * 添加模型
- * @param {*} params 
+ * @param {*} params
  */
 export async function addModel(params) {
   return request(PRE_URL + '/add', {
     method: 'POST',
     data: {
-      ...params
+      ...params,
     },
   });
 }
@@ -24,44 +24,57 @@ export async function delModel(id) {
   return request(PRE_URL + '/del', {
     method: 'POST',
     data: {
-      modelId: id
-    }
-  })
+      modelId: id,
+    },
+  });
 }
 
 /**
  * 修改模型信息
- * @param {*} params 
+ * @param {*} params
  */
 export async function editModel(params) {
   return request(PRE_URL + '/edit', {
     method: 'POST',
     data: {
-      ...params
+      ...params,
+    },
+  });
+}
+
+/**
+ * 修改模型信息
+ * @param {*} params
+ */
+export async function upgradeModel(params) {
+  return request(PRE_URL + '/upgrade', {
+    method: 'POST',
+    data: {
+      ...params,
     },
   });
 }
 
 /**
  * 停、启用模型操作
- * @param {*} params 
+ * @param {*} params
  */
 export async function changeStatus(params) {
   return request(PRE_URL + '/changeStatus', {
     method: 'POST',
     data: {
-      ...params
-    }
-  })
+      ...params,
+    },
+  });
 }
 
 export async function queryModel(params) {
   return request(PRE_URL + '/getByPage', {
     method: 'POST',
     data: {
-      ...params
-    }
-  })
+      ...params,
+    },
+  });
 }
 
 /**
@@ -70,23 +83,47 @@ export async function queryModel(params) {
 export async function queryAllModel() {
   return request(PRE_URL + '/getAllModels', {
     method: 'POST',
-    data: {
-    }
-  })
+    data: {},
+  });
 }
 
-
 /**
- * 获取表字段列表 
- * @param {*} params 
+ * 获取表字段列表
+ * @param {*} params
  */
 export async function getColumns(params) {
   return request(PRE_URL + '/getColumns', {
     method: 'POST',
     data: {
-      ...params
-    }
-  })
+      ...params,
+    },
+  });
+}
+
+/**
+ * 获取表字段列表
+ * @param {*} params
+ */
+export async function getUpgradeColumns(params) {
+  return request(PRE_URL + '/getUpgradeColumns', {
+    method: 'POST',
+    data: {
+      ...params,
+    },
+  });
+}
+
+/**
+ * 获取表字段列表
+ * @param {*} params
+ */
+export async function getSchemas(params) {
+  return request(PRE_URL + '/getSchemas', {
+    method: 'POST',
+    data: {
+      ...params,
+    },
+  });
 }
 
 /**
@@ -97,7 +134,7 @@ export async function getModelMeta(modelId) {
   return request(PRE_URL + '/getColumnsByModelId', {
     method: 'POST',
     data: {
-      modelId: modelId
-    }
-  })
+      modelId: modelId,
+    },
+  });
 }
