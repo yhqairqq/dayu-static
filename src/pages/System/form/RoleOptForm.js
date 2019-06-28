@@ -2,13 +2,10 @@ import React from 'react';
 import {
   Form,
   Input,
-  Select,
   Modal,
-  Badge,
-  Divider,
-  Steps,
   Radio,
 } from 'antd';
+
 const FormItem = Form.Item;
 
 @Form.create()

@@ -1,28 +1,12 @@
 import React from 'react';
-import { connect } from "dva";
 import {
   Form,
   Tree,
   Input,
   Select,
-  Icon,
-  Button,
-  Dropdown,
-  Menu,
-  InputNumber,
-  DatePicker,
-  Modal,
-  message,
-  Popconfirm,
-  Badge,
-  Divider,
-  Steps,
-  Radio,
+  Modal
 } from 'antd';
 const FormItem = Form.Item;
-const { TreeNode } = Tree;
-const { Search } = Input;
-const { Option } = Select;
 
 @Form.create()
 class AllotRes2Role extends React.Component {

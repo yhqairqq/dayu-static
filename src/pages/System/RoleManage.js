@@ -55,8 +55,7 @@ class RoleManage extends React.Component {
     {
       title: '操作', dataIndex: 'option', render: (text, record) => (
         <Fragment>
-          <Popconfirm placement="top" title="确定删除该角色？"
-            onConfirm={() => this.handleDelete(record)}>
+          <Popconfirm placement="top" title="确定删除该角色？" onConfirm={() => this.handleDelete(record)}>
             <a>删除</a>
           </Popconfirm>
           <Divider type="vertical" />
@@ -96,7 +95,6 @@ class RoleManage extends React.Component {
   };
 
   handleModalVisible = (flag, record, isEdit) => {
-    const { dispatch } = this.props;
     this.setState({
       modalVisible: !!flag,
       isEditForm: !!isEdit,
@@ -105,13 +103,12 @@ class RoleManage extends React.Component {
   };
 
   handleAllotModalVisible = (flag, record) => {
-    const { dispatch } = this.props;
     this.setState({
       allotResVisible: !!flag,
       recordValue: record || {},
     });
   };
-  
+
   handleAllotUpdate = fields => {
     const { dispatch } = this.props;
     dispatch({

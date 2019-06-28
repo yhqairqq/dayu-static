@@ -1,7 +1,5 @@
-import React, { PureComponent, Fragment } from 'react';
+import React, { Fragment } from 'react';
 import { connect } from 'dva';
-import moment from 'moment';
-import router from 'umi/router';
 import {
   Row,
   Col,
@@ -9,19 +7,11 @@ import {
   Form,
   Input,
   Select,
-  Icon,
   Button,
-  Dropdown,
-  Menu,
-  InputNumber,
-  DatePicker,
-  Modal,
   Popconfirm,
   message,
   Badge,
-  Divider,
-  Steps,
-  Radio,
+  Divider
 } from 'antd';
 import StandardTable from '@/components/StandardTable';
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
@@ -30,14 +20,9 @@ import ModelOptForm from './form/ModelOptForm';
 import styles from './PeekData.less';
 
 const FormItem = Form.Item;
-const { Step } = Steps;
-const { TextArea } = Input;
 const { Option } = Select;
-const RadioGroup = Radio.Group;
-const getValue = obj =>
-  Object.keys(obj)
-    .map(key => obj[key])
-    .join(',');
+
+const getValue = obj => Object.keys(obj).map(key => obj[key]).join(',');
 const statusMap = ['success', 'error'];
 const status = ['使用中', '已停用'];
 
@@ -73,7 +58,9 @@ class ModelManage extends React.Component {
     {
       title: '操作', render: (text, record) => (
         <Fragment>
-          <Popconfirm placement="top" title="确定删除该模型？"
+          <Popconfirm
+            placement="top"
+            title="确定删除该模型？"
             onConfirm={() => this.handleDelete(record)}>
             <a>删除</a>
           </Popconfirm>

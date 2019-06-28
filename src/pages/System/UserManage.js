@@ -64,7 +64,7 @@ class UserManage extends React.Component {
           <Popconfirm
             placement="top"
             title="确定删除该用户？"
-            onConfirm={() => this.handleDelete(record)} >
+            onConfirm={() => this.handleDelete(record)}>
             <a>删除</a>
           </Popconfirm>
           <Divider type="vertical" />

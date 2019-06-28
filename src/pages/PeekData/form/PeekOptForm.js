@@ -400,7 +400,7 @@ class BasicInfoStep extends React.Component {
               disabled={peekId !== 0}
               onChange={value => onFormValueChange('modelId', value)}
             >
-              {allModels.map((item, index) => (
+              {allModels.map((item) => (
                 <Option value={item.id} key={item.id}>
                   {item.name}
                 </Option>

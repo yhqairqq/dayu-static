@@ -9,7 +9,6 @@ import {
   Select,
   Icon,
   Button,
-  Modal,
   message,
   Popconfirm,
   Badge,
@@ -91,15 +90,13 @@ class DatasourceManage extends PureComponent {
       key: 'action',
       render: (text, record) => (
         <Fragment>
-          <Popconfirm placement="top" title="确定删除该数据源？"
-            onConfirm={() => this.handleDelete(record)}>
+          <Popconfirm placement="top" title="确定删除该数据源？" onConfirm={() => this.handleDelete(record)}>
             <a>删除</a>
           </Popconfirm>
           <Divider type="vertical" />
           <a onClick={() => this.handleModalVisible(true, record, true)}>编辑</a>
           <Divider type="vertical" />
-          <Popconfirm placement="top" title={record.status === 0 ? '确定停用' : '确定启用'}
-            onConfirm={() => this.handleStatus(record)}>
+          <Popconfirm placement="top" title={record.status === 0 ? '确定停用' : '确定启用'} onConfirm={() => this.handleStatus(record)}>
             <a>{record.status === 0 ? '停用' : '启用'}</a>
           </Popconfirm>
         </Fragment>

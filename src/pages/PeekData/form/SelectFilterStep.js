@@ -1,7 +1,5 @@
 import React from 'react';
-import { connect } from 'dva';
-import { Form, Input, Select, Steps, Tag, Badge, notification, Divider } from 'antd';
-import _ from 'lodash';
+import { Form, Input, Select, Steps, notification, Divider } from 'antd';
 import RuleShow from './RuleShow';
 
 const FormItem = Form.Item;

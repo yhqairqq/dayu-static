@@ -1,15 +1,12 @@
 import React from 'react';
-import dva, { connect } from 'dva';
+import { connect } from 'dva';
 import {
   Form,
   Input,
   Select,
-  Modal,
-  Badge,
-  Divider,
-  Steps,
-  Radio,
+  Modal
 } from 'antd';
+
 const FormItem = Form.Item;
 const { Option } = Select;
 
@@ -155,7 +152,7 @@ class DsOptForm extends React.Component {
         <FormItem key="testSql" {...this.formLayout} label="连接测试sql">
           {form.getFieldDecorator('testSql', {
             initialValue: values.testSql
-          })(<Input placeholder="SELECT 1" />)}
+          })(<Input placeholder="SELECT 1"/>)}
         </FormItem>
       </Modal >
     );

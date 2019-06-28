@@ -1,11 +1,12 @@
 import React from 'react';
+import { connect } from 'dva';
 import {
   Form,
   Input,
   Select,
-  Modal,
-  Radio,
+  Modal
 } from 'antd';
+
 const FormItem = Form.Item;
 
 @Form.create()

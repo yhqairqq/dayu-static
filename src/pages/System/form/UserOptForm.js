@@ -6,6 +6,7 @@ import {
   Select,
   Modal
 } from 'antd';
+
 const FormItem = Form.Item;
 const { Option } = Select;
 
@@ -109,11 +110,13 @@ class UserOptForm extends React.Component {
             rules: [{ required: true, message: '请选择角色' }],
             initialValue: values.roleIds,
           })(
-            <Select placeholder="选择角色" style={{ width: '100%' }}
+            <Select
+              placeholder="选择角色"
+              style={{ width: '100%' }}
               mode="multiple"
               defaultValue={values.roleIds}
             >
-              {allRoles.map((r, index) => (
+              {allRoles.map((r) => (
                 <Option key={r.id} value={r.id}>{r.name}</Option>
               ))}
             </Select>

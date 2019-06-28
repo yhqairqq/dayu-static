@@ -21,6 +21,7 @@ import ResOptForm from './form/ResOptForm';
 import styles from '../styles/Manage.less';
 
 const FormItem = Form.Item;
+const { Option } = Select;
 
 const getValue = obj => Object.keys(obj).map(key => obj[key]).join(',');
 
@@ -75,7 +76,7 @@ class ResManage extends React.Component {
       name = '根节点';
     } else {
       for (let i = 0; i < allParents.length; i++) {
-        if (allParents[i].id == parentId) {
+        if (allParents[i].id === parentId) {
           name = allParents[i].name;
           break;
         }
@@ -104,7 +105,6 @@ class ResManage extends React.Component {
   };
 
   handleModalVisible = (flag, record, isEdit) => {
-    const { dispatch } = this.props;
     this.setState({
       modalVisible: !!flag,
       isEditForm: !!isEdit,
