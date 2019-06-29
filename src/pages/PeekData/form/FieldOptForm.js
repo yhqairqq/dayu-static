@@ -1,28 +1,13 @@
-import React, { PureComponent, Fragment } from 'react';
-import dva, { connect } from 'dva';
+import React from 'react';
+import { connect } from 'dva';
 import {
-  Row,
-  Col,
-  Card,
   Form,
   Input,
   Select,
-  Icon,
-  Button,
-  Dropdown,
-  Menu,
-  InputNumber,
-  DatePicker,
   Modal,
-  message,
-  Popconfirm,
-  Badge,
-  Divider,
-  Steps,
-  Radio,
-  Table,
 } from 'antd';
-const FormItem = Form.Item;
+
+const { Option } = Select;
 
 @Form.create()
 @connect(({ datasource, loading }) => ({
@@ -56,7 +41,7 @@ class FieldOptForm extends React.Component {
 
   // 在render()方法之后立即执行
   componentDidMount() {
-    const { dispatch } = this.props; 
+    const { dispatch } = this.props;
 
     dispatch({
       type: 'datasource/getDataTypes'
@@ -64,7 +49,7 @@ class FieldOptForm extends React.Component {
   };
 
   handleFieldUpdate = () => {
-    const { form, handleUpdate} = this.props;
+    const { form, handleUpdate } = this.props;
     const { formVals: oldValue } = this.state;
     form.validateFields((err, fieldsValue) => {
       if (err) return;
@@ -116,8 +101,8 @@ class FieldOptForm extends React.Component {
               initialValue: values.display,
             })(
               <Select key="display">
-                  <Option key={0} value={0}>隐藏</Option>
-                  <Option key={1} value={1}>显示</Option>
+                <Option key={0} value={0}>隐藏</Option>
+                <Option key={1} value={1}>显示</Option>
               </Select>
             )}
           </Form.Item>
@@ -127,8 +112,8 @@ class FieldOptForm extends React.Component {
               initialValue: values.dataType,
             })(
               <Select key="dataType">
-                {dataTypes && dataTypes.map((item, index) => (
-                  <Option key={index} value={item}>{item}</Option>
+                {dataTypes && dataTypes.map((item) => (
+                  <Option key={item} value={item}>{item}</Option>
                 ))}
               </Select>
             )}

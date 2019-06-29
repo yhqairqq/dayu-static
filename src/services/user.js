@@ -3,13 +3,13 @@ import request from '@/utils/request';
 const PRE_URL = "/sys/user";
 
 export async function query() {
-  return request(PRE_URL + '/users');
+  return request(`${PRE_URL}/users`);
 }
 /**
  * 查询当前用户信息
  */
 export async function queryCurrent() {
-  return request(PRE_URL + '/getCurrent', {
+  return request(`${PRE_URL}/getCurrent`, {
     method: 'POST',
   });
 }
@@ -18,11 +18,20 @@ export async function queryCurrent() {
  * @param {*} params 
  */
 export async function queryUsers(params) {
-  return request(PRE_URL + '/getByPage', {
+  return request(`${PRE_URL}/getByPage`, {
     method: 'POST',
     data: {
       ...params
     }
+  })
+}
+
+/**
+ * 获取当前用户拥有的菜单列表
+ */
+export async function queryUserMenu() {
+  return request(`${PRE_URL}/menuTree`, {
+    method: 'POST'
   })
 }
 
@@ -32,7 +41,7 @@ export async function queryUsers(params) {
  * @param {*} params 
  */
 export async function addUser(params) {
-  return request(PRE_URL + '/add', {
+  return request(`${PRE_URL}/add`, {
     method: 'POST',
     data: {
       ...params
@@ -45,7 +54,7 @@ export async function addUser(params) {
  * @param {Long} id 用户Id
  */
 export async function delUser(id) {
-  return request(PRE_URL + '/del', {
+  return request(`${PRE_URL}/del`, {
     method: 'POST',
     data: {
       userId: id
@@ -58,7 +67,7 @@ export async function delUser(id) {
  * @param {Long} id 用户Id
  */
 export async function resetPwd(id) {
-  return request(PRE_URL + '/resetPwd', {
+  return request(`${PRE_URL}/resetPwd`, {
     method: 'POST',
     data: {
       userId: id
@@ -71,7 +80,7 @@ export async function resetPwd(id) {
  * @param {*} params 
  */
 export async function editUser(params) {
-  return request(PRE_URL + '/edit', {
+  return request(`${PRE_URL}/edit`, {
     method: 'POST',
     data: {
       ...params
@@ -84,7 +93,7 @@ export async function editUser(params) {
  * @param {*} params 
  */
 export async function accountLogin(params) {
-  return request(PRE_URL + '/login', {
+  return request(`${PRE_URL}/login`, {
     method: 'POST',
     data: params,
   });

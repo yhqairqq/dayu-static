@@ -1,14 +1,9 @@
 import React from 'react';
-import { connect } from 'dva';
-import { Form, Input, Select, Steps, Tag, Badge, notification, Divider } from 'antd';
-import _ from 'lodash';
+import { Input, Select, notification, Divider } from 'antd';
 import RuleShow from './RuleShow';
 
-const FormItem = Form.Item;
-const { Step } = Steps;
 const { Option } = Select;
-const { TextArea } = Input;
-const Search = Input.Search;
+const { Search } = Input;
 
 const DEFAULT_STATE = {
   selectedGroup: -1,
@@ -45,7 +40,7 @@ class SelectFilterStep extends React.Component {
     const field = modelMetas.find(item => item.name === val);
     this.setState({
       selectedField: val,
-      ruleList: dataTypeRules[field.dataType] || dataTypeRules['OBJECT'],
+      ruleList: dataTypeRules[field.dataType] || dataTypeRules.OBJECT,
     });
   };
 
@@ -77,7 +72,7 @@ class SelectFilterStep extends React.Component {
     }
     const fieldObj = modelMetas.find(item => item.name === selectedField);
     if (!isNull) {
-      for (let i = 0; i < rules.length; i++) {
+      for (let i = 0; i < rules.length; i += 1) {
         const tmp = rules[i];
         if (tmp.metaId === fieldObj.id && tmp.rule === selectedRule) {
           isHave = true;
@@ -159,7 +154,7 @@ class SelectFilterStep extends React.Component {
             {modelMetas
               .filter(item => selectedGroup === -1 || item.tagId === selectedGroup)
               .filter(item => !searchValue || item.showName.indexOf(searchValue) > -1)
-              .map((item, index) => (
+              .map((item) => (
                 <Option value={item.name} key={item.id}>
                   {item.showName}
                 </Option>
@@ -171,7 +166,7 @@ class SelectFilterStep extends React.Component {
             onChange={this.handleRuleChange}
             value={selectedRule}
           >
-            {ruleList.map((item, index) => (
+            {ruleList.map((item) => (
               <Option value={item.value} key={item.value}>
                 {item.label}
               </Option>

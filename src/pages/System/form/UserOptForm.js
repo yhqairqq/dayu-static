@@ -1,30 +1,20 @@
-import React, { PureComponent, Fragment } from 'react';
+import React from 'react';
 import { connect } from "dva";
 import {
-  Row,
-  Col,
-  Card,
   Form,
   Input,
   Select,
-  Icon,
-  Button,
-  Dropdown,
-  Menu,
-  InputNumber,
-  DatePicker,
-  Modal,
-  message,
-  Popconfirm,
-  Badge,
-  Divider,
-  Steps,
-  Radio,
+  Modal
 } from 'antd';
+
 const FormItem = Form.Item;
 const { Option } = Select;
 
 @Form.create()
+@connect(({ role, loading }) => ({
+  role,
+  loading: loading.models.role
+}))
 class UserOptForm extends React.Component {
   static defaultProps = {
     values: {
@@ -52,8 +42,10 @@ class UserOptForm extends React.Component {
       if (err) return;
       form.resetFields();
       if (isEdit) {
-        fieldsValue.userId = values.id;
-        handleUpdate(fieldsValue);
+        handleUpdate({
+          userId: values.id,
+          ...fieldsValue
+        });
       } else {
         handleAdd(fieldsValue);
       }
@@ -62,7 +54,8 @@ class UserOptForm extends React.Component {
 
   render() {
     const { isEdit, modalVisible, handleModalVisible,
-      values, form } = this.props;
+      values, form,
+      role: { allRoles } } = this.props;
     return (
       <Modal
         destroyOnClose
@@ -75,20 +68,6 @@ class UserOptForm extends React.Component {
         onCancel={() => handleModalVisible(false, false, values)}
         onOk={this.okHandle}
       >
-        <FormItem key="appId" {...this.formLayout} label="所属应用">
-          {form.getFieldDecorator('appId', {
-            rules: [{ required: true, message: '请选择应用' }],
-            initialValue: values.appId,
-          })(
-            <Select placeholder="选择数据字段" style={{ width: '100%' }}
-              disabled={isEdit}
-              defaultValue={values.appId}
-            >
-              <Option value={0} key={0}>拉冬系统</Option>
-              <Option value={1} key={1}>日报看板</Option>
-            </Select>
-          )}
-        </FormItem>
         <FormItem key="nickname" {...this.formLayout} label="用户姓名">
           {form.getFieldDecorator('nickname', {
             rules: [{ required: true, message: '请输入用户姓名！' }],
@@ -97,7 +76,7 @@ class UserOptForm extends React.Component {
         </FormItem>
         <FormItem key="username" {...this.formLayout} label="用户登录名">
           {form.getFieldDecorator('username', {
-            rules: [{ required: true, message: '请输入用户登录名！'}],
+            rules: [{ required: true, message: '请输入用户登录名！' }],
             initialValue: values.username
           })(<Input placeholder="请输入" />)}
         </FormItem>
@@ -127,6 +106,23 @@ class UserOptForm extends React.Component {
             rules: [{ required: false, message: '请输入电子邮箱！', min: 5, max: 20 }],
             initialValue: values.email
           })(<Input placeholder="请输入" />)}
+        </FormItem>
+        <FormItem key="roleIds" {...this.formLayout} label="拥有角色">
+          {form.getFieldDecorator('roleIds', {
+            rules: [{ required: true, message: '请选择角色' }],
+            initialValue: values.roleIds,
+          })(
+            <Select
+              placeholder="选择角色"
+              style={{ width: '100%' }}
+              mode="multiple"
+              defaultValue={values.roleIds}
+            >
+              {allRoles.map((r) => (
+                <Option key={r.id} value={r.id}>{r.name}</Option>
+              ))}
+            </Select>
+          )}
         </FormItem>
       </Modal>
     )

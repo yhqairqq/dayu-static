@@ -52,24 +52,24 @@ export default {
     },
     *fetchModelMeta({ payload }, { call, put }) {
       const response = yield call(getModelMeta, payload);
-      console.log('fetchModelMeta:', payload);
       yield put({
         type: 'saveModelMetas',
         payload: response.data,
       });
     },
-    *add({ payload, callback }, { call, put }) {
+    *add({ payload, callback }, { call }) {
       const response = yield call(addModel, payload);
       if (response && response.state === 0) {
         if (callback) callback();
       }
     },
-    *remove({ payload, callback }, { call, put }) {
+    *remove({ payload, callback }, { call }) {
       const response = yield call(delModel, payload);
       if (response && response.state === 0) {
         if (callback) callback();
       }
     },
+
     *update({ payload, callback }, { call, put }) {
       const { isUpgrade, ...others } = payload;
       const response = yield call(isUpgrade ? upgradeModel : editModel, others);
@@ -77,7 +77,7 @@ export default {
         if (callback) callback();
       }
     },
-    *changeStatus({ payload, callback }, { call, put }) {
+    *changeStatus({ payload, callback }, { call }) {
       const response = yield call(changeStatus, payload);
       if (response && response.state === 0) {
         if (callback) callback();

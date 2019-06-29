@@ -50,37 +50,37 @@ export default {
         payload: response.data,
       });
     },
-    *sendData2Me({ payload, callback }, { call, put }) {
+    *sendData2Me({ payload, callback }, { call }) {
       const response = yield call(sendData2Me, payload);
       if (response && response.state === 0) {
         if (callback) callback(response.data);
       }
     },
-    *countSize({ payload, callback }, { call, put }) {
+    *countSize({ payload, callback }, { call }) {
       const response = yield call(countSize, payload);
       if (response && response.state === 0) {
         if (callback) callback(response.data);
       }
     },
-    *previewData({ payload, callback }, { call, put }) {
+    *previewData({ payload, callback }, { call }) {
       const response = yield call(previewData, payload);
       if (response && response.state === 0) {
         if (callback) callback(response.data);
       }
     },
-    *add({ payload, callback }, { call, put }) {
+    *add({ payload, callback }, { call }) {
       const response = yield call(addPeek, payload);
       if (response && response.state === 0) {
         if (callback) callback();
       }
     },
-    *remove({ payload, callback }, { call, put }) {
+    *remove({ payload, callback }, { call }) {
       const response = yield call(delPeek, payload);
       if (response && response.state === 0) {
         if (callback) callback();
       }
     },
-    *update({ payload, callback }, { call, put }) {
+    *update({ payload, callback }, { call }) {
       const response = yield call(editPeek, payload);
       if (response && response.state === 0) {
         if (callback) callback();

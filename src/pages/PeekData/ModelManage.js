@@ -1,7 +1,5 @@
-import React, { PureComponent, Fragment } from 'react';
+import React, { Fragment } from 'react';
 import { connect } from 'dva';
-import moment from 'moment';
-import router from 'umi/router';
 import {
   Row,
   Col,
@@ -9,19 +7,11 @@ import {
   Form,
   Input,
   Select,
-  Icon,
   Button,
-  Dropdown,
-  Menu,
-  InputNumber,
-  DatePicker,
-  Modal,
   Popconfirm,
   message,
   Badge,
-  Divider,
-  Steps,
-  Radio,
+  Divider
 } from 'antd';
 import StandardTable from '@/components/StandardTable';
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
@@ -31,14 +21,9 @@ import styles from './PeekData.less';
 import ModelUpgradeModal from './form/ModelUpgradeModal';
 
 const FormItem = Form.Item;
-const { Step } = Steps;
-const { TextArea } = Input;
 const { Option } = Select;
-const RadioGroup = Radio.Group;
-const getValue = obj =>
-  Object.keys(obj)
-    .map(key => obj[key])
-    .join(',');
+
+const getValue = obj => Object.keys(obj).map(key => obj[key]).join(',');
 const statusMap = ['success', 'error'];
 const status = ['使用中', '已停用'];
 
@@ -51,10 +36,9 @@ const status = ['使用中', '已停用'];
 class ModelManage extends React.Component {
   state = {
     modalVisible: false,
-    expandForm: false,
     recordValue: {},
     isEditForm: false, // 是否为编辑数据
-    formValues: {},
+    formValues: {}
   };
 
   // 表格字段列表
@@ -69,16 +53,12 @@ class ModelManage extends React.Component {
       },
     },
     { title: '创建人', dataIndex: 'creator' },
-    { title: '描述', dataIndex: 'desc' },
+    { title: '描述', dataIndex: 'desc', },
     {
-      title: '操作',
-      render: (text, record) => (
+      title: '操作', render: (text, record) => (
         <Fragment>
-          <Popconfirm
-            placement="top"
-            title="确定删除该模型？"
-            onConfirm={() => this.handleDelete(record)}
-          >
+          <Popconfirm placement="top" title="确定删除该模型？"
+            onConfirm={() => this.handleDelete(record)}>
             <a>删除</a>
           </Popconfirm>
           <Divider type="vertical" />
@@ -94,19 +74,20 @@ class ModelManage extends React.Component {
             <a>{record.status === 0 ? '停用' : '启用'}</a>
           </Popconfirm>
         </Fragment>
-      ),
-    },
+      )
+    }
   ];
 
   componentDidMount() {
     const { dispatch } = this.props;
     dispatch({
-      type: 'model/fetch',
+      type: 'model/fetch'
     });
     dispatch({
-      type: 'datasource/fetch',
+      type: 'datasource/fetch'
     });
   }
+
   // 分页、过滤、排序处理
   handleStandardTableChange = (pagination, filtersArg, sorter) => {
     const { dispatch } = this.props;
@@ -119,7 +100,7 @@ class ModelManage extends React.Component {
 
     const params = {
       ...formValues,
-      ...filters,
+      ...filters
     };
     if (sorter.field) {
       params.sorter = `${sorter.field}_${sorter.order}`;
@@ -130,19 +111,20 @@ class ModelManage extends React.Component {
         params,
         currentPage: pagination.current,
         pageSize: pagination.pageSize,
-      },
+      }
     });
-  };
+  }
+
   // 重置查询表单
   handleFormReset = () => {
     const { form, dispatch } = this.props;
     form.resetFields();
     this.setState({
-      formValues: {},
+      formValues: {}
     });
     dispatch({
       type: 'model/fetch',
-      payload: {},
+      payload: {}
     });
   };
 
@@ -154,22 +136,22 @@ class ModelManage extends React.Component {
       if (err) return;
       const values = {
         ...fieldsValues,
-        updatedAt: fieldsValues.updatedAt && fieldsValues.updatedAt.valueOf(),
+        updatedAt: fieldsValues.updatedAt && fieldsValues.updatedAt.valueOf()
       };
       this.setState({
-        formValues: values,
+        formValues: values
       });
       dispatch({
         type: 'model/fetch',
         payload: {
-          params: values,
-        },
+          params: values
+        }
       });
     });
   };
 
   // 删除操作处理
-  handleDelete = record => {
+  handleDelete = (record) => {
     const { dispatch } = this.props;
     dispatch({
       type: 'model/remove',
@@ -178,32 +160,33 @@ class ModelManage extends React.Component {
         message.success('删除成功');
         // 重载数据
         this.reloadData();
-      },
+      }
     });
   };
+
   // 模型启、停用操作
-  handleStatus = record => {
+  handleStatus = (record) => {
     const { dispatch } = this.props;
-    const status = record.status === 0 ? 1 : 0;
     dispatch({
       type: 'model/changeStatus',
       payload: {
-        status: status,
+        status: record.status === 0 ? 1 : 0,
         modelId: record.id,
       },
       callback: () => {
         message.success('操作成功');
         // 重载数据
         this.reloadData();
-      },
+      }
     });
   };
 
-  handleModalVisible = (flag, record, isUpgrade = false) => {
+  handleModalVisible = (flag, isEdit, record) => {
+    const { dispatch } = this.props;
     this.setState({
       modalVisible: !!flag,
       recordValue: record || {},
-      isUpgrade,
+      isUpgrade
     });
   };
 
@@ -217,7 +200,7 @@ class ModelManage extends React.Component {
         this.handleModalVisible();
         // 重载数据
         this.reloadData();
-      },
+      }
     });
   };
 
@@ -231,7 +214,7 @@ class ModelManage extends React.Component {
         this.handleModalVisible();
         // 重载数据
         this.reloadData();
-      },
+      }
     });
   };
 
@@ -246,10 +229,7 @@ class ModelManage extends React.Component {
 
   // 查询表单
   renderForm() {
-    const { expandForm } = this.state;
-    const {
-      form: { getFieldDecorator },
-    } = this.props;
+    const { form: { getFieldDecorator } } = this.props;
     return (
       <Form onSubmit={this.handleSearch} layout="inline">
         <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
@@ -287,17 +267,19 @@ class ModelManage extends React.Component {
   render() {
     const {
       model: { data },
-      loading,
-    } = this.props;
+      loading } = this.props;
     const { modalVisible, recordValue, isUpgrade } = this.state;
     const parentMethods = {
       handleAdd: this.handleAdd,
       handleModalVisible: this.handleModalVisible,
-      handleUpdate: this.handleUpdate,
+      handleUpdate: this.handleUpdate
     };
 
     return (
-      <PageHeaderWrapper title="模型管理" content="管理取数模型，设置模型规则~">
+      <PageHeaderWrapper
+        title="模型管理"
+        content='管理取数模型，设置模型规则~'
+      >
         <Card bordered={false}>
           <div className={styles.peekDataManage}>
             <div className={styles.peekDataManageForm}>{this.renderForm()}</div>
@@ -307,7 +289,6 @@ class ModelManage extends React.Component {
               </Button>
             </div>
             <StandardTable
-              disabledSelected={true}
               loading={loading}
               data={data}
               columns={this.columns}

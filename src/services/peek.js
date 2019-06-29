@@ -1,5 +1,4 @@
 import request from '@/utils/request';
-import { async } from 'q';
 
 const PRE_URL = "/peekdata/peek";
 
@@ -8,7 +7,7 @@ const PRE_URL = "/peekdata/peek";
  * @param {*} params 
  */
 export async function addPeek(params) {
-  return request(PRE_URL + '/add', {
+  return request(`${PRE_URL}/add`, {
     method: 'POST',
     data: {
       ...params
@@ -21,7 +20,7 @@ export async function addPeek(params) {
  * @param {Long} id 模型Id
  */
 export async function delPeek(id) {
-  return request(PRE_URL + '/del', {
+  return request(`${PRE_URL}/del`, {
     method: 'POST',
     data: {
       peekId: id
@@ -34,7 +33,7 @@ export async function delPeek(id) {
  * @param {*} params 
  */
 export async function editPeek(params) {
-  return request(PRE_URL + '/edit', {
+  return request(`${PRE_URL}/edit`, {
     method: 'POST',
     data: {
       ...params
@@ -47,7 +46,7 @@ export async function editPeek(params) {
  * @param {*} params 
  */
 export async function queryPeek(params) {
-  return request(PRE_URL + '/getByPage', {
+  return request(`${PRE_URL}/getByPage`, {
     method: 'POST',
     data: {
      ...params
@@ -60,7 +59,7 @@ export async function queryPeek(params) {
  * @param {*} peekId 
  */
 export async function sendData2Me(peekId) {
-  return request(PRE_URL + '/sendData2Me', {
+  return request(`${PRE_URL}/sendData2Me`, {
     method: 'POST',
     data: {
       peekId
@@ -73,7 +72,7 @@ export async function sendData2Me(peekId) {
  * @param {*} params 
  */
 export async function countSize(params) {
-  return request(PRE_URL + '/countSize', {
+  return request(`${PRE_URL}/countSize`, {
     method: 'POST',
     data: {
       ...params
@@ -86,7 +85,7 @@ export async function countSize(params) {
  * @param {*} params 
  */
 export async function previewData(params) {
-  return request(PRE_URL + '/previewData', {
+  return request(`${PRE_URL}/previewData`, {
     method: 'POST',
     data: {
       ...params
@@ -99,7 +98,7 @@ export async function previewData(params) {
  * @param {*} peekId 
  */
 export async function getRuleByPeekId(peekId) {
-  return request(PRE_URL + '/getRuleByPeekId', {
+  return request(`${PRE_URL}/getRuleByPeekId`, {
     method: 'POST',
     data: {
       peekId
@@ -111,7 +110,7 @@ export async function getRuleByPeekId(peekId) {
  * 获取所有数据类型的对就有效规则
  */
 export async function getDataTypeRules() {
-  return request(PRE_URL + '/getDataTypeRules', {
+  return request(`${PRE_URL}/getDataTypeRules`, {
     method: 'POST',
     data: {
     }

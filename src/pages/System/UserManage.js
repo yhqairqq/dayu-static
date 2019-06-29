@@ -1,7 +1,5 @@
-import React, { PureComponent, Fragment } from 'react';
+import React, { Fragment } from 'react';
 import { connect } from 'dva';
-import moment from 'moment';
-import router from 'umi/router';
 import {
   Row,
   Col,
@@ -11,17 +9,10 @@ import {
   Select,
   Icon,
   Button,
-  Dropdown,
-  Menu,
-  InputNumber,
-  DatePicker,
-  Modal,
+  Tag,
   Popconfirm,
   message,
-  Badge,
   Divider,
-  Steps,
-  Radio,
 } from 'antd';
 import StandardTable from '@/components/StandardTable';
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
@@ -29,11 +20,14 @@ import UserOptForm from './form/UserOptForm';
 
 import styles from '../styles/Manage.less';
 
+const { Option } = Select;
 const FormItem = Form.Item;
+const getValue = obj => Object.keys(obj).map(key => obj[key]).join(',');
 
 @Form.create()
-@connect(({ user, loading }) => ({
+@connect(({ user, role, loading }) => ({
   user,
+  role,
   loading: loading.models.user
 }))
 class UserManage extends React.Component {
@@ -44,30 +38,40 @@ class UserManage extends React.Component {
     recordValue: {},
     formValues: {}
   }
+
   // 表格字段
   columns = [
     { title: '昵称', dataIndex: 'nickname' },
     { title: '登录名', dataIndex: 'username' },
     {
-      title: '所属应用', dataIndex: 'appId', filters: [
-        { text: '拉冬系统', value: 0 },
-        { text: '日报看板', value: 1 }
-      ], render(val) {
-        return <span>{val === 0 ? '拉冬系统' : '日报看板'}</span>;
-      }
+      title: '拥有角色', dataIndex: 'roleNames', render: (text) => (
+        <span>
+          {
+            text.map(t => (
+              <Tag color="blue" key={t}>{t}</Tag>
+            ))
+          }
+        </span>
+      )
     },
     { title: '所在部门', dataIndex: 'department' },
     { title: '职位', dataIndex: 'position' },
     { title: '邮箱', dataIndex: 'email' },
+    { title: '电话', dataIndex: 'phone' },
     {
-      title: '操作', dataIndex: 'option', render: (text, record) => (
+      title: '操作', dataIndex: 'option', render: (record) => (
         <Fragment>
-          <Popconfirm placement="top" title="确定删除该用户？"
-            onConfirm={() => this.handleDelete(record)}>
+          <Popconfirm
+            placement="top"
+            title="确定删除该用户？"
+            onConfirm={() => this.handleDelete(record)}
+          >
             <a>删除</a>
           </Popconfirm>
           <Divider type="vertical" />
-          <Popconfirm placement="top" title="确定初始化密码？"
+          <Popconfirm
+            placement="top"
+            title="确定初始化密码？"
             onConfirm={() => this.resetPwd(record)}
           >
             <a>初始化密码</a>
@@ -79,12 +83,18 @@ class UserManage extends React.Component {
       )
     }
   ]
+
   componentDidMount() {
     const { dispatch } = this.props;
     dispatch({
       type: 'user/fetchByParams'
     })
+
+    dispatch({
+      type: 'role/fetchAll'
+    })
   }
+
   handleFormReset = () => {
     const { form, dispatch } = this.props;
     form.resetFields();
@@ -96,14 +106,15 @@ class UserManage extends React.Component {
       payload: {},
     });
   };
+
   toggleForm = () => {
     const { expandForm } = this.state;
     this.setState({
       expandForm: !expandForm,
     });
   };
+
   handleModalVisible = (flag, record, isEdit) => {
-    const { dispatch } = this.props;
     this.setState({
       modalVisible: !!flag,
       isEditForm: !!isEdit,
@@ -113,7 +124,6 @@ class UserManage extends React.Component {
 
   handleAdd = fields => {
     const { dispatch } = this.props;
-    console.log(fields)
     dispatch({
       type: 'user/add',
       payload: fields,
@@ -167,6 +177,7 @@ class UserManage extends React.Component {
       }
     });
   }
+
   // 重新加载数据
   reloadData = () => {
     const { dispatch } = this.props;
@@ -228,16 +239,21 @@ class UserManage extends React.Component {
 
   // 查询表单
   renderForm() {
-    const { form: { getFieldDecorator } } = this.props;
+    const { form: { getFieldDecorator },
+      role: { allRoles }
+    } = this.props;
     return (
       <Form onSubmit={this.handleSearch} layout="inline">
         <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
           <Col md={8} sm={24}>
-            <FormItem key="appId" label="所属应用">
-              {getFieldDecorator('appId')(
-                <Select key="appId" placeholder="请选择所属应用">
-                  <Option value="0" key="0">拉冬系统</Option>
-                  <Option value="1" key="1">日报看板</Option>
+            <FormItem key="roleId" label="拥有角色">
+              {getFieldDecorator('roleId')(
+                <Select key="roleId" placeholder="请选择所属应用">
+                  {
+                    allRoles.map((item) => (
+                      <Option value={item.id} key={item.id}>{item.name}</Option>
+                    ))
+                  }
                 </Select>
               )}
             </FormItem>
@@ -283,7 +299,6 @@ class UserManage extends React.Component {
               </span>
             </div>
             <StandardTable
-              disabledSelected={true}
               loading={loading}
               data={data}
               columns={this.columns}

@@ -82,7 +82,7 @@ const request = extend({
 request.interceptors.request.use((url, options) => {
   const { headers } = options;
   // 向header中添加token
-  let nHeaders = {
+  const nHeaders = {
     ...headers,
     token: localStorage.getItem('token')
   }
@@ -96,7 +96,7 @@ request.interceptors.request.use((url, options) => {
 /**
 *对于状态码实际是 200 的错误
 */
-request.interceptors.response.use(async (response, options) => {
+request.interceptors.response.use(async (response) => {
   const { status, url } = response;
   if (status === 401) {
     notification.error({
@@ -111,9 +111,9 @@ request.interceptors.response.use(async (response, options) => {
   }
 
   const ret = await response.clone().json();
-  const { state, data, message, code } = ret
+  const { state, message, code } = ret
   if (state !== 0) {
-    if (code == 401) {
+    if (code === '401') {
       notification.error({
         message: '未登录或登录已过期，请重新登录。',
       });
@@ -124,14 +124,11 @@ request.interceptors.response.use(async (response, options) => {
           type: 'login/logout',
         });
       }
-      return;
     } else {
-      if (url) {
-        notification.error({
-          message: `请求错误`,
-          description: message,
-        });
-      }
+      notification.error({
+        message: `请求错误`,
+        description: message,
+      });
     }
   }
   return response;

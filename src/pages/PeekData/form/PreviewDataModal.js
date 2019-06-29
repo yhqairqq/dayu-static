@@ -1,12 +1,5 @@
-import { PureComponent, Fragment } from "react";
-import {
-  Popconfirm,
-  Empty,
-  Row,
-  Modal,
-  Col,
-  Table,
-} from "antd";
+import React from "react";
+import { Empty, Modal, Table } from "antd";
 
 class PreviewDataModal extends React.Component {
   static defaultProps = {
@@ -15,9 +8,6 @@ class PreviewDataModal extends React.Component {
     handleModalVisible: () => { }
   }
 
-  constructor(props) {
-    super(props);
-  }
   render() {
     const { data, columns, modalVisible, handleModalVisible } = this.props;
     return (

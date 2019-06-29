@@ -31,17 +31,17 @@ export default [
       // dashboard
       {
         path: '/dashboard',
-        name: 'dashboard',
+        name: '仪表盘',
         icon: 'dashboard',
         routes: [
           {
             path: '/dashboard/analysis',
-            name: 'analysis',
+            name: '分析页',
             component: './Dashboard/Analysis',
           },
           {
             path: '/dashboard/monitor',
-            name: 'monitor',
+            name: '监控页',
             component: './Dashboard/Monitor',
           },
         ],
@@ -67,46 +67,51 @@ export default [
             name: '用户管理',
             component: './System/ResManage',
           },
+          {
+            path: '/system/res-manage',
+            name: '资源管理',
+            component: './System/ResManage'
+          }
         ],
       },
       // 基础信息管理
       {
         path: '/common',
         icon: 'profile',
-        name: 'common',
+        name: '基础信息管理',
         routes: [
           // 数据源管理
           {
             path: '/common/datasource-manage',
-            name: 'datasource',
+            name: '数据源管理',
             component: './SysCommon/DatasourceManage',
-          },
-        ],
+          }
+        ]
       },
       // 自助取数平台
       {
         path: '/peekdata',
         icon: 'funnel-plot',
-        name: 'peekdata',
+        name: '自助取数',
         routes: [
           // 模型管理
           {
             path: '/peekdata/model-manage',
-            name: 'modelmanage',
+            name: '模型管理',
             component: './PeekData/ModelManage',
           },
           // 取数管理
           {
             path: '/peekdata/peek-manage',
-            name: 'peekmanage',
-            component: './PeekData/PeekManage',
+            name: '取数管理',
+            component: './PeekData/PeekManage'
           },
           //分组管理
           {
             path: '/peekdata/tags',
             name: '标签管理',
             component: './PeekData/tags',
-          },
+          }
         ],
       },
       // 日志埋点管理
@@ -118,19 +123,19 @@ export default [
           // 应用管理
           {
             path: '/cerebrum/app-manage',
-            name: '埋点应用管理',
+            name: '埋点应用管理'
           },
           // 埋点管理
           {
             path: '/cerebrum/anchor-manage',
-            name: '埋点管理',
+            name: '埋点管理'
           },
           // 日志上传策略
           {
             path: '/cerebrum/trans-strategy',
-            name: '上传策略管理',
-          },
-        ],
+            name: '上传策略管理'
+          }
+        ]
       },
       {
         name: 'account',

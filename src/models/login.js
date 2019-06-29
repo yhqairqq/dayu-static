@@ -74,7 +74,6 @@ export default {
 
   reducers: {
     changeLoginStatus(state, { payload }) {
-      console.log(payload);
       setAuthority(payload.roles);
       return {
         ...state,

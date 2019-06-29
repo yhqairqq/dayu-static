@@ -1,5 +1,4 @@
 import request from '@/utils/request';
-import { async } from 'q';
 
 const PRE_URL = "/common/datasource";
 
@@ -8,7 +7,7 @@ const PRE_URL = "/common/datasource";
  * @param {*} params 
  */
 export async function addDatasource(params) {
-  return request(PRE_URL + '/add', {
+  return request(`${PRE_URL}/add`, {
     method: 'POST',
     data: {
       ...params
@@ -16,13 +15,21 @@ export async function addDatasource(params) {
   });
 }
 
+/**
+ * 获取所有支持的数据源类型
+ */
+export async function getAllDsTypes() {
+  return request(`${PRE_URL}/getAllDsTypes`, {
+    method: 'POST'
+  })
+}
 
 /**
  * 修改数据源信息
  * @param {*} params 
  */
 export async function editDatasource(params) {
-  return request(PRE_URL + '/edit', {
+  return request(`${PRE_URL}/edit`, {
     method: 'POST',
     data: {
       ...params
@@ -35,7 +42,7 @@ export async function editDatasource(params) {
  * @param {*} params 
  */
 export async function changeStatus(params) {
-  return request(PRE_URL + '/changeStatus', {
+  return request(`${PRE_URL}/changeStatus`, {
     method: 'POST',
     data: {
       ...params
@@ -48,7 +55,7 @@ export async function changeStatus(params) {
  * @param {Long} id 数据源Id
  */
 export async function delDatasource(id) {
-  return request(PRE_URL + '/del', {
+  return request(`${PRE_URL}/del`, {
     method: 'POST',
     data: {
       dsId: id
@@ -61,7 +68,7 @@ export async function delDatasource(id) {
  * @param {*} params 
  */
 export async function queryDatasource(params) {
-  return request(PRE_URL + '/getByPage', {
+  return request(`${PRE_URL}/getByPage`, {
     method: 'POST',
     data: {
       ...params
@@ -74,10 +81,10 @@ export async function queryDatasource(params) {
  * @param {*} params 
  */
 export async function queryAllSimpleDatasource(params) {
-  return request(PRE_URL + '/getAllSimple', {
+  return request(`${PRE_URL}/getAllSimple`, {
     method: 'POST',
     data: {
-      params: params
+      params
     }
   })
 }
@@ -87,10 +94,10 @@ export async function queryAllSimpleDatasource(params) {
  * @param {*} dsId  数据源Id
  */
 export async function getTables(dsId) {
-  return request(PRE_URL + '/getTables', {
+  return request(`${PRE_URL}/getTables`, {
     method: 'POST',
     data: {
-      dsId: dsId
+      dsId
     }
   })
 }
@@ -99,7 +106,7 @@ export async function getTables(dsId) {
  * 获取支持的数据类型列表
  */
 export async function getDataTypes() {
-  return request(PRE_URL + '/getDataTypes', {
+  return request(`${PRE_URL}/getDataTypes`, {
     method: 'POST',
     data: {
     }
