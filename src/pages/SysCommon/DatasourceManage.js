@@ -26,6 +26,8 @@ const { Option } = Select;
 const statusMap = ['success', 'error']
 const status = ['使用中', '已停用']
 
+const getValue = obj => Object.keys(obj).map(key => obj[key]).join(',');
+
 @Form.create()
 @connect(({ datasource, user, loading }) => ({
   datasource,
@@ -192,11 +194,10 @@ class DatasourceManage extends PureComponent {
   // 数据源启、停用操作
   handleStatus = (record) => {
     const { dispatch } = this.props;
-    const status = record.status === 0 ? 1 : 0;
     dispatch({
       type: 'datasource/changeStatus',
       payload: {
-        status: status,
+        status: record.status === 0 ? 1 : 0,
         dsId: record.id
       },
       callback: () => {
@@ -222,7 +223,6 @@ class DatasourceManage extends PureComponent {
   }
 
   handleModalVisible = (flag, record, isEdit) => {
-    const { dispatch } = this.props;
     this.setState({
       modalVisible: !!flag,
       isEditForm: !!isEdit,
@@ -282,8 +282,8 @@ class DatasourceManage extends PureComponent {
               {getFieldDecorator('type')(
                 <Select placeholder="请选择数据类型">
                   {
-                    allTypes.map((item, index) => (
-                      <Option value={item.type} key={index}>{item.type}</Option>
+                    allTypes.map((item) => (
+                      <Option value={item.type} key={item.type}>{item.type}</Option>
                     ))
                   }
                 </Select>
@@ -305,7 +305,7 @@ class DatasourceManage extends PureComponent {
               {getFieldDecorator('createdBy')(
                 <Select placeholder="请选择数据源创建人">
                   {
-                    list.map((item, index) => (
+                    list.map((item) => (
                       <Option value={item.id} key={item.id}>{item.nickname}</Option>
                     ))
                   }
@@ -331,7 +331,7 @@ class DatasourceManage extends PureComponent {
 
   render() {
     const { datasource: { data }, loading } = this.props;
-    const { modalVisible, expandForm, recordValue, formValues, isEditForm } = this.state;
+    const { modalVisible, expandForm, recordValue, isEditForm } = this.state;
 
     const parentMethods = {
       handleAdd: this.handleAdd,
@@ -362,7 +362,6 @@ class DatasourceManage extends PureComponent {
               </span>
             </div>
             <StandardTable
-              disabledSelected={true}
               loading={loading}
               data={data}
               columns={this.columns}
@@ -375,7 +374,8 @@ class DatasourceManage extends PureComponent {
           {...parentMethods}
           isEdit={isEditForm}
           values={recordValue}
-          modalVisible={modalVisible} />
+          modalVisible={modalVisible}
+        />
       </PageHeaderWrapper>
     );
   }

@@ -1,12 +1,8 @@
 import React from 'react';
 import {
   Form,
-  Tree,
-  Input,
-  Select,
   Modal
 } from 'antd';
-const FormItem = Form.Item;
 
 @Form.create()
 class AllotRes2Role extends React.Component {
@@ -31,18 +27,19 @@ class AllotRes2Role extends React.Component {
   }
 
   okHandle = () => {
-    const { values, isEdit = false, form, handleUpdate } = this.props;
+    const { values, form, handleUpdate } = this.props;
     form.validateFields((err, fieldsValue) => {
       if (err) return;
       form.resetFields();
-      fieldsValue.roleId = values.id;
-      handleUpdate(fieldsValue);
+      handleUpdate({
+        roleId: values.id,
+        ...fieldsValue
+      });
     })
   }
 
   render() {
-    const { isEdit, modalVisible, handleModalVisible,
-      values, form } = this.props;
+    const { modalVisible, handleModalVisible, values } = this.props;
     return (
       <Modal
         destroyOnClose
@@ -50,12 +47,12 @@ class AllotRes2Role extends React.Component {
         width={540}
         style={{ top: 20 }}
         bodyStyle={{ padding: '10px 40px' }}
-        title={'分配资源权限'}
+        title='分配资源权限'
         visible={modalVisible}
         onCancel={() => handleModalVisible(false, false, values)}
         onOk={this.okHandle}
       >
-      <span>出来就好</span>
+        <span>出来就好</span>
       </Modal>
     )
   }

@@ -42,8 +42,10 @@ class UserOptForm extends React.Component {
       if (err) return;
       form.resetFields();
       if (isEdit) {
-        fieldsValue.userId = values.id;
-        handleUpdate(fieldsValue);
+        handleUpdate({
+          userId: values.id,
+          ...fieldsValue
+        });
       } else {
         handleAdd(fieldsValue);
       }

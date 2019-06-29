@@ -35,7 +35,6 @@ const status = ['使用中', '已停用'];
 class ModelManage extends React.Component {
   state = {
     modalVisible: false,
-    expandForm: false,
     recordValue: {},
     isEditForm: false, // 是否为编辑数据
     formValues: {}
@@ -58,17 +57,13 @@ class ModelManage extends React.Component {
     {
       title: '操作', render: (text, record) => (
         <Fragment>
-          <Popconfirm
-            placement="top"
-            title="确定删除该模型？"
-            onConfirm={() => this.handleDelete(record)}>
+          <Popconfirm placement="top" title="确定删除该模型？" onConfirm={() => this.handleDelete(record)}>
             <a>删除</a>
           </Popconfirm>
           <Divider type="vertical" />
           <a onClick={() => this.handleModalVisible(true, true, record)}>编辑</a>
           <Divider type="vertical" />
-          <Popconfirm placement="top" title={record.status === 0 ? '确定停用' : '确定启用'}
-            onConfirm={() => this.handleStatus(record)}>
+          <Popconfirm placement="top" title={record.status === 0 ? '确定停用' : '确定启用'} onConfirm={() => this.handleStatus(record)}>
             <a>{record.status === 0 ? '停用' : '启用'}</a>
           </Popconfirm>
         </Fragment>
@@ -85,6 +80,7 @@ class ModelManage extends React.Component {
       type: 'datasource/fetch'
     });
   }
+
   // 分页、过滤、排序处理
   handleStandardTableChange = (pagination, filtersArg, sorter) => {
     const { dispatch } = this.props;
@@ -111,6 +107,7 @@ class ModelManage extends React.Component {
       }
     });
   }
+
   // 重置查询表单
   handleFormReset = () => {
     const { form, dispatch } = this.props;
@@ -159,14 +156,14 @@ class ModelManage extends React.Component {
       }
     });
   };
+
   // 模型启、停用操作
   handleStatus = (record) => {
     const { dispatch } = this.props;
-    const status = record.status === 0 ? 1 : 0;
     dispatch({
       type: 'model/changeStatus',
       payload: {
-        status: status,
+        status: record.status === 0 ? 1 : 0,
         modelId: record.id,
       },
       callback: () => {
@@ -178,7 +175,6 @@ class ModelManage extends React.Component {
   };
 
   handleModalVisible = (flag, isEdit, record) => {
-    const { dispatch } = this.props;
     this.setState({
       modalVisible: !!flag,
       isEditForm: !!isEdit,
@@ -225,7 +221,6 @@ class ModelManage extends React.Component {
 
   // 查询表单
   renderForm() {
-    const { expandForm } = this.state;
     const { form: { getFieldDecorator } } = this.props;
     return (
       <Form onSubmit={this.handleSearch} layout="inline">
@@ -283,10 +278,9 @@ class ModelManage extends React.Component {
             <div className={styles.peekDataManageOperator}>
               <Button icon="plus" type="primary" onClick={() => this.handleModalVisible(true)}>
                 新建
-            </Button>
+              </Button>
             </div>
             <StandardTable
-              disabledSelected={true}
               loading={loading}
               data={data}
               columns={this.columns}

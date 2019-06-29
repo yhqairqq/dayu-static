@@ -37,8 +37,10 @@ class RoleOptForm extends React.Component {
       if (err) return;
       form.resetFields();
       if (isEdit) {
-        fieldsValue.roleId = values.id;
-        handleUpdate(fieldsValue);
+        handleUpdate({
+          roleId: values.id,
+          ...fieldsValue
+        });
       } else {
         handleAdd(fieldsValue);
       }

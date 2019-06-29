@@ -75,11 +75,10 @@ class ResManage extends React.Component {
     if (parentId === "0") {
       name = '根节点';
     } else {
-      for (let i = 0; i < allParents.length; i++) {
-        if (allParents[i].id === parentId) {
-          name = allParents[i].name;
-          break;
-        }
+      const nodes = allParents.filter(n => n.id === parentId);
+      if (nodes && nodes.length > 0) {
+        const { name: tmp } = nodes[0];
+        name = tmp;
       }
     }
     return (<span><Tag color="blue" key={parentId}>{name}</Tag></span>);
@@ -277,7 +276,6 @@ class ResManage extends React.Component {
               </span>
             </div>
             <StandardTable
-              disabledSelected={true}
               loading={loading}
               data={data}
               columns={this.columns}

@@ -1,28 +1,17 @@
-import React, { PureComponent, Fragment } from 'react';
-import dva, { connect } from 'dva';
+import React, { Fragment } from 'react';
+import { connect } from 'dva';
 import {
-  Row,
-  Col,
-  Card,
   Form,
   Input,
   Select,
-  Icon,
   Button,
-  Dropdown,
-  Menu,
-  InputNumber,
-  DatePicker,
   Modal,
   message,
-  Popconfirm,
-  Badge,
   Divider,
   Steps,
-  Radio,
   Table,
 } from 'antd';
-import StandardTable from '@/components/StandardTable';
+
 import FieldOptForm from './FieldOptForm';
 
 const FormItem = Form.Item;
@@ -44,6 +33,7 @@ class ModelOptForm extends React.Component {
     handleUpdate: () => { },
     handleModalVisible: () => { }
   };
+
   constructor(props) {
     super(props);
     const { values } = props;
@@ -92,19 +82,6 @@ class ModelOptForm extends React.Component {
     }
   };
 
-  okHandle = () => {
-    form.validateFields((err, fieldsValues) => {
-      if (err) return;
-      form.resetFields();
-      if (isEdit) {
-        fieldsValues.modelId = recordValue.id;
-        handleUpdate(fieldsValues);
-      } else {
-        handleAdd(fieldsValues);
-      }
-    })
-  }
-
   backward = () => {
     const { currentStep } = this.state;
     this.setState({
@@ -135,17 +112,19 @@ class ModelOptForm extends React.Component {
         () => {
           if (currentStep < 1) {
             this.forward();
+            return;
+          }
+          if (isEdit) {
+            handleUpdate(formVals);
           } else {
-            if (isEdit) {
-              handleUpdate(formVals);
-            } else {
-              handleAdd(formVals);
-            }
+            handleAdd(formVals);
           }
         }
       );
     });
   };
+
+
   // 取消处理
   cancelHandle = () => {
     const { handleModalVisible, values, form } = this.props;
@@ -220,7 +199,7 @@ class ModelOptForm extends React.Component {
     const {
       formVals: { fields }
     } = this.state;
-    if (currentStep == 1) {
+    if (currentStep === 1) {
       // 业务表字段显示信息
       const columns = [
         {
@@ -267,11 +246,14 @@ class ModelOptForm extends React.Component {
           rules: [{ required: true, message: '请选择数据源' }],
           initialValue: formVals.datasourceId,
         })(
-          <Select placeholder="请选择数据源" style={{ width: '100%' }}
+          <Select
+            placeholder="请选择数据源"
+            style={{ width: '100%' }}
             disabled={formVals.modelId !== 0}
-            onChange={(value) => this.handleDtChange(value)}>
+            onChange={(value) => this.handleDtChange(value)}
+          >
             {
-              simpleDatasources.map((item, index) => (
+              simpleDatasources.map((item) => (
                 <Option value={item.id} key={item.id}>{item.name}</Option>
               ))
             }
@@ -283,11 +265,14 @@ class ModelOptForm extends React.Component {
           rules: [{ required: true, message: '请选择业务表' }],
           initialValue: formVals.tableName,
         })(
-          <Select placeholder="请选择业务表" style={{ width: '100%' }}
+          <Select
+            placeholder="请选择业务表"
+            style={{ width: '100%' }}
             disabled={formVals.modelId !== 0}
-            onChange={(value) => this.handleTableChange(value)}>
+            onChange={(value) => this.handleTableChange(value)}
+          >
             {
-              tables && tables.map((item, index) => (
+              tables && tables.map((item) => (
                 <Option key={item.name} value={item.name}>{item.name}</Option>
               ))
             }
@@ -303,7 +288,6 @@ class ModelOptForm extends React.Component {
   };
 
   handleFieldModalVisible = (flag, record) => {
-    const { dispatch } = this.props;
     this.setState({
       editFieldModelVisible: !!flag,
       editField: record || {},
@@ -313,9 +297,9 @@ class ModelOptForm extends React.Component {
   handleFieldUpdate = fields => {
     const { formVals } = this.state;
 
-    let tmp = formVals.fields;
+    const tmp = formVals.fields;
     const { name, showName, dataType, groupName, display } = fields;
-    for (let i = 0; i < tmp.length; i++) {
+    for (let i = 0; i < tmp.length; i += 1) {
       if (tmp[i].name === name) {
         tmp[i].showName = showName;
         tmp[i].display = display;
@@ -331,9 +315,10 @@ class ModelOptForm extends React.Component {
     message.success('修改成功');
     this.handleFieldModalVisible();
   }
+
   render() {
     const { isEdit, modalVisible, handleModalVisible, values } = this.props;
-    const { currentStep, formVals } = this.state;
+    const { currentStep, formVals, editField, editFieldModelVisible } = this.state;
 
     return (
       <Modal
@@ -355,8 +340,8 @@ class ModelOptForm extends React.Component {
         {this.renderContent(currentStep, formVals)}
         {/* 修改字段模式框 */}
         <FieldOptForm
-          values={this.state.editField}
-          modalVisible={this.state.editFieldModelVisible}
+          values={editField}
+          modalVisible={editFieldModelVisible}
           handleModalVisible={this.handleFieldModalVisible}
           handleUpdate={this.handleFieldUpdate}
         />

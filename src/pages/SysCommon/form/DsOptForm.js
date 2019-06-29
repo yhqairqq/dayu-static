@@ -51,8 +51,10 @@ class DsOptForm extends React.Component {
       if (err) return;
       form.resetFields();
       if (isEdit) {
-        fieldsValue.dsId = values.id
-        handleUpdate(fieldsValue);
+        handleUpdate({
+          dsId: values.id,
+          ...fieldsValue
+        });
       } else {
         handleAdd(fieldsValue);
       }
@@ -61,20 +63,19 @@ class DsOptForm extends React.Component {
 
   // 数据源修改
   handleDtChange = (value) => {
-    const { datasource: { allTypes } } = this.props;
+    const { form, datasource: { allTypes } } = this.props;
     let driverStr = '';
-    for (let i = 0; i < allTypes.length; i++) {
+    for (let i = 0; i < allTypes.length; i += 1) {
       if (allTypes[i].type === value) {
         driverStr = allTypes[i].driver;
         break;
       }
     }
     // 联动
-    this.props.form.setFieldsValue({
+    form.setFieldsValue({
       jdbcDriver: driverStr
     })
   }
-
 
   render() {
     const {
@@ -104,8 +105,8 @@ class DsOptForm extends React.Component {
           })(
             <Select style={{ width: '100%' }} placeholder="请选择数据源类型" onChange={this.handleDtChange}>
               {
-                allTypes.map((item, index) => (
-                  <Option value={item.type} key={index}>{item.type}</Option>
+                allTypes.map((item) => (
+                  <Option value={item.type} key={item.type}>{item.type}</Option>
                 ))
               }
             </Select>
@@ -152,9 +153,9 @@ class DsOptForm extends React.Component {
         <FormItem key="testSql" {...this.formLayout} label="连接测试sql">
           {form.getFieldDecorator('testSql', {
             initialValue: values.testSql
-          })(<Input placeholder="SELECT 1"/>)}
+          })(<Input placeholder="SELECT 1" />)}
         </FormItem>
-      </Modal >
+      </Modal>
     );
   }
 }

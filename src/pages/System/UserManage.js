@@ -64,7 +64,8 @@ class UserManage extends React.Component {
           <Popconfirm
             placement="top"
             title="确定删除该用户？"
-            onConfirm={() => this.handleDelete(record)}>
+            onConfirm={() => this.handleDelete(record)}
+          >
             <a>删除</a>
           </Popconfirm>
           <Divider type="vertical" />
@@ -298,7 +299,6 @@ class UserManage extends React.Component {
               </span>
             </div>
             <StandardTable
-              disabledSelected={true}
               loading={loading}
               data={data}
               columns={this.columns}

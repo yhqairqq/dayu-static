@@ -1,17 +1,13 @@
-import { PureComponent, Fragment } from 'react';
+import React, { Fragment } from 'react';
 
+import { Popconfirm, Empty, Table, Input, Select } from 'antd';
 import styles from './RuleShow.less';
-import { Popconfirm, Empty, Row, Col, Table, Input, Select } from 'antd';
 
 class RuleShow extends React.Component {
   static defaultProps = {
     rules: [],
-    handleDelRule: () => {},
+    handleDelRule: () => { },
   };
-
-  constructor(props) {
-    super(props);
-  }
 
   onRuleValueChange = (record, e) => {
     record.value = e.target.value;
@@ -40,9 +36,9 @@ class RuleShow extends React.Component {
         title: '规则',
         dataIndex: 'rule',
         key: 'rule',
-        render: (text, record, index) => {
+        render: (text, record) => {
           const fieldObj = modelMetas.find(item => item.name === record.fieldName) || {};
-          const ruleList = dataTypeRules[fieldObj.dataType] || dataTypeRules['OBJECT'] || [];
+          const ruleList = dataTypeRules[fieldObj.dataType] || dataTypeRules.OBJECT || [];
           return (
             <Select
               value={record.rule}
@@ -61,7 +57,7 @@ class RuleShow extends React.Component {
         title: '代入值',
         dataIndex: 'value',
         key: 'value',
-        render: (text, record, index) => (
+        render: (text, record) => (
           <Input value={record.value} onChange={value => this.onRuleValueChange(record, value)} />
         ),
       },
@@ -82,16 +78,16 @@ class RuleShow extends React.Component {
     ];
     return (
       <div className={styles.ruleList}>
-        {rules.length <= 0 ? (
+        {rules.length <= 0 ?
           <Empty
             style={{ marginTop: 20 }}
             imageStyle={{ height: 50 }}
             image={Empty.PRESENTED_IMAGE_SIMPLE}
             description={<span>一个规则也没有</span>}
           />
-        ) : (
+          :
           <Table size="small" dataSource={rules} columns={columns} />
-        )}
+        }
       </div>
     );
   }

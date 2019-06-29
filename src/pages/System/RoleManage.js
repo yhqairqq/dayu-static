@@ -286,7 +286,6 @@ class RoleManage extends React.Component {
               </span>
             </div>
             <StandardTable
-              disabledSelected={true}
               loading={loading}
               data={data}
               columns={this.columns}

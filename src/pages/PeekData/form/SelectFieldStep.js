@@ -1,13 +1,8 @@
 import React from 'react';
-import { connect } from 'dva';
-import { Form, Input, Select, Steps, Tag } from 'antd';
-import _ from 'lodash';
+import { Form, Select, Tag } from 'antd';
 
 const FormItem = Form.Item;
-const { Step } = Steps;
 const { Option } = Select;
-const { TextArea } = Input;
-const Search = Input.Search;
 
 class SelectFieldStep extends React.Component {
   static defaultProps = {
@@ -20,10 +15,6 @@ class SelectFieldStep extends React.Component {
     searchValue: '',
     selectedField: undefined,
   };
-
-  constructor(props) {
-    super(props);
-  }
 
   onGroupChange = value => {
     this.setState({
@@ -39,18 +30,19 @@ class SelectFieldStep extends React.Component {
   };
 
   onAddField = key => {
+    const { onFormValueChange } = this.props;
     this.setState({
       searchValue: '',
       selectedField: undefined,
     });
     const { modelMetas = [], selectedFields = [] } = this.props;
     const field = modelMetas.find(item => item.name === key);
-    this.props.onFormValueChange('fields', [...selectedFields, field.name]);
+    onFormValueChange('fields', [...selectedFields, field.name]);
   };
 
   handleDeleteFields = key => {
-    const { selectedFields = [] } = this.props;
-    this.props.onFormValueChange('fields', selectedFields.filter(item => item.key !== key));
+    const { selectedFields = [], onFormValueChange } = this.props;
+    onFormValueChange('fields', selectedFields.filter(item => item.key !== key));
   };
 
   render() {
@@ -100,11 +92,11 @@ class SelectFieldStep extends React.Component {
         </FormItem>
         <div>
           <span>已选字段：</span>
-          {selectedFieldObjs.map((field, index) => (
+          {selectedFieldObjs.map((field) => (
             <Tag
               style={{ marginTop: 5 }}
               key={field.name}
-              closable={true}
+              closable
               onClose={() => this.handleDeleteFields(field.name)}
             >
               {field.showName}

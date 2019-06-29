@@ -8,6 +8,7 @@ import {
 } from 'antd';
 
 const FormItem = Form.Item;
+const { Option } = Select;
 
 @Form.create()
 @connect(({ resource, loading }) => ({
@@ -42,13 +43,16 @@ class ResOptForm extends React.Component {
       if (err) return;
       form.resetFields();
       if (isEdit) {
-        fieldsValue.resId = values.id;
-        handleUpdate(fieldsValue);
+        handleUpdate({
+          ...fieldsValue,
+          resId: values.id
+        });
       } else {
         handleAdd(fieldsValue);
       }
     })
   }
+  
   render() {
     const { isEdit, modalVisible, handleModalVisible,
       values, form, resource: { allParents } } = this.props;
