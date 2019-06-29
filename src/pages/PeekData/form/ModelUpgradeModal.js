@@ -313,7 +313,7 @@ class ModelUpgradeModal extends React.Component {
       <div className={styles.modelOptFormFooter}>
         <Button
           key="back"
-          className={(currentStep == 1).toString()}
+          className={(currentStep === 1).toString()}
           style={{ float: 'left' }}
           onClick={this.backward}
         >
@@ -324,7 +324,7 @@ class ModelUpgradeModal extends React.Component {
         </Button>
         <Button
           key="forward"
-          className={(currentStep == 0).toString()}
+          className={(currentStep === 0).toString()}
           type="primary"
           onClick={this.handleNext}
         >
@@ -332,7 +332,7 @@ class ModelUpgradeModal extends React.Component {
         </Button>
         <Button
           key="save"
-          className={(currentStep == 1).toString()}
+          className={(currentStep === 1).toString()}
           type="primary"
           onClick={this.handleSave}
         >
