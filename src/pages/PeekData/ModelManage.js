@@ -181,8 +181,7 @@ class ModelManage extends React.Component {
     });
   };
 
-  handleModalVisible = (flag, isEdit, record) => {
-    const { dispatch } = this.props;
+  handleModalVisible = (flag, record, isUpgrade = false) => {
     this.setState({
       modalVisible: !!flag,
       recordValue: record || {},

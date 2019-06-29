@@ -105,6 +105,19 @@ export async function getColumns(params) {
  * 获取表字段列表
  * @param {*} params
  */
+export async function getUpgradeColumns(params) {
+  return request(PRE_URL + '/getUpgradeColumns', {
+    method: 'POST',
+    data: {
+      ...params,
+    },
+  });
+}
+
+/**
+ * 获取表字段列表
+ * @param {*} params
+ */
 export async function getSchemas(params) {
   return request(PRE_URL + '/getSchemas', {
     method: 'POST',

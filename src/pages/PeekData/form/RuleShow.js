@@ -9,16 +9,13 @@ class RuleShow extends React.Component {
     handleDelRule: () => { },
   };
 
-  onRuleValueChange = (record, e) => {
-    record.value = e.target.value;
-    this.setState({});
+  onRuleValueChange = (idx, e) => {
+    this.props.handleChangeRule({value:e.target.value}, idx);
   };
 
-  onRuleChange = (record, value, ruleList) => {
+  onRuleChange = (idx, value, ruleList) => {
     const ruleObj = ruleList.find(item => item.value === value);
-    record.rule = ruleObj.value;
-    record.label = ruleObj.label;
-    this.setState({});
+    this.props.handleChangeRule({rule:ruleObj.value, label:ruleObj.label}, idx);
   };
 
   render() {
@@ -36,13 +33,13 @@ class RuleShow extends React.Component {
         title: '规则',
         dataIndex: 'rule',
         key: 'rule',
-        render: (text, record) => {
+        render: (text, record, index) => {
           const fieldObj = modelMetas.find(item => item.name === record.fieldName) || {};
           const ruleList = dataTypeRules[fieldObj.dataType] || dataTypeRules.OBJECT || [];
           return (
             <Select
               value={record.rule}
-              onChange={value => this.onRuleChange(record, value, ruleList)}
+              onChange={value => this.onRuleChange(index, value, ruleList )}
             >
               {ruleList.map(rule => (
                 <Select.Option value={rule.value} key={rule.value}>
@@ -57,8 +54,8 @@ class RuleShow extends React.Component {
         title: '代入值',
         dataIndex: 'value',
         key: 'value',
-        render: (text, record) => (
-          <Input value={record.value} onChange={value => this.onRuleValueChange(record, value)} />
+        render: (text, record, index) => (
+          <Input value={record.value} onChange={value => this.onRuleValueChange(index,value)} />
         ),
       },
       {

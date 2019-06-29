@@ -109,6 +109,17 @@ class SelectFilterStep extends React.Component {
     this.props.onFormValueChange('rules', rules.filter((item, index) => index !== idx));
   };
 
+  handleChangeRule = (params, idx) => {
+    const { rules = [] } = this.props;
+    const newRuleList = rules.map((rule, index) => {
+      if (idx === index){
+        return {...rule,...params};
+      }
+      return rule;
+    });
+    this.props.onFormValueChange('rules', newRuleList);
+  };
+
   render() {
     const { modelMetas = [], dataTypeRules = {}, tagList, rules } = this.props;
     const {
@@ -183,6 +194,7 @@ class SelectFilterStep extends React.Component {
         </div>
         <RuleShow
           rules={rules}
+          handleChangeRule={this.handleChangeRule}
           modelMetas={modelMetas}
           dataTypeRules={dataTypeRules}
           handleDelRule={this.handleDelRule}
