@@ -151,11 +151,11 @@ class PeekOptForm extends React.Component {
               return;
             }
 
-            formVals.fields = fields.join(',');
+            const params = {...formVals, fields:fields.join(',')};
             if (isEdit) {
-              handleUpdate(formVals);
+              handleUpdate(params);
             } else {
-              handleAdd(formVals);
+              handleAdd(params);
             }
           }
         }
@@ -294,7 +294,7 @@ class PeekOptForm extends React.Component {
     } = this.props;
 
     const tagList = [{ id: -1, name: '全部' }, ...this.props.tag.tagList];
-    const { fields, rules } = formVals;
+    const { fields= [] , rules } = formVals;
     switch (currentStep) {
       case 1:
         return (
