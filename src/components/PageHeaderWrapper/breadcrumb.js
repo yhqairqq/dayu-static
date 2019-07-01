@@ -74,7 +74,8 @@ const conversionFromLocation = (routerLocation, breadcrumbNameMap, props) => {
       breadcrumbName: home,
     });
   }
-  return extraBreadcrumbItems;
+  // 过滤掉为null的breadcrumb
+  return extraBreadcrumbItems.filter(r => r);
 };
 
 /**

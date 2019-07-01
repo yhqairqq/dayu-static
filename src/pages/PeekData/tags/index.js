@@ -16,8 +16,7 @@ import {
   message,
   Modal,
   Popconfirm,
-  Row,
-  Select,
+  Row
 } from 'antd';
 import StandardTable from '@/components/StandardTable';
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
@@ -26,7 +25,6 @@ import moment from 'moment';
 import styles from './index.less';
 
 const FormItem = Form.Item;
-const Option = Select.Option;
 
 const getValue = obj =>
   Object.keys(obj)
@@ -42,7 +40,7 @@ const TagFormModal = Form.create()(props => {
         type: 'tag/saveTag',
         payload: fieldsValue,
         callback: () => {
-          message.success(!!fieldsValue.id ? '修改成功' : '添加成功');
+          message.success(!fieldsValue.id ? '修改成功' : '添加成功');
           handleModalVisible(false, {}, true);
         },
       });
@@ -59,7 +57,7 @@ const TagFormModal = Form.create()(props => {
       destroyOnClose
       style={{ top: 20 }}
       title={isEdit ? '修改标签' : '新增标签'}
-      visible={true}
+      visible
       onOk={okHandle}
       onCancel={() => handleModalVisible()}
       confirmLoading={loading}
@@ -95,7 +93,6 @@ class TagList extends React.Component {
   state = {
     modalVisible: false,
     expandForm: false,
-    recordValue: {},
     formValues: {},
   };
 
@@ -112,7 +109,7 @@ class TagList extends React.Component {
         dataIndex: 'modified',
         key: 'modified',
         render: (text, record) =>
-          moment.unix(record['modified'] || record['created']).format('YYYY-MM-DD hh:mm:ss'),
+          moment.unix(record.modified || record.created).format('YYYY-MM-DD hh:mm:ss'),
       },
       {
         title: '操作',
@@ -153,7 +150,7 @@ class TagList extends React.Component {
     this.setState(
       {
         modalVisible: visible,
-        record: record,
+        record,
       },
       () => reload && this.reloadData()
     );
@@ -167,6 +164,7 @@ class TagList extends React.Component {
       payload: params,
     });
   };
+
   handleFormReset = () => {
     const { form } = this.props;
     form.resetFields();
@@ -182,7 +180,7 @@ class TagList extends React.Component {
 
   handleSearch = e => {
     e.preventDefault();
-    const { dispatch, form } = this.props;
+    const { form } = this.props;
     form.validateFields((err, fieldsValue) => {
       if (err) return;
       this.reloadData({ params: fieldsValue });
@@ -191,7 +189,6 @@ class TagList extends React.Component {
 
   // 分页、过滤、排序处理
   handleStandardTableChange = (pagination, filtersArg, sorter) => {
-    const { dispatch } = this.props;
     const { formValues } = this.state;
     const filters = Object.keys(filtersArg).reduce((obj, key) => {
       const newObj = { ...obj };
@@ -292,7 +289,6 @@ class TagList extends React.Component {
               data={data}
               loading={loading}
               rowKey={record => record.id}
-              disabledSelected={true}
               columns={this.columns}
               onChange={this.handleStandardTableChange}
             />

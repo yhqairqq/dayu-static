@@ -64,14 +64,9 @@ export default [
           },
           {
             path: '/system/res-manage',
-            name: '用户管理',
+            name: '资源管理',
             component: './System/ResManage',
           },
-          {
-            path: '/system/res-manage',
-            name: '资源管理',
-            component: './System/ResManage'
-          }
         ],
       },
       // 基础信息管理
@@ -85,8 +80,8 @@ export default [
             path: '/common/datasource-manage',
             name: '数据源管理',
             component: './SysCommon/DatasourceManage',
-          }
-        ]
+          },
+        ],
       },
       // 自助取数平台
       {
@@ -104,14 +99,14 @@ export default [
           {
             path: '/peekdata/peek-manage',
             name: '取数管理',
-            component: './PeekData/PeekManage'
+            component: './PeekData/PeekManage',
           },
           //分组管理
           {
             path: '/peekdata/tags',
             name: '标签管理',
             component: './PeekData/tags',
-          }
+          },
         ],
       },
       // 日志埋点管理
@@ -123,19 +118,19 @@ export default [
           // 应用管理
           {
             path: '/cerebrum/app-manage',
-            name: '埋点应用管理'
+            name: '埋点应用管理',
           },
           // 埋点管理
           {
             path: '/cerebrum/anchor-manage',
-            name: '埋点管理'
+            name: '埋点管理',
           },
           // 日志上传策略
           {
             path: '/cerebrum/trans-strategy',
-            name: '上传策略管理'
-          }
-        ]
+            name: '上传策略管理',
+          },
+        ],
       },
       {
         name: 'account',

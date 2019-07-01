@@ -1,6 +1,7 @@
 import memoizeOne from 'memoize-one';
 import isEqual from 'lodash/isEqual';
 import Authorized from '@/utils/Authorized';
+import { queryUserMenu } from '@/services/user';
 
 const { check } = Authorized;
 
@@ -107,12 +108,11 @@ export default {
   },
 
   effects: {
-    *getMenuData({ payload }, { put }) {
+    *getMenuData({ payload }, { call, put }) {
       const { routes, authority, path } = payload;
-      const originalMenuData = memoizeOneFormatter(routes, authority, path);
-      // const resp = yield call(queryUserMenu, payload);
-      // const originalMenuData = memoizeOneFormatter(resp.data, authority, path);
-      // console.log(resp.data)
+      // 动态拉取用户可见的菜单列表
+      const resp = yield call(queryUserMenu, payload);
+      const originalMenuData = memoizeOneFormatter(resp.data, authority, path);
       const breadcrumbNameMap = memoizeOneGetBreadcrumbNameMap(originalMenuData);
       const menuData = filterMenuData(originalMenuData);
       yield put({
