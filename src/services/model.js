@@ -30,20 +30,33 @@ export async function delModel(id) {
 
 /**
  * 修改模型信息
- * @param {*} params 
+ * @param {*} params
  */
 export async function editModel(params) {
   return request(`${PRE_URL}/edit`, {
     method: 'POST',
     data: {
-      ...params
+      ...params,
+    },
+  });
+}
+
+/**
+ * 修改模型信息
+ * @param {*} params
+ */
+export async function upgradeModel(params) {
+  return request(PRE_URL + '/upgrade', {
+    method: 'POST',
+    data: {
+      ...params,
     },
   });
 }
 
 /**
  * 停、启用模型操作
- * @param {*} params 
+ * @param {*} params
  */
 export async function changeStatus(params) {
   return request(`${PRE_URL}/changeStatus`, {
@@ -86,6 +99,32 @@ export async function getColumns(params) {
       ...params
     }
   })
+}
+
+/**
+ * 获取表字段列表
+ * @param {*} params
+ */
+export async function getUpgradeColumns(params) {
+  return request(PRE_URL + '/getUpgradeColumns', {
+    method: 'POST',
+    data: {
+      ...params,
+    },
+  });
+}
+
+/**
+ * 获取表字段列表
+ * @param {*} params
+ */
+export async function getSchemas(params) {
+  return request(PRE_URL + '/getSchemas', {
+    method: 'POST',
+    data: {
+      ...params,
+    },
+  });
 }
 
 /**

@@ -6,7 +6,7 @@ const { Option } = Select;
 const { Search } = Input;
 
 const DEFAULT_STATE = {
-  selectedGroup: '全部',
+  selectedGroup: -1,
   searchValue: undefined,
   selectedField: undefined,
   ruleList: [],
@@ -109,8 +109,19 @@ class SelectFilterStep extends React.Component {
     this.props.onFormValueChange('rules', rules.filter((item, index) => index !== idx));
   };
 
+  handleChangeRule = (params, idx) => {
+    const { rules = [] } = this.props;
+    const newRuleList = rules.map((rule, index) => {
+      if (idx === index){
+        return {...rule,...params};
+      }
+      return rule;
+    });
+    this.props.onFormValueChange('rules', newRuleList);
+  };
+
   render() {
-    const { modelMetas = [], dataTypeRules = {}, groups, rules } = this.props;
+    const { modelMetas = [], dataTypeRules = {}, tagList, rules } = this.props;
     const {
       selectedGroup,
       searchValue,
@@ -131,9 +142,9 @@ class SelectFilterStep extends React.Component {
             value={selectedGroup}
             onChange={this.handleGroupChange}
           >
-            {groups.map(item => (
-              <Option value={item} key={item}>
-                {item}
+            {tagList.map(item => (
+              <Option value={item.id} key={item.id}>
+                {item.name}
               </Option>
             ))}
           </Select>
@@ -152,7 +163,7 @@ class SelectFilterStep extends React.Component {
             notFoundContent={null}
           >
             {modelMetas
-              .filter(item => selectedGroup === '全部' || item.groupName === selectedGroup)
+              .filter(item => selectedGroup === -1 || item.tagId === selectedGroup)
               .filter(item => !searchValue || item.showName.indexOf(searchValue) > -1)
               .map((item) => (
                 <Option value={item.name} key={item.id}>
@@ -183,6 +194,7 @@ class SelectFilterStep extends React.Component {
         </div>
         <RuleShow
           rules={rules}
+          handleChangeRule={this.handleChangeRule}
           modelMetas={modelMetas}
           dataTypeRules={dataTypeRules}
           handleDelRule={this.handleDelRule}

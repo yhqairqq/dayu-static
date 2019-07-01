@@ -18,9 +18,10 @@ import BasicInfoStep from './BasicInfoStep';
 const { Step } = Steps;
 
 @Form.create()
-@connect(({ model, peek, loading }) => ({
+@connect(({ model, peek, loading, tag }) => ({
   model,
   peek,
+  tag,
   loading: loading.models.peek,
 }))
 class PeekOptForm extends React.Component {
@@ -91,6 +92,11 @@ class PeekOptForm extends React.Component {
       type: 'peek/getDataTypeRules',
       payload: {},
     });
+
+    dispatch({
+      type: 'tag/fetchAll',
+      payload: {},
+    });
   }
 
   // 模型选择变更处理
@@ -145,11 +151,11 @@ class PeekOptForm extends React.Component {
               return;
             }
 
-            formVals.fields = fields.join(',');
+            const params = {...formVals, fields:fields.join(',')};
             if (isEdit) {
-              handleUpdate(formVals);
+              handleUpdate(params);
             } else {
-              handleAdd(formVals);
+              handleAdd(params);
             }
           }
         }
@@ -287,16 +293,15 @@ class PeekOptForm extends React.Component {
       peek: { dataTypeRules },
     } = this.props;
 
-    const groupFieldMap = _.groupBy(modelMetas, 'groupName');
-    const groups = ['全部', ..._.keys(groupFieldMap)];
-    const { fields, rules } = formVals;
+    const tagList = [{ id: -1, name: '全部' }, ...this.props.tag.tagList];
+    const { fields= [] , rules } = formVals;
     switch (currentStep) {
       case 1:
         return (
           <SelectFieldStep
             selectedFields={fields}
             formLayout={this.formLayout}
-            groups={groups}
+            tagList={tagList}
             modelMetas={modelMetas}
             onFormValueChange={this.onFormValueChange}
           />
@@ -304,7 +309,7 @@ class PeekOptForm extends React.Component {
       case 2:
         return (
           <SelectFilterStep
-            groups={groups}
+            tagList={tagList}
             onFormValueChange={this.onFormValueChange}
             modelMetas={modelMetas}
             rules={rules}
