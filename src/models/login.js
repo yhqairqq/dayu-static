@@ -1,9 +1,7 @@
 import { routerRedux } from 'dva/router';
 import { stringify } from 'qs';
 import { getFakeCaptcha } from '@/services/api';
-import { setAuthority } from '@/utils/authority';
 import { getPageQuery } from '@/utils/utils';
-import { reloadAuthorized } from '@/utils/Authorized';
 import { accountLogin } from '@/services/user';
 
 export default {
@@ -23,9 +21,8 @@ export default {
         payload: data,
       });
       // Login successfully
-      if ( state === 0) {
+      if (state === 0) {
         const { token } = data;
-        reloadAuthorized();
         localStorage.setItem('token', token);
         const urlParams = new URL(window.location.href);
         const params = getPageQuery();
@@ -57,7 +54,6 @@ export default {
           currentAuthority: 'guest',
         },
       });
-      reloadAuthorized();
       // redirect
       if (window.location.pathname !== '/user/login') {
         yield put(
@@ -74,7 +70,6 @@ export default {
 
   reducers: {
     changeLoginStatus(state, { payload }) {
-      setAuthority(payload.roles);
       return {
         ...state,
         status: payload.status,

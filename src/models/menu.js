@@ -1,9 +1,6 @@
 import memoizeOne from 'memoize-one';
 import isEqual from 'lodash/isEqual';
-import { formatMessage } from 'umi-plugin-react/locale';
 import Authorized from '@/utils/Authorized';
-import { menu } from '../defaultSettings';
-import { queryUserMenu } from '@/services/user';
 
 const { check } = Authorized;
 
@@ -26,9 +23,10 @@ function formatter(data, parentAuthority, parentName) {
       }
       // if enableMenuLocale use item.name,
       // close menu international
-      const name = menu.disableLocal
-        ? item.name
-        : formatMessage({ id: locale, defaultMessage: item.name });
+      // const name = menu.disableLocal
+      //   ? item.name
+      //   : formatMessage({ id: locale, defaultMessage: item.name });
+      const { name } = item;
       const result = {
         ...item,
         name,
@@ -109,7 +107,7 @@ export default {
   },
 
   effects: {
-    *getMenuData({ payload }, { call, put }) {
+    *getMenuData({ payload }, { put }) {
       const { routes, authority, path } = payload;
       const originalMenuData = memoizeOneFormatter(routes, authority, path);
       // const resp = yield call(queryUserMenu, payload);

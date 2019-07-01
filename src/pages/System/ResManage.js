@@ -12,7 +12,7 @@ import {
   Tag,
   Popconfirm,
   message,
-  Divider
+  Divider,
 } from 'antd';
 import StandardTable from '@/components/StandardTable';
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
@@ -23,12 +23,15 @@ import styles from '../styles/Manage.less';
 const FormItem = Form.Item;
 const { Option } = Select;
 
-const getValue = obj => Object.keys(obj).map(key => obj[key]).join(',');
+const getValue = obj =>
+  Object.keys(obj)
+    .map(key => obj[key])
+    .join(',');
 
 @Form.create()
 @connect(({ resource, loading }) => ({
   resource,
-  loading: loading.models.resource
+  loading: loading.models.resource,
 }))
 class ResManage extends React.Component {
   state = {
@@ -36,43 +39,51 @@ class ResManage extends React.Component {
     expandForm: false,
     isEditForm: false,
     recordValue: {},
-    formValues: {}
-  }
+    formValues: {},
+  };
 
   // 表格字段
   columns = [
-    { title: '父节点', dataIndex: 'parentId', render: (text) => this.showParentName(text) },
+    { title: '父节点', dataIndex: 'parentId', render: text => this.showParentName(text) },
     { title: '图标', dataIndex: 'icon' },
     { title: '资源名称', dataIndex: 'name' },
     { title: '路径', dataIndex: 'path' },
     { title: '描述', dataIndex: 'comment' },
     {
-      title: '操作', dataIndex: 'option', render: (record) => (
+      title: '操作',
+      dataIndex: 'option',
+      render: (text, record) => (
         <Fragment>
-          <Popconfirm placement="top" title="确定删除该资源？" onConfirm={() => this.handleDelete(record)}>
+          <Popconfirm
+            placement="top"
+            title="确定删除该资源？"
+            onConfirm={() => this.handleDelete(record)}
+          >
             <a>删除</a>
           </Popconfirm>
           <Divider type="vertical" />
           <a onClick={() => this.handleModalVisible(true, record, true)}>编辑</a>
         </Fragment>
-      )
-    }
-  ]
+      ),
+    },
+  ];
 
   componentDidMount() {
     const { dispatch } = this.props;
     dispatch({
-      type: 'resource/fetch'
-    })
+      type: 'resource/fetch',
+    });
     dispatch({
-      type: 'resource/fetchAllParent'
-    })
+      type: 'resource/fetchAllParent',
+    });
   }
 
-  showParentName = (parentId) => {
-    const { resource: { allParents } } = this.props;
-    let name = "";
-    if (parentId === "0") {
+  showParentName = parentId => {
+    const {
+      resource: { allParents },
+    } = this.props;
+    let name = '';
+    if (parentId === '0') {
       name = '根节点';
     } else {
       const nodes = allParents.filter(n => n.id === parentId);
@@ -81,8 +92,14 @@ class ResManage extends React.Component {
         name = tmp;
       }
     }
-    return (<span><Tag color="blue" key={parentId}>{name}</Tag></span>);
-  }
+    return (
+      <span>
+        <Tag color="blue" key={parentId}>
+          {name}
+        </Tag>
+      </span>
+    );
+  };
 
   handleFormReset = () => {
     const { form, dispatch } = this.props;
@@ -121,7 +138,7 @@ class ResManage extends React.Component {
         this.handleModalVisible();
         // 重载数据
         this.reloadData();
-      }
+      },
     });
   };
 
@@ -135,12 +152,12 @@ class ResManage extends React.Component {
         this.handleModalVisible();
         // 重载数据
         this.reloadData();
-      }
+      },
     });
   };
 
   // 删除操作处理
-  handleDelete = (record) => {
+  handleDelete = record => {
     const { dispatch } = this.props;
     dispatch({
       type: 'resource/remove',
@@ -149,7 +166,7 @@ class ResManage extends React.Component {
         message.success('删除成功');
         // 重载数据
         this.reloadData();
-      }
+      },
     });
   };
 
@@ -179,11 +196,11 @@ class ResManage extends React.Component {
       dispatch({
         type: 'resource/fetch',
         payload: {
-          params: values
+          params: values,
         },
       });
     });
-  }
+  };
 
   // 分页、过滤、排序处理
   handleStandardTableChange = (pagination, filtersArg, sorter) => {
@@ -197,7 +214,7 @@ class ResManage extends React.Component {
 
     const params = {
       ...formValues,
-      ...filters
+      ...filters,
     };
     if (sorter.field) {
       params.sorter = `${sorter.field}_${sorter.order}`;
@@ -207,14 +224,17 @@ class ResManage extends React.Component {
       payload: {
         params,
         currentPage: pagination.current,
-        pageSize: pagination.pageSize
-      }
+        pageSize: pagination.pageSize,
+      },
     });
-  }
+  };
 
   // 查询表单
   renderForm() {
-    const { form: { getFieldDecorator }, resource: { allParents } } = this.props;
+    const {
+      form: { getFieldDecorator },
+      resource: { allParents },
+    } = this.props;
     return (
       <Form onSubmit={this.handleSearch} layout="inline">
         <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
@@ -222,9 +242,13 @@ class ResManage extends React.Component {
             <FormItem key="parentId" label="父节点">
               {getFieldDecorator('parentId')(
                 <Select key="parentId" placeholder="请选择父节点">
-                  <Option value={0} key={0}>---根节点---</Option>
+                  <Option value={0} key={0}>
+                    ---根节点---
+                  </Option>
                   {allParents.map(ap => (
-                    <Option value={ap.id} key={ap.id}>{ap.name}</Option>
+                    <Option value={ap.id} key={ap.id}>
+                      {ap.name}
+                    </Option>
                   ))}
                 </Select>
               )}
@@ -243,32 +267,40 @@ class ResManage extends React.Component {
         </Row>
         <Divider type="horizontal" />
       </Form>
-    )
+    );
   }
 
   render() {
-    const { resource: { data }, loading } = this.props;
+    const {
+      resource: { data },
+      loading,
+    } = this.props;
     const { modalVisible, expandForm, recordValue, isEditForm } = this.state;
     const parentMethods = {
       handleAdd: this.handleAdd,
       handleModalVisible: this.handleModalVisible,
-      handleUpdate: this.handleUpdate
-    }
+      handleUpdate: this.handleUpdate,
+    };
     return (
-      <PageHeaderWrapper
-        title="系统资源管理"
-        content='对系统资源进行增删改查操作~'
-      >
+      <PageHeaderWrapper title="系统资源管理" content="对系统资源进行增删改查操作~">
         <Card bordered={false}>
           <div className={styles.Manage}>
-            {expandForm && (
-              <div className={styles.ManageForm}>{this.renderForm()}</div>
-            )}
+            {expandForm && <div className={styles.ManageForm}>{this.renderForm()}</div>}
             <div className={styles.ManageOperator}>
-              <Button icon="plus" type="primary" onClick={() => this.handleModalVisible(true, {}, false)}>添加资源</Button>
+              <Button
+                icon="plus"
+                type="primary"
+                onClick={() => this.handleModalVisible(true, {}, false)}
+              >
+                添加资源
+              </Button>
               <span className={styles.querySubmitButtons}>
-                <Button type="primary" onClick={this.handleSearch}>查询</Button>
-                <Button style={{ marginLeft: 8 }} onClick={this.handleFormReset}>重置</Button>
+                <Button type="primary" onClick={this.handleSearch}>
+                  查询
+                </Button>
+                <Button style={{ marginLeft: 8 }} onClick={this.handleFormReset}>
+                  重置
+                </Button>
                 <a style={{ marginLeft: 8 }} onClick={this.toggleForm}>
                   {expandForm ? '收起' : '展开'}
                   <Icon type={expandForm ? 'up' : 'down'} />

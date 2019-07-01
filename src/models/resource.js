@@ -3,7 +3,8 @@ import {
   addRes,
   editRes,
   delRes,
-  queryAllParents
+  queryAllParents,
+  queryResTree,
 } from '@/services/resource';
 
 export default {
@@ -11,9 +12,10 @@ export default {
   state: {
     data: {
       list: [],
-      pagination: {}
+      pagination: {},
     },
-    allParents: []
+    allParents: [],
+    resTree: [],
   },
 
   effects: {
@@ -22,10 +24,21 @@ export default {
       const { state, data = [] } = response;
       yield put({
         type: 'saveAll',
-        payload: data
-      })
+        payload: data,
+      });
       if (response && state === 0) {
         if (callback) callback(data);
+      }
+    },
+    *fetchResTree({ payload, callback }, { call, put }) {
+      const resp = yield call(queryResTree, payload);
+      const { state, data } = resp;
+      yield put({
+        type: 'saveResTree',
+        payload: data,
+      });
+      if (resp && state === 0 && callback) {
+        callback();
       }
     },
     *fetch({ payload, callback }, { call, put }) {
@@ -62,14 +75,20 @@ export default {
     save(state, action) {
       return {
         ...state,
-        data: action.payload
-      }
+        data: action.payload,
+      };
     },
     saveAll(state, action) {
       return {
         ...state,
-        allParents: action.payload
-      }
-    }
-  }
-}
+        allParents: action.payload,
+      };
+    },
+    saveResTree(state, action) {
+      return {
+        ...state,
+        resTree: action.payload,
+      };
+    },
+  },
+};

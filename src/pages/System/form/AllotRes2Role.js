@@ -1,29 +1,37 @@
 import React from 'react';
-import {
-  Form,
-  Modal
-} from 'antd';
+import { connect } from 'dva';
+import { Form, Modal } from 'antd';
 
 @Form.create()
+@connect(({ resource, loading }) => ({
+  resource,
+  loading: loading.models.resource,
+}))
 class AllotRes2Role extends React.Component {
   static defaultProps = {
     values: {
       appId: 0,
-      type: 0
+      type: 0,
     },
     isEdit: false,
-    handleUpdate: () => { },
-    handleModalVisible: () => { }
-  }
+    handleUpdate: () => {},
+    handleModalVisible: () => {},
+  };
 
   constructor(props) {
     super(props);
-    this.state = {
-    };
+    this.state = {};
     this.formLayout = {
       labelCol: { span: 7 },
       wrapperCol: { span: 13 },
     };
+  }
+
+  componentDidMount() {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'resource/fetchResTree',
+    });
   }
 
   okHandle = () => {
@@ -33,13 +41,14 @@ class AllotRes2Role extends React.Component {
       form.resetFields();
       handleUpdate({
         roleId: values.id,
-        ...fieldsValue
+        ...fieldsValue,
       });
-    })
-  }
+    });
+  };
 
   render() {
-    const { modalVisible, handleModalVisible, values } = this.props;
+    const { allotResVisible, handleModalVisible, values } = this.props;
+
     return (
       <Modal
         destroyOnClose
@@ -47,14 +56,14 @@ class AllotRes2Role extends React.Component {
         width={540}
         style={{ top: 20 }}
         bodyStyle={{ padding: '10px 40px' }}
-        title='分配资源权限'
-        visible={modalVisible}
+        title="分配资源权限"
+        visible={allotResVisible}
         onCancel={() => handleModalVisible(false, false, values)}
         onOk={this.okHandle}
       >
-        <span>出来就好</span>
+        <div />
       </Modal>
-    )
+    );
   }
 }
 
