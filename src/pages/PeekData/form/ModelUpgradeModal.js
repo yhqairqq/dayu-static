@@ -5,21 +5,20 @@ import {
   Divider,
   Form,
   Input,
+  message,
   Modal,
   Select,
   Spin,
   Steps,
   Switch,
   Table,
-  message,
 } from 'antd';
-import _ from 'lodash';
+import styles from '../PeekData.less';
+
 const FormItem = Form.Item;
 const { Step } = Steps;
 const { Option } = Select;
 const { TextArea } = Input;
-
-import styles from '../PeekData.less';
 
 @Form.create()
 @connect(({ model, loading }) => ({
@@ -66,11 +65,14 @@ class ModelUpgradeModal extends React.Component {
   }
 
   getModalData = () => {
-    return this.props.model.modelModal || {};
+    const { model } = this.props;
+    const { modelModal } = model;
+    return modelModal || {};
   };
 
   getModalDataItem = () => {
-    return this.state.item || {};
+    const { item } = this.state;
+    return item || {};
   };
 
   isEdit = () => {
@@ -82,7 +84,8 @@ class ModelUpgradeModal extends React.Component {
    * @returns {boolean}
    */
   isUpgrade = () => {
-    return this.props.isUpgrade;
+    const { isUpgrade } = this.props;
+    return isUpgrade;
   };
 
   handleDtChange = datasourceId => {
@@ -98,12 +101,13 @@ class ModelUpgradeModal extends React.Component {
     const { dispatch } = this.props;
     const item = this.getModalDataItem();
     this.onItemValueChange({ [prop]: tableName });
-    //根据选择的表查询该表的column和Schema
+
+    // 根据选择的表查询该表的column和Schema
     dispatch({
       type: 'model/getColumnsAndSchemas',
       payload: {
         modelId: item.id,
-        tableName: tableName,
+        tableName,
         datasourceId: item.datasourceId,
         isUpgrade: this.isUpgrade(),
       },
@@ -119,22 +123,24 @@ class ModelUpgradeModal extends React.Component {
   processData = (fields, schemaList) => {
     const { tagList } = this.getModalData();
     const isEdit = this.isEdit();
-    //匹配标签
+    // 匹配标签
     const DEFAULT_TAG = tagList.find(item => item.defaulted === 1);
     const schemaMap = schemaList.reduce((a, b) => {
-      a[b['fieldName']] = b;
-      return a;
+      const x = { ...a };
+      x[b.fieldName] = b;
+      return x;
     }, {});
-    fields.forEach(item => {
+    return fields.forEach(item => {
+      const obj = { ...item };
       if (!isEdit || this.isUpgrade()) {
         const findTag = tagList.find(tag => item.name.startsWith(tag.rule)) || DEFAULT_TAG;
-        item['tagId'] = findTag.id;
+        obj.tagId = findTag.id;
         const schema = schemaMap[item.name] || {};
-        item['showName'] = schema.comments || '';
+        obj.showName = schema.comments || '';
       }
-      item['_orderName'] = item.showName;
+      obj.orderName = item.showName;
+      return obj;
     });
-    return fields;
   };
 
   onItemValueChange = params => {
@@ -175,9 +181,9 @@ class ModelUpgradeModal extends React.Component {
               disabled={this.isEdit() || this.isUpgrade()}
               onChange={this.handleDtChange}
             >
-              {datasourceList.map(item => (
-                <Option value={item.id} key={item.id}>
-                  {item.name}
+              {datasourceList.map(pItem => (
+                <Option value={pItem.id} key={pItem.id}>
+                  {pItem.name}
                 </Option>
               ))}
             </Select>
@@ -196,9 +202,9 @@ class ModelUpgradeModal extends React.Component {
                 onChange={value => this.handleTableChange(value)}
               >
                 {tableList &&
-                  tableList.map(item => (
-                    <Option key={item.name} value={item.name}>
-                      {item.name}
+                  tableList.map(pItem => (
+                    <Option key={pItem.name} value={pItem.name}>
+                      {pItem.name}
                     </Option>
                   ))}
               </Select>
@@ -207,7 +213,7 @@ class ModelUpgradeModal extends React.Component {
         ) : null}
         {this.isUpgrade() ? (
           <FormItem key="tableNameBak" {...this.formLayout} label="业务表">
-            <Input value={item.tableName} disabled={true} />
+            <Input value={item.tableName} disabled />
           </FormItem>
         ) : null}
 
@@ -223,9 +229,9 @@ class ModelUpgradeModal extends React.Component {
                 onChange={value => this.handleTableChange(value, 'newTableName')}
               >
                 {tableList &&
-                  tableList.map(item => (
-                    <Option key={item.name} value={item.name}>
-                      {item.name}
+                  tableList.map(pItem => (
+                    <Option key={pItem.name} value={pItem.name}>
+                      {pItem.name}
                     </Option>
                   ))}
               </Select>
@@ -266,12 +272,12 @@ class ModelUpgradeModal extends React.Component {
   handleNext = () => {
     const { form } = this.props;
 
-    form.validateFields((err, fieldsValue) => {
+    form.validateFields(err => {
       if (err) return;
 
       const item = this.getModalDataItem();
 
-      if (this.isUpgrade() && item['tableName'] === item['newTableName']) {
+      if (this.isUpgrade() && item.tableName === item.newTableName) {
         message.error('模型对应的业务表名称没有发生变更,请修改!');
         return;
       }
@@ -284,7 +290,7 @@ class ModelUpgradeModal extends React.Component {
     const { handleUpdate, handleAdd } = this.props;
     const { item, fieldList } = this.state;
     const hasErrorField = fieldList.some(
-      item => item.showName == null || item.showName.length === 0
+      pItem => pItem.showName == null || pItem.showName.length === 0
     );
     if (hasErrorField) {
       message.error('存在显示名称为空的记录,请检查!');
@@ -345,10 +351,11 @@ class ModelUpgradeModal extends React.Component {
   onFieldPropChange = (record, prop, mapper = e => e) => value => {
     const { fieldList } = this.state;
     const newFields = fieldList.map(item => {
+      const obj = { ...item };
       if (item.name === record.name) {
-        item[prop] = mapper(value);
+        obj[prop] = mapper(value);
       }
-      return item;
+      return obj;
     });
     this.setState({
       fieldList: newFields,
@@ -374,7 +381,7 @@ class ModelUpgradeModal extends React.Component {
         dataIndex: 'showName',
         key: 'showName',
         width: '25%',
-        sorter: (a, b) => a._orderName.localeCompare(b._orderName),
+        sorter: (a, b) => a.orderName.localeCompare(b.orderName),
         render: (text, record) => (
           <Input
             value={text}
@@ -455,7 +462,7 @@ class ModelUpgradeModal extends React.Component {
         style={{ top: 20 }}
         bodyStyle={{ padding: '10px 40px' }}
         title={this.renderTitle()}
-        visible={true}
+        visible
         footer={this.renderFooter(currentStep)}
         onCancel={this.handleCancel}
       >

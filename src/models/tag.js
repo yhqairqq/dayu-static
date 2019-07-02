@@ -23,7 +23,7 @@ export default {
       }
     },
 
-    *fetchAll({ payload, callback }, { call, put }) {
+    *fetchAll({ payload }, { call, put }) {
       const response = yield call(TagService.queryAll, payload);
       yield put({
         type: 'saveTagList',
@@ -31,14 +31,14 @@ export default {
       });
     },
 
-    *saveTag({ payload, callback }, { call, put }) {
-      const response = yield call(!!payload.id ? TagService.edit : TagService.add, payload);
+    *saveTag({ payload, callback }, { call }) {
+      const response = yield call(payload.id ? TagService.edit : TagService.add, payload);
       if (response && response.state === 0) {
         if (callback) callback();
       }
     },
 
-    *remove({ payload, callback }, { call, put }) {
+    *remove({ payload, callback }, { call }) {
       const response = yield call(TagService.remove, payload);
       if (response && response.state === 0) {
         if (callback) callback();

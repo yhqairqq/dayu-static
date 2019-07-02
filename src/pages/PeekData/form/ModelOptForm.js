@@ -13,13 +13,12 @@ import {
   Table,
   message,
 } from 'antd';
-import _ from 'lodash';
+import styles from '../PeekData.less';
+
 const FormItem = Form.Item;
 const { Step } = Steps;
 const { Option } = Select;
 const { TextArea } = Input;
-
-import styles from '../PeekData.less';
 
 @Form.create()
 @connect(({ model, datasource, tag, loading }) => ({
@@ -37,6 +36,7 @@ class ModelOptForm extends React.Component {
     handleUpdate: () => {},
     handleModalVisible: () => {},
   };
+
   constructor(props) {
     super(props);
     const { record } = props;
@@ -65,18 +65,16 @@ class ModelOptForm extends React.Component {
     dispatch({
       type: 'datasource/fetchAll',
     });
-
-    //拉取字段类型
+    // 拉取字段类型
     dispatch({
       type: 'datasource/getDataTypes',
     });
-
-    //拉取字段类型
+    // 拉取字段类型
     dispatch({
       type: 'tag/fetchAll',
     });
 
-    //拉取已设置的字段信息
+    // 拉取已设置的字段信息
     if (formVals.tableName) {
       this.handleTableChange(formVals.tableName);
     }
@@ -128,7 +126,7 @@ class ModelOptForm extends React.Component {
       this.setState({
         formVals: newFormValues,
       });
-      if (!!newFormValues.modelId) {
+      if (newFormValues.modelId) {
         handleUpdate(newFormValues);
       } else {
         handleAdd(newFormValues);
@@ -161,29 +159,30 @@ class ModelOptForm extends React.Component {
   handleTableChange = value => {
     const { dispatch } = this.props;
     const { formVals } = this.state;
+    const newFormValus = {
+      ...formVals,
+      fields: [],
+      schemaList: [],
+    };
     this.setState(
       {
-        formVals: {
-          ...formVals,
-          fields: [],
-          schemaList: [],
-        },
+        formVals: newFormValus,
       },
       () => {
         dispatch({
           type: 'model/getColumnsAndSchemas',
           payload: {
-            modelId: formVals.modelId,
+            modelId: newFormValus.modelId,
             tableName: value,
-            datasourceId: formVals.datasourceId,
+            datasourceId: newFormValus.datasourceId,
           },
           callback: data => {
             const { fields = [], schemas = [] } = data;
-            const { tagList } = this.props.tag;
-            const { formVals } = this.state;
+            const { tag } = this.props;
+            const { tagList } = tag;
             this.setState({
               formVals: {
-                ...formVals,
+                ...newFormValus,
                 fields: this.processData(fields, schemas, tagList),
               },
             });
@@ -197,32 +196,35 @@ class ModelOptForm extends React.Component {
     const { tagList } = this.getModalData();
     const { formVals } = this.state;
     const isEdit = !!formVals.modelId;
-    //匹配标签
+    // 匹配标签
     const DEFAULT_TAG = tagList.find(item => item.defaulted === 1);
     const schemaMap = schemaList.reduce((a, b) => {
-      a[b['fieldName']] = b;
-      return a;
+      const obj = { ...a };
+      obj[b.fieldName] = b;
+      return obj;
     }, {});
-    fields.forEach(item => {
+    return fields.map(item => {
+      const obj = { ...item };
       if (!isEdit) {
         const findTag = tagList.find(tag => item.name.startsWith(tag.rule)) || DEFAULT_TAG;
-        item['tagId'] = findTag.id;
+        obj.tagId = findTag.id;
         const schema = schemaMap[item.name] || {};
-        item['showName'] = schema.comments || '';
+        obj.showName = schema.comments || '';
       }
-      item['_orderName'] = item.showName;
+      obj.orderName = item.showName;
+      return obj;
     });
-    return fields;
   };
 
   onFieldPropChange = (record, prop, mapper = e => e) => value => {
     const { formVals } = this.state;
     const { fields = [] } = formVals;
     const newFields = fields.map(item => {
+      const obj = { ...item };
       if (item.name === record.name) {
-        item[prop] = mapper(value);
+        obj[prop] = mapper(value);
       }
-      return item;
+      return obj;
     });
     this.setState({
       formVals: {
@@ -238,7 +240,7 @@ class ModelOptForm extends React.Component {
       <div className={styles.modelOptFormFooter}>
         <Button
           key="back"
-          className={(currentStep == 1).toString()}
+          className={(currentStep === 1).toString()}
           style={{ float: 'left' }}
           onClick={this.backward}
         >
@@ -249,7 +251,7 @@ class ModelOptForm extends React.Component {
         </Button>
         <Button
           key="forward"
-          className={(currentStep == 0).toString()}
+          className={(currentStep === 0).toString()}
           type="primary"
           onClick={() => this.handleNext(currentStep)}
         >
@@ -257,7 +259,7 @@ class ModelOptForm extends React.Component {
         </Button>
         <Button
           key="save"
-          className={(currentStep == 1).toString()}
+          className={(currentStep === 1).toString()}
           type="primary"
           onClick={() => this.handleSave()}
         >
@@ -291,7 +293,7 @@ class ModelOptForm extends React.Component {
             disabled={!!formVals.modelId}
             onChange={value => this.handleDtChange(value)}
           >
-            {simpleDatasources.map((item, index) => (
+            {simpleDatasources.map(item => (
               <Option value={item.id} key={item.id}>
                 {item.name}
               </Option>
@@ -311,7 +313,7 @@ class ModelOptForm extends React.Component {
             onChange={value => this.handleTableChange(value)}
           >
             {tables &&
-              tables.map((item, index) => (
+              tables.map(item => (
                 <Option key={item.name} value={item.name}>
                   {item.name}
                 </Option>
@@ -331,8 +333,9 @@ class ModelOptForm extends React.Component {
     const {
       formVals: { fields },
     } = this.state;
-    const { dataTypes } = this.props.datasource;
-    const { tagList } = this.props.tag;
+    const { datasource, tag } = this.props;
+    const { dataTypes } = datasource;
+    const { tagList } = tag;
     const columns = [
       {
         title: '字段名',
@@ -349,7 +352,7 @@ class ModelOptForm extends React.Component {
         dataIndex: 'showName',
         key: 'showName',
         width: '25%',
-        sorter: (a, b) => a._orderName.localeCompare(b._orderName),
+        sorter: (a, b) => a.orderName.localeCompare(b.orderName),
         render: (text, record) => (
           <Input
             value={text}
@@ -428,7 +431,7 @@ class ModelOptForm extends React.Component {
         width={1000}
         style={{ top: 20 }}
         bodyStyle={{ padding: '10px 40px' }}
-        title={!!record.id ? '修改模型' : '新增模型'}
+        title={record.id ? '修改模型' : '新增模型'}
         visible={modalVisible}
         footer={this.renderFooter(currentStep)}
         onCancel={() => handleModalVisible(false, false, record)}

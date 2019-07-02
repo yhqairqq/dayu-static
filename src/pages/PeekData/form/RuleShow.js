@@ -6,22 +6,26 @@ import styles from './RuleShow.less';
 class RuleShow extends React.Component {
   static defaultProps = {
     rules: [],
-    handleDelRule: () => { },
+    handleDelRule: () => {},
   };
 
   onRuleValueChange = (idx, e) => {
-    this.props.handleChangeRule({value:e.target.value}, idx);
+    const { handleChangeRule } = this.props;
+    handleChangeRule({ value: e.target.value }, idx);
   };
 
   onRuleChange = (idx, value, ruleList) => {
+    const { handleChangeRule } = this.props;
     const ruleObj = ruleList.find(item => item.value === value);
-    this.props.handleChangeRule({rule:ruleObj.value, label:ruleObj.label}, idx);
+    handleChangeRule({ rule: ruleObj.value, label: ruleObj.label }, idx);
   };
 
   render() {
     const { rules, handleDelRule, modelMetas, dataTypeRules } = this.props;
     const groupsMapper = {};
-    modelMetas.forEach(item => (groupsMapper[item.name] = item.groupName));
+    modelMetas.forEach(item => {
+      groupsMapper[item.name] = item.groupName;
+    });
     const columns = [
       {
         title: '分组名',
@@ -39,7 +43,7 @@ class RuleShow extends React.Component {
           return (
             <Select
               value={record.rule}
-              onChange={value => this.onRuleChange(index, value, ruleList )}
+              onChange={value => this.onRuleChange(index, value, ruleList)}
             >
               {ruleList.map(rule => (
                 <Select.Option value={rule.value} key={rule.value}>
@@ -55,7 +59,7 @@ class RuleShow extends React.Component {
         dataIndex: 'value',
         key: 'value',
         render: (text, record, index) => (
-          <Input value={record.value} onChange={value => this.onRuleValueChange(index,value)} />
+          <Input value={record.value} onChange={value => this.onRuleValueChange(index, value)} />
         ),
       },
       {
@@ -75,16 +79,16 @@ class RuleShow extends React.Component {
     ];
     return (
       <div className={styles.ruleList}>
-        {rules.length <= 0 ?
+        {rules.length <= 0 ? (
           <Empty
             style={{ marginTop: 20 }}
             imageStyle={{ height: 50 }}
             image={Empty.PRESENTED_IMAGE_SIMPLE}
             description={<span>一个规则也没有</span>}
           />
-          :
+        ) : (
           <Table size="small" dataSource={rules} columns={columns} />
-        }
+        )}
       </div>
     );
   }

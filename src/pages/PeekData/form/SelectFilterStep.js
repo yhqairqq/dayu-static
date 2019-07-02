@@ -63,7 +63,7 @@ class SelectFilterStep extends React.Component {
     let msg = '';
 
     const { selectedField, selectedRule, ruleValue, ruleList } = this.state;
-    const { rules = [], modelMetas } = this.props;
+    const { rules = [], modelMetas, onFormValueChange } = this.props;
 
     if (!selectedField || !selectedRule || !ruleValue) {
       isNull = true;
@@ -85,7 +85,7 @@ class SelectFilterStep extends React.Component {
     const ruleObj = ruleList.find(item => item.value === selectedRule);
 
     if (!isHave && !isNull) {
-      this.props.onFormValueChange('rules', [
+      onFormValueChange('rules', [
         ...rules,
         {
           metaId: fieldObj.id,
@@ -105,19 +105,19 @@ class SelectFilterStep extends React.Component {
   };
 
   handleDelRule = idx => {
-    const { rules = [] } = this.props;
-    this.props.onFormValueChange('rules', rules.filter((item, index) => index !== idx));
+    const { rules = [], onFormValueChange } = this.props;
+    onFormValueChange('rules', rules.filter((item, index) => index !== idx));
   };
 
   handleChangeRule = (params, idx) => {
-    const { rules = [] } = this.props;
+    const { rules = [], onFormValueChange } = this.props;
     const newRuleList = rules.map((rule, index) => {
-      if (idx === index){
-        return {...rule,...params};
+      if (idx === index) {
+        return { ...rule, ...params };
       }
       return rule;
     });
-    this.props.onFormValueChange('rules', newRuleList);
+    onFormValueChange('rules', newRuleList);
   };
 
   render() {
@@ -165,7 +165,7 @@ class SelectFilterStep extends React.Component {
             {modelMetas
               .filter(item => selectedGroup === -1 || item.tagId === selectedGroup)
               .filter(item => !searchValue || item.showName.indexOf(searchValue) > -1)
-              .map((item) => (
+              .map(item => (
                 <Option value={item.name} key={item.id}>
                   {item.showName}
                 </Option>
@@ -177,7 +177,7 @@ class SelectFilterStep extends React.Component {
             onChange={this.handleRuleChange}
             value={selectedRule}
           >
-            {ruleList.map((item) => (
+            {ruleList.map(item => (
               <Option value={item.value} key={item.value}>
                 {item.label}
               </Option>

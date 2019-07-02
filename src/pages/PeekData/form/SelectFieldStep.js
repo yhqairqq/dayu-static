@@ -42,8 +42,8 @@ class SelectFieldStep extends React.Component {
   };
 
   handleDeleteFields = key => {
-    const { selectedFields = [] } = this.props;
-    this.props.onFormValueChange('fields', selectedFields.filter(item => item !== key));
+    const { selectedFields = [], onFormValueChange } = this.props;
+    onFormValueChange('fields', selectedFields.filter(item => item !== key));
   };
 
   render() {
@@ -93,7 +93,7 @@ class SelectFieldStep extends React.Component {
         </FormItem>
         <div>
           <span>已选字段：</span>
-          {selectedFieldObjs.map((field) => (
+          {selectedFieldObjs.map(field => (
             <Tag
               style={{ marginTop: 5 }}
               key={field.name}

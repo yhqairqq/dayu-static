@@ -1,14 +1,6 @@
 import React from 'react';
 import { connect } from 'dva';
-import {
-  Form,
-  Button,
-  Modal,
-  Steps,
-  notification,
-} from 'antd';
-
-import _ from 'lodash';
+import { Button, Form, Modal, notification, Steps } from 'antd';
 import { getRuleByPeekId } from '@/services/peek';
 import PreviewDataModal from './PreviewDataModal';
 import SelectFieldStep from './SelectFieldStep';
@@ -28,9 +20,9 @@ class PeekOptForm extends React.Component {
   static defaultProps = {
     values: {},
     isEdit: false,
-    handleAdd: () => { },
-    handleUpdate: () => { },
-    handleModalVisible: () => { },
+    handleAdd: () => {},
+    handleUpdate: () => {},
+    handleModalVisible: () => {},
   };
 
   constructor(props) {
@@ -151,7 +143,7 @@ class PeekOptForm extends React.Component {
               return;
             }
 
-            const params = {...formVals, fields:fields.join(',')};
+            const params = { ...formVals, fields: fields.join(',') };
             if (isEdit) {
               handleUpdate(params);
             } else {
@@ -291,17 +283,19 @@ class PeekOptForm extends React.Component {
       form,
       model: { allModels, modelMetas },
       peek: { dataTypeRules },
+      tag: { tagList },
     } = this.props;
 
-    const tagList = [{ id: -1, name: '全部' }, ...this.props.tag.tagList];
-    const { fields= [] , rules } = formVals;
+    const newTagList = [{ id: -1, name: '全部' }, ...tagList];
+    const { fields = [], rules } = formVals;
+    const { formLayout } = this;
     switch (currentStep) {
       case 1:
         return (
           <SelectFieldStep
             selectedFields={fields}
-            formLayout={this.formLayout}
-            tagList={tagList}
+            formLayout={formLayout}
+            tagList={newTagList}
             modelMetas={modelMetas}
             onFormValueChange={this.onFormValueChange}
           />
@@ -309,7 +303,7 @@ class PeekOptForm extends React.Component {
       case 2:
         return (
           <SelectFilterStep
-            tagList={tagList}
+            tagList={newTagList}
             onFormValueChange={this.onFormValueChange}
             modelMetas={modelMetas}
             rules={rules}

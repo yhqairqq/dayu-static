@@ -70,7 +70,7 @@ export default {
       }
     },
 
-    *update({ payload, callback }, { call, put }) {
+    *update({ payload, callback }, { call }) {
       const { isUpgrade, ...others } = payload;
       const response = yield call(isUpgrade ? upgradeModel : editModel, others);
       if (response && response.state === 0) {
@@ -94,17 +94,17 @@ export default {
       }
     },
 
-    *getColumnsAndSchemas({ payload, callback }, { call, put }) {
+    *getColumnsAndSchemas({ payload, callback }, { call }) {
       const { isUpgrade } = payload;
       const response1 = yield call(isUpgrade ? getUpgradeColumns : getColumns, payload);
       const response2 = yield call(getSchemas, payload);
 
-      if (response1 && response1.state === 0 && response2 && response2.state == 0) {
+      if (response1 && response1.state === 0 && response2 && response2.state === 0) {
         if (callback) callback({ fields: response1.data, schemas: response2.data });
       }
     },
 
-    *initPage({ payload, callback }, { call, put }) {
+    *initPage({ payload }, { call, put }) {
       const dataSourceResult = yield call(DatasourceService.queryAllSimpleDatasource, payload);
       const tagResult = yield call(TagService.queryAll, payload);
       const dataTypeResult = yield call(DatasourceService.getDataTypes, payload);
@@ -127,7 +127,7 @@ export default {
       }
     },
 
-    *queryTableListByDsId({ payload, callback }, { call, put }) {
+    *queryTableListByDsId({ payload }, { call, put }) {
       const response = yield call(DatasourceService.getTables, payload);
       if (response && response.state === 0) {
         yield put({
