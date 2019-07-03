@@ -1,15 +1,18 @@
-import { fakeRegister } from '@/services/api';
+import { regUser } from '@/services/user';
 
 export default {
   namespace: 'register',
 
   state: {
-    status: undefined,
+    status: {
+      state: null,
+      data: null,
+    },
   },
 
   effects: {
     *submit({ payload }, { call, put }) {
-      const response = yield call(fakeRegister, payload);
+      const response = yield call(regUser, payload);
       yield put({
         type: 'registerHandle',
         payload: response,
@@ -21,7 +24,7 @@ export default {
     registerHandle(state, { payload }) {
       return {
         ...state,
-        status: payload.status,
+        status: payload,
       };
     },
   },

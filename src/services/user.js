@@ -36,6 +36,19 @@ export async function queryUserMenu() {
 }
 
 /**
+ * 用户注册接口
+ * @param {*} params
+ */
+export async function regUser(params) {
+  return request(`${PRE_URL}/reg`, {
+    method: 'POST',
+    data: {
+      ...params,
+    },
+  });
+}
+
+/**
  * 添加用户
  * @param {*} params
  */
