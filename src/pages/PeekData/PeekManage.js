@@ -11,7 +11,7 @@ import {
   Button,
   Popconfirm,
   message,
-  Divider
+  Divider,
 } from 'antd';
 import StandardTable from '@/components/StandardTable';
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
@@ -32,7 +32,7 @@ const getValue = obj =>
   user,
   model,
   peek,
-  loading: loading.models.peek
+  loading: loading.models.peek,
 }))
 class PeekManage extends React.Component {
   state = {
@@ -40,8 +40,8 @@ class PeekManage extends React.Component {
     expandForm: false,
     isEditForm: false,
     recordValue: {},
-    formValues: {}
-  }
+    formValues: {},
+  };
 
   // 表格字段列表
   columns = [
@@ -50,35 +50,44 @@ class PeekManage extends React.Component {
     { title: '创建人', dataIndex: 'creator', key: 'creator' },
     { title: '取数次数', dataIndex: 'peekTime', key: 'peekTime' },
     {
-      title: '操作', render: (text, record) => (
+      title: '操作',
+      render: (text, record) => (
         <Fragment>
-          <Popconfirm placement="top" title="确定删除该模型？" onConfirm={() => this.handleDelete(record)}>
+          <Popconfirm
+            placement="top"
+            title="确定删除该模型？"
+            onConfirm={() => this.handleDelete(record)}
+          >
             <a>删除</a>
           </Popconfirm>
           <Divider type="vertical" />
           <a onClick={() => this.handleModalVisible(true, record, true)}>编辑</a>
           <Divider type="vertical" />
-          <Popconfirm placement="top" title='导出数据到邮箱' onConfirm={() => this.exportData(record)}>
+          <Popconfirm
+            placement="top"
+            title="导出数据到邮箱"
+            onConfirm={() => this.exportData(record)}
+          >
             <a>导出</a>
           </Popconfirm>
         </Fragment>
-      )
-    }
+      ),
+    },
   ];
 
   componentDidMount() {
     const { dispatch } = this.props;
     // 获取取数实例
     dispatch({
-      type: 'peek/fetch'
+      type: 'peek/fetch',
     });
     // 获取所有模型
     dispatch({
-      type: 'model/fetchAll'
+      type: 'model/fetchAll',
     });
     // 获取所有用户
     dispatch({
-      type: 'user/fetch'
+      type: 'user/fetch',
     });
   }
 
@@ -90,16 +99,16 @@ class PeekManage extends React.Component {
     });
   };
 
-  exportData = (record) => {
+  exportData = record => {
     const { dispatch } = this.props;
     dispatch({
       type: 'peek/sendData2Me',
       payload: record.id,
-      callback: (msg) => {
+      callback: msg => {
         message.success(msg);
-      }
+      },
     });
-  }
+  };
 
   handleAdd = fields => {
     const { dispatch } = this.props;
@@ -111,7 +120,7 @@ class PeekManage extends React.Component {
         this.handleModalVisible();
         // 重载数据
         this.reloadData();
-      }
+      },
     });
   };
 
@@ -125,12 +134,12 @@ class PeekManage extends React.Component {
         this.handleModalVisible();
         // 重载数据
         this.reloadData();
-      }
+      },
     });
   };
 
   // 删除操作处理
-  handleDelete = (record) => {
+  handleDelete = record => {
     const { dispatch } = this.props;
     dispatch({
       type: 'peek/remove',
@@ -139,7 +148,7 @@ class PeekManage extends React.Component {
         message.success('删除成功');
         // 重载数据
         this.reloadData();
-      }
+      },
     });
   };
 
@@ -188,7 +197,7 @@ class PeekManage extends React.Component {
       dispatch({
         type: 'peek/fetch',
         payload: {
-          params: values
+          params: values,
         },
       });
     });
@@ -206,7 +215,7 @@ class PeekManage extends React.Component {
 
     const params = {
       ...formValues,
-      ...filters
+      ...filters,
     };
     if (sorter.field) {
       params.sorter = `${sorter.field}_${sorter.order}`;
@@ -217,9 +226,9 @@ class PeekManage extends React.Component {
         params,
         currentPage: pagination.current,
         pageSize: pagination.pageSize,
-      }
+      },
     });
-  }
+  };
 
   // 查询form表单
   renderForm() {
@@ -236,11 +245,11 @@ class PeekManage extends React.Component {
             <FormItem key="modelId" label="所属模型">
               {getFieldDecorator('modelId')(
                 <Select key="modelId" placeholder="请选择所属模型">
-                  {
-                    allModels.map((item) => (
-                      <Option value={item.id} key={item.id}>{item.name}</Option>
-                    ))
-                  }
+                  {allModels.map(item => (
+                    <Option value={item.id} key={item.id}>
+                      {item.name}
+                    </Option>
+                  ))}
                 </Select>
               )}
             </FormItem>
@@ -249,11 +258,11 @@ class PeekManage extends React.Component {
             <FormItem key="createdBy" label="创建人">
               {getFieldDecorator('createdBy')(
                 <Select key="createdBy" placeholder="请选择创建人">
-                  {
-                    list.map((item) => (
-                      <Option key={item.id} value={item.id}>{item.nickname}</Option>
-                    ))
-                  }
+                  {list.map(item => (
+                    <Option key={item.id} value={item.id}>
+                      {item.nickname}
+                    </Option>
+                  ))}
                 </Select>
               )}
             </FormItem>
@@ -270,30 +279,36 @@ class PeekManage extends React.Component {
   }
 
   render() {
-    const { peek: { data }, loading } = this.props;
+    const {
+      peek: { data },
+      loading,
+    } = this.props;
     const { modalVisible, expandForm, recordValue, isEditForm } = this.state;
     const parentMethods = {
       handleAdd: this.handleAdd,
       handleModalVisible: this.handleModalVisible,
-      handleUpdate: this.handleUpdate
-    }
+      handleUpdate: this.handleUpdate,
+    };
     return (
-      <PageHeaderWrapper
-        title="取数管理"
-        content="管理取数实例，每个取数实例即一个查询~"
-      >
+      <PageHeaderWrapper title="取数管理" content="管理取数实例，每个取数实例即一个查询~">
         <Card bordered={false}>
           <div className={styles.peekDataManage}>
-            {expandForm && (
-              <div className={styles.peekDataManageForm}>{this.renderForm()}</div>
-            )}
+            {expandForm && <div className={styles.peekDataManageForm}>{this.renderForm()}</div>}
             <div className={styles.peekDataManageOperator}>
-              <Button icon="plus" type="primary" onClick={() => this.handleModalVisible(true, {}, false)}>
+              <Button
+                icon="plus"
+                type="primary"
+                onClick={() => this.handleModalVisible(true, {}, false)}
+              >
                 新建
               </Button>
               <span className={styles.querySubmitButtons}>
-                <Button type="primary" onClick={this.handleSearch}>查询</Button>
-                <Button style={{ marginLeft: 8 }} onClick={this.handleFormReset}>重置</Button>
+                <Button type="primary" onClick={this.handleSearch}>
+                  查询
+                </Button>
+                <Button style={{ marginLeft: 8 }} onClick={this.handleFormReset}>
+                  重置
+                </Button>
                 <a style={{ marginLeft: 8 }} onClick={this.toggleForm}>
                   {expandForm ? '收起' : '展开'}
                   <Icon type={expandForm ? 'up' : 'down'} />
@@ -318,7 +333,7 @@ class PeekManage extends React.Component {
           />
         )}
       </PageHeaderWrapper>
-    )
+    );
   }
 }
 

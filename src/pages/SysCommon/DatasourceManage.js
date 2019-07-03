@@ -12,7 +12,7 @@ import {
   message,
   Popconfirm,
   Badge,
-  Divider
+  Divider,
 } from 'antd';
 import StandardTable from '@/components/StandardTable';
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
@@ -23,16 +23,19 @@ import styles from './DatasourceManage.less';
 const FormItem = Form.Item;
 const { Option } = Select;
 
-const statusMap = ['success', 'error']
-const status = ['使用中', '已停用']
+const statusMap = ['success', 'error'];
+const status = ['使用中', '已停用'];
 
-const getValue = obj => Object.keys(obj).map(key => obj[key]).join(',');
+const getValue = obj =>
+  Object.keys(obj)
+    .map(key => obj[key])
+    .join(',');
 
 @Form.create()
 @connect(({ datasource, user, loading }) => ({
   datasource,
   user,
-  loading: loading.models.datasource
+  loading: loading.models.datasource,
 }))
 class DatasourceManage extends PureComponent {
   state = {
@@ -40,29 +43,29 @@ class DatasourceManage extends PureComponent {
     expandForm: false,
     recordValue: {},
     isEditForm: false, // 是否为编辑数据
-    formValues: {}
+    formValues: {},
   };
 
   columns = [
     {
       title: '数据源类型',
       dataIndex: 'type',
-      key: 'type'
+      key: 'type',
     },
     {
       title: '数据源名称',
       dataIndex: 'name',
-      key: 'name'
+      key: 'name',
     },
     {
       title: '数据源URL',
       dataIndex: 'jdbcUrl',
-      key: 'jdbcUrl'
+      key: 'jdbcUrl',
     },
     {
       title: '登录账号',
       dataIndex: 'username',
-      key: 'username'
+      key: 'username',
     },
     {
       title: '状态',
@@ -71,16 +74,16 @@ class DatasourceManage extends PureComponent {
       filters: [
         {
           text: status[0],
-          value: 0
+          value: 0,
         },
         {
           text: status[1],
-          value: 1
-        }
+          value: 1,
+        },
       ],
       render(val) {
-        return <Badge status={statusMap[val]} text={status[val]} />
-      }
+        return <Badge status={statusMap[val]} text={status[val]} />;
+      },
     },
     {
       title: '创建人',
@@ -92,33 +95,41 @@ class DatasourceManage extends PureComponent {
       key: 'action',
       render: (text, record) => (
         <Fragment>
-          <Popconfirm placement="top" title="确定删除该数据源？" onConfirm={() => this.handleDelete(record)}>
+          <Popconfirm
+            placement="top"
+            title="确定删除该数据源？"
+            onConfirm={() => this.handleDelete(record)}
+          >
             <a>删除</a>
           </Popconfirm>
           <Divider type="vertical" />
           <a onClick={() => this.handleModalVisible(true, record, true)}>编辑</a>
           <Divider type="vertical" />
-          <Popconfirm placement="top" title={record.status === 0 ? '确定停用' : '确定启用'} onConfirm={() => this.handleStatus(record)}>
+          <Popconfirm
+            placement="top"
+            title={record.status === 0 ? '确定停用' : '确定启用'}
+            onConfirm={() => this.handleStatus(record)}
+          >
             <a>{record.status === 0 ? '停用' : '启用'}</a>
           </Popconfirm>
         </Fragment>
-      )
-    }
+      ),
+    },
   ];
 
   componentDidMount() {
     const { dispatch } = this.props;
     dispatch({
-      type: 'datasource/fetch'
+      type: 'datasource/fetch',
     });
     // 获取所有用户
     dispatch({
-      type: 'user/fetch'
+      type: 'user/fetch',
     });
     // 拉取支持的数据源类型
     dispatch({
-      type: 'datasource/fetchAllDsTypes'
-    })
+      type: 'datasource/fetchAllDsTypes',
+    });
   }
 
   handleStandardTableChange = (pagination, filtersArg, sorter) => {
@@ -145,7 +156,7 @@ class DatasourceManage extends PureComponent {
         params,
         currentPage: pagination.current,
         pageSize: pagination.pageSize,
-      }
+      },
     });
   };
 
@@ -185,31 +196,31 @@ class DatasourceManage extends PureComponent {
       dispatch({
         type: 'datasource/fetch',
         payload: {
-          params: values
+          params: values,
         },
       });
     });
   };
 
   // 数据源启、停用操作
-  handleStatus = (record) => {
+  handleStatus = record => {
     const { dispatch } = this.props;
     dispatch({
       type: 'datasource/changeStatus',
       payload: {
         status: record.status === 0 ? 1 : 0,
-        dsId: record.id
+        dsId: record.id,
       },
       callback: () => {
         message.success('操作成功');
         // 重载数据
         this.reloadData();
-      }
+      },
     });
-  }
+  };
 
   // 删除操作处理
-  handleDelete = (record) => {
+  handleDelete = record => {
     const { dispatch } = this.props;
     dispatch({
       type: 'datasource/remove',
@@ -218,9 +229,9 @@ class DatasourceManage extends PureComponent {
         message.success('删除成功');
         // 重载数据
         this.reloadData();
-      }
+      },
     });
-  }
+  };
 
   handleModalVisible = (flag, record, isEdit) => {
     this.setState({
@@ -240,7 +251,7 @@ class DatasourceManage extends PureComponent {
         this.handleModalVisible();
         // 重载数据
         this.reloadData();
-      }
+      },
     });
   };
 
@@ -254,7 +265,7 @@ class DatasourceManage extends PureComponent {
         this.handleModalVisible();
         // 重载数据
         this.reloadData();
-      }
+      },
     });
   };
 
@@ -265,7 +276,7 @@ class DatasourceManage extends PureComponent {
       type: 'datasource/fetch',
       payload: {},
     });
-  }
+  };
 
   // 查询form
   renderForm() {
@@ -281,11 +292,11 @@ class DatasourceManage extends PureComponent {
             <FormItem key="type" label="数据源">
               {getFieldDecorator('type')(
                 <Select placeholder="请选择数据类型">
-                  {
-                    allTypes.map((item) => (
-                      <Option value={item.type} key={item.type}>{item.type}</Option>
-                    ))
-                  }
+                  {allTypes.map(item => (
+                    <Option value={item.type} key={item.type}>
+                      {item.type}
+                    </Option>
+                  ))}
                 </Select>
               )}
             </FormItem>
@@ -294,8 +305,12 @@ class DatasourceManage extends PureComponent {
             <FormItem key="status" label="源状态">
               {getFieldDecorator('status')(
                 <Select placeholder="请选择数据状态">
-                  <Option key="0" vallue="0">使用中</Option>
-                  <Option key="1" vallue="1">已停用</Option>
+                  <Option key="0" vallue="0">
+                    使用中
+                  </Option>
+                  <Option key="1" vallue="1">
+                    已停用
+                  </Option>
                 </Select>
               )}
             </FormItem>
@@ -304,11 +319,11 @@ class DatasourceManage extends PureComponent {
             <FormItem key="createdBy" label="创建人">
               {getFieldDecorator('createdBy')(
                 <Select placeholder="请选择数据源创建人">
-                  {
-                    list.map((item) => (
-                      <Option value={item.id} key={item.id}>{item.nickname}</Option>
-                    ))
-                  }
+                  {list.map(item => (
+                    <Option value={item.id} key={item.id}>
+                      {item.nickname}
+                    </Option>
+                  ))}
                 </Select>
               )}
             </FormItem>
@@ -326,35 +341,37 @@ class DatasourceManage extends PureComponent {
         </Row>
         <Divider type="horizontal" />
       </Form>
-    )
+    );
   }
 
   render() {
-    const { datasource: { data }, loading } = this.props;
+    const {
+      datasource: { data },
+      loading,
+    } = this.props;
     const { modalVisible, expandForm, recordValue, isEditForm } = this.state;
 
     const parentMethods = {
       handleAdd: this.handleAdd,
       handleModalVisible: this.handleModalVisible,
-      handleUpdate: this.handleUpdate
-    }
+      handleUpdate: this.handleUpdate,
+    };
     return (
-      <PageHeaderWrapper
-        title="数据源管理"
-        content="管理所有可用的数据源，为系统其他业务服务~"
-      >
+      <PageHeaderWrapper title="数据源管理" content="管理所有可用的数据源，为系统其他业务服务~">
         <Card bordered={false}>
           <div className={styles.tableList}>
-            {expandForm && (
-              <div className={styles.tableListForm}>{this.renderForm()}</div>
-            )}
+            {expandForm && <div className={styles.tableListForm}>{this.renderForm()}</div>}
             <div className={styles.tableListOperator}>
               <Button type="primary" icon="plus" onClick={() => this.handleModalVisible(true)}>
                 新建
               </Button>
               <span className={styles.submitButtons}>
-                <Button type="primary" onClick={this.handleSearch}>查询</Button>
-                <Button style={{ marginLeft: 8 }} onClick={this.handleFormReset}>重置</Button>
+                <Button type="primary" onClick={this.handleSearch}>
+                  查询
+                </Button>
+                <Button style={{ marginLeft: 8 }} onClick={this.handleFormReset}>
+                  重置
+                </Button>
                 <a style={{ marginLeft: 8 }} onClick={this.toggleForm}>
                   {expandForm ? '收起' : '展开'}
                   <Icon type={expandForm ? 'up' : 'down'} />

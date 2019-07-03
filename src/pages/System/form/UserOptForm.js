@@ -1,11 +1,6 @@
 import React from 'react';
-import { connect } from "dva";
-import {
-  Form,
-  Input,
-  Select,
-  Modal
-} from 'antd';
+import { connect } from 'dva';
+import { Form, Input, Select, Modal } from 'antd';
 
 const FormItem = Form.Item;
 const { Option } = Select;
@@ -13,23 +8,22 @@ const { Option } = Select;
 @Form.create()
 @connect(({ role, loading }) => ({
   role,
-  loading: loading.models.role
+  loading: loading.models.role,
 }))
 class UserOptForm extends React.Component {
   static defaultProps = {
     values: {
-      appId: 0
+      appId: 0,
     },
     isEdit: false,
-    handleAdd: () => { },
-    handleUpdate: () => { },
-    handleModalVisible: () => { }
-  }
+    handleAdd: () => {},
+    handleUpdate: () => {},
+    handleModalVisible: () => {},
+  };
 
   constructor(props) {
     super(props);
-    this.state = {
-    };
+    this.state = {};
     this.formLayout = {
       labelCol: { span: 7 },
       wrapperCol: { span: 13 },
@@ -44,18 +38,23 @@ class UserOptForm extends React.Component {
       if (isEdit) {
         handleUpdate({
           userId: values.id,
-          ...fieldsValue
+          ...fieldsValue,
         });
       } else {
         handleAdd(fieldsValue);
       }
-    })
-  }
+    });
+  };
 
   render() {
-    const { isEdit, modalVisible, handleModalVisible,
-      values, form,
-      role: { allRoles } } = this.props;
+    const {
+      isEdit,
+      modalVisible,
+      handleModalVisible,
+      values,
+      form,
+      role: { allRoles },
+    } = this.props;
     return (
       <Modal
         destroyOnClose
@@ -71,40 +70,39 @@ class UserOptForm extends React.Component {
         <FormItem key="nickname" {...this.formLayout} label="用户姓名">
           {form.getFieldDecorator('nickname', {
             rules: [{ required: true, message: '请输入用户姓名！' }],
-            initialValue: values.nickname
+            initialValue: values.nickname,
           })(<Input placeholder="请输入" />)}
         </FormItem>
         <FormItem key="username" {...this.formLayout} label="用户登录名">
           {form.getFieldDecorator('username', {
             rules: [{ required: true, message: '请输入用户登录名！' }],
-            initialValue: values.username
+            initialValue: values.username,
           })(<Input placeholder="请输入" />)}
         </FormItem>
         <FormItem key="password" {...this.formLayout} label="登录密码">
-          {form.getFieldDecorator('password', {
-          })(<Input placeholder="默认自动生成" />)}
+          {form.getFieldDecorator('password', {})(<Input placeholder="默认自动生成" />)}
         </FormItem>
         <FormItem key="department" {...this.formLayout} label="所在部门">
           {form.getFieldDecorator('department', {
             rules: [{ required: true, message: '请输入部门名！' }],
-            initialValue: values.department
+            initialValue: values.department,
           })(<Input placeholder="请输入" />)}
         </FormItem>
         <FormItem key="position" {...this.formLayout} label="职位">
           {form.getFieldDecorator('position', {
-            initialValue: values.position
+            initialValue: values.position,
           })(<Input placeholder="请输入" />)}
         </FormItem>
         <FormItem key="phone" {...this.formLayout} label="联系电话">
           {form.getFieldDecorator('phone', {
             rules: [{ required: false, message: '请输入联系电话！', min: 11, max: 20 }],
-            initialValue: values.phone
+            initialValue: values.phone,
           })(<Input placeholder="请输入" />)}
         </FormItem>
         <FormItem key="email" {...this.formLayout} label="电子邮箱">
           {form.getFieldDecorator('email', {
-            rules: [{ required: false, message: '请输入电子邮箱！', min: 5, max: 20 }],
-            initialValue: values.email
+            rules: [{ required: true, message: '请输入电子邮箱！', min: 5, max: 20 }],
+            initialValue: values.email,
           })(<Input placeholder="请输入" />)}
         </FormItem>
         <FormItem key="roleIds" {...this.formLayout} label="拥有角色">
@@ -118,14 +116,16 @@ class UserOptForm extends React.Component {
               mode="multiple"
               defaultValue={values.roleIds}
             >
-              {allRoles.map((r) => (
-                <Option key={r.id} value={r.id}>{r.name}</Option>
+              {allRoles.map(r => (
+                <Option key={r.id} value={r.id}>
+                  {r.name}
+                </Option>
               ))}
             </Select>
           )}
         </FormItem>
       </Modal>
-    )
+    );
   }
 }
 

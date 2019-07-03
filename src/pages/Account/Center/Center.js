@@ -144,9 +144,10 @@ class Center extends PureComponent {
                   <Divider dashed />
                   <div className={styles.tags}>
                     <div className={styles.tagsTitle}>标签</div>
-                    {currentUser.tags && currentUser.tags.concat(newTags).map(item => (
-                      <Tag key={item.key}>{item.label}</Tag>
-                    ))}
+                    {currentUser.tags &&
+                      currentUser.tags
+                        .concat(newTags)
+                        .map(item => <Tag key={item.key}>{item.label}</Tag>)}
                     {inputVisible && (
                       <Input
                         ref={this.saveInputRef}

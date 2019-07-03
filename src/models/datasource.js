@@ -7,7 +7,7 @@ import {
   changeStatus,
   getDataTypes,
   getTables,
-  getAllDsTypes
+  getAllDsTypes,
 } from '@/services/datasource';
 
 export default {
@@ -20,13 +20,13 @@ export default {
     dataTypes: [], // 数据类型
     data: {
       list: [],
-      pagination: {}
+      pagination: {},
     },
   },
   effects: {
     *fetchAll(_, { call, put }) {
       const response = yield call(queryAllSimpleDatasource);
-      const { data } = response
+      const { data } = response;
       yield put({
         type: 'saveAll',
         payload: data,
@@ -34,7 +34,7 @@ export default {
     },
     *fetchTables({ payload }, { call, put }) {
       const response = yield call(getTables, payload);
-      const { data } = response
+      const { data } = response;
       yield put({
         type: 'saveTables',
         payload: data,
@@ -52,7 +52,7 @@ export default {
     },
     *fetch({ payload }, { call, put }) {
       const response = yield call(queryDatasource, payload);
-      const { data } = response
+      const { data } = response;
       yield put({
         type: 'save',
         payload: data,
@@ -88,7 +88,7 @@ export default {
         type: 'saveDataTypes',
         payload: response.data,
       });
-    }
+    },
   },
 
   reducers: {
@@ -101,26 +101,26 @@ export default {
     saveAll(state, action) {
       return {
         ...state,
-        simpleDatasources: action.payload
-      }
+        simpleDatasources: action.payload,
+      };
     },
     saveTables(state, action) {
       return {
         ...state,
-        tables: action.payload
-      }
+        tables: action.payload,
+      };
     },
     saveDataTypes(state, action) {
       return {
         ...state,
-        dataTypes: action.payload
-      }
+        dataTypes: action.payload,
+      };
     },
     saveAllTypes(state, action) {
       return {
         ...state,
-        allTypes: action.payload
-      }
-    }
+        allTypes: action.payload,
+      };
+    },
   },
-}
+};

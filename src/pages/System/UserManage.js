@@ -22,13 +22,16 @@ import styles from '../styles/Manage.less';
 
 const { Option } = Select;
 const FormItem = Form.Item;
-const getValue = obj => Object.keys(obj).map(key => obj[key]).join(',');
+const getValue = obj =>
+  Object.keys(obj)
+    .map(key => obj[key])
+    .join(',');
 
 @Form.create()
 @connect(({ user, role, loading }) => ({
   user,
   role,
-  loading: loading.models.user
+  loading: loading.models.user,
 }))
 class UserManage extends React.Component {
   state = {
@@ -36,30 +39,34 @@ class UserManage extends React.Component {
     expandForm: false,
     isEditForm: false,
     recordValue: {},
-    formValues: {}
-  }
+    formValues: {},
+  };
 
   // 表格字段
   columns = [
     { title: '昵称', dataIndex: 'nickname' },
     { title: '登录名', dataIndex: 'username' },
     {
-      title: '拥有角色', dataIndex: 'roleNames', render: (text) => (
+      title: '拥有角色',
+      dataIndex: 'roleNames',
+      render: text => (
         <span>
-          {
-            text.map(t => (
-              <Tag color="blue" key={t}>{t}</Tag>
-            ))
-          }
+          {text.map(t => (
+            <Tag color="blue" key={t}>
+              {t}
+            </Tag>
+          ))}
         </span>
-      )
+      ),
     },
     { title: '所在部门', dataIndex: 'department' },
     { title: '职位', dataIndex: 'position' },
     { title: '邮箱', dataIndex: 'email' },
     { title: '电话', dataIndex: 'phone' },
     {
-      title: '操作', dataIndex: 'option', render: (record) => (
+      title: '操作',
+      dataIndex: 'option',
+      render: (text, record) => (
         <Fragment>
           <Popconfirm
             placement="top"
@@ -78,21 +85,20 @@ class UserManage extends React.Component {
           </Popconfirm>
           <Divider type="vertical" />
           <a onClick={() => this.handleModalVisible(true, record, true)}>编辑</a>
-
         </Fragment>
-      )
-    }
-  ]
+      ),
+    },
+  ];
 
   componentDidMount() {
     const { dispatch } = this.props;
     dispatch({
-      type: 'user/fetchByParams'
-    })
+      type: 'user/fetchByParams',
+    });
 
     dispatch({
-      type: 'role/fetchAll'
-    })
+      type: 'role/fetchAll',
+    });
   }
 
   handleFormReset = () => {
@@ -132,7 +138,7 @@ class UserManage extends React.Component {
         this.handleModalVisible();
         // 重载数据
         this.reloadData();
-      }
+      },
     });
   };
 
@@ -146,12 +152,12 @@ class UserManage extends React.Component {
         this.handleModalVisible();
         // 重载数据
         this.reloadData();
-      }
+      },
     });
   };
 
   // 删除操作处理
-  handleDelete = (record) => {
+  handleDelete = record => {
     const { dispatch } = this.props;
     dispatch({
       type: 'user/remove',
@@ -160,12 +166,12 @@ class UserManage extends React.Component {
         message.success('删除成功');
         // 重载数据
         this.reloadData();
-      }
+      },
     });
   };
 
   // 重置密码
-  resetPwd = (record) => {
+  resetPwd = record => {
     const { dispatch } = this.props;
     dispatch({
       type: 'user/resetPwd',
@@ -174,9 +180,9 @@ class UserManage extends React.Component {
         message.success('重置密码成功');
         // 重载数据
         this.reloadData();
-      }
+      },
     });
-  }
+  };
 
   // 重新加载数据
   reloadData = () => {
@@ -204,11 +210,11 @@ class UserManage extends React.Component {
       dispatch({
         type: 'user/fetchByParams',
         payload: {
-          params: values
+          params: values,
         },
       });
     });
-  }
+  };
 
   // 分页、过滤、排序处理
   handleStandardTableChange = (pagination, filtersArg, sorter) => {
@@ -222,7 +228,7 @@ class UserManage extends React.Component {
 
     const params = {
       ...formValues,
-      ...filters
+      ...filters,
     };
     if (sorter.field) {
       params.sorter = `${sorter.field}_${sorter.order}`;
@@ -232,15 +238,16 @@ class UserManage extends React.Component {
       payload: {
         params,
         currentPage: pagination.current,
-        pageSize: pagination.pageSize
-      }
+        pageSize: pagination.pageSize,
+      },
     });
-  }
+  };
 
   // 查询表单
   renderForm() {
-    const { form: { getFieldDecorator },
-      role: { allRoles }
+    const {
+      form: { getFieldDecorator },
+      role: { allRoles },
     } = this.props;
     return (
       <Form onSubmit={this.handleSearch} layout="inline">
@@ -249,11 +256,11 @@ class UserManage extends React.Component {
             <FormItem key="roleId" label="拥有角色">
               {getFieldDecorator('roleId')(
                 <Select key="roleId" placeholder="请选择所属应用">
-                  {
-                    allRoles.map((item) => (
-                      <Option value={item.id} key={item.id}>{item.name}</Option>
-                    ))
-                  }
+                  {allRoles.map(item => (
+                    <Option value={item.id} key={item.id}>
+                      {item.name}
+                    </Option>
+                  ))}
                 </Select>
               )}
             </FormItem>
@@ -266,32 +273,40 @@ class UserManage extends React.Component {
         </Row>
         <Divider type="horizontal" />
       </Form>
-    )
+    );
   }
 
   render() {
-    const { user: { data }, loading } = this.props;
+    const {
+      user: { data },
+      loading,
+    } = this.props;
     const { modalVisible, expandForm, recordValue, isEditForm } = this.state;
     const parentMethods = {
       handleAdd: this.handleAdd,
       handleModalVisible: this.handleModalVisible,
-      handleUpdate: this.handleUpdate
-    }
+      handleUpdate: this.handleUpdate,
+    };
     return (
-      <PageHeaderWrapper
-        title="用户管理"
-        content='对系统用户进行增删改查等操作~'
-      >
+      <PageHeaderWrapper title="用户管理" content="对系统用户进行增删改查等操作~">
         <Card bordered={false}>
           <div className={styles.Manage}>
-            {expandForm && (
-              <div className={styles.ManageForm}>{this.renderForm()}</div>
-            )}
+            {expandForm && <div className={styles.ManageForm}>{this.renderForm()}</div>}
             <div className={styles.ManageOperator}>
-              <Button icon="plus" type="primary" onClick={() => this.handleModalVisible(true, {}, false)}>添加新用户</Button>
+              <Button
+                icon="plus"
+                type="primary"
+                onClick={() => this.handleModalVisible(true, {}, false)}
+              >
+                添加新用户
+              </Button>
               <span className={styles.querySubmitButtons}>
-                <Button type="primary" onClick={this.handleSearch}>查询</Button>
-                <Button style={{ marginLeft: 8 }} onClick={this.handleFormReset}>重置</Button>
+                <Button type="primary" onClick={this.handleSearch}>
+                  查询
+                </Button>
+                <Button style={{ marginLeft: 8 }} onClick={this.handleFormReset}>
+                  重置
+                </Button>
                 <a style={{ marginLeft: 8 }} onClick={this.toggleForm}>
                   {expandForm ? '收起' : '展开'}
                   <Icon type={expandForm ? 'up' : 'down'} />

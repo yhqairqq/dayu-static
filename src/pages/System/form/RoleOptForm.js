@@ -1,10 +1,5 @@
 import React from 'react';
-import {
-  Form,
-  Input,
-  Modal,
-  Radio,
-} from 'antd';
+import { Form, Input, Modal, Radio } from 'antd';
 
 const FormItem = Form.Item;
 
@@ -13,18 +8,17 @@ class RoleOptForm extends React.Component {
   static defaultProps = {
     values: {
       appId: 0,
-      type: 0
+      type: 0,
     },
     isEdit: false,
-    handleAdd: () => { },
-    handleUpdate: () => { },
-    handleModalVisible: () => { }
-  }
+    handleAdd: () => {},
+    handleUpdate: () => {},
+    handleModalVisible: () => {},
+  };
 
   constructor(props) {
     super(props);
-    this.state = {
-    };
+    this.state = {};
     this.formLayout = {
       labelCol: { span: 7 },
       wrapperCol: { span: 13 },
@@ -39,17 +33,16 @@ class RoleOptForm extends React.Component {
       if (isEdit) {
         handleUpdate({
           roleId: values.id,
-          ...fieldsValue
+          ...fieldsValue,
         });
       } else {
         handleAdd(fieldsValue);
       }
-    })
-  }
+    });
+  };
 
   render() {
-    const { isEdit, modalVisible, handleModalVisible,
-      values, form } = this.props;
+    const { isEdit, modalVisible, handleModalVisible, values, form } = this.props;
     return (
       <Modal
         destroyOnClose
@@ -65,18 +58,18 @@ class RoleOptForm extends React.Component {
         <FormItem key="name" {...this.formLayout} label="角色名称">
           {form.getFieldDecorator('name', {
             rules: [{ required: true, message: '请输入角色名称！' }],
-            initialValue: values.name
+            initialValue: values.name,
           })(<Input placeholder="请输入" />)}
         </FormItem>
         <FormItem key="code" {...this.formLayout} label="角色编码">
           {form.getFieldDecorator('code', {
             rules: [{ required: true, message: '请输入角色编码！' }],
-            initialValue: values.code
+            initialValue: values.code,
           })(<Input placeholder="请输入" />)}
         </FormItem>
         <Form.Item key="type" {...this.formLayout} label="角色类型">
           {form.getFieldDecorator('type', {
-            initialValue: values.type
+            initialValue: values.type,
           })(
             <Radio.Group>
               <Radio value={0}>待授权角色</Radio>
@@ -85,7 +78,7 @@ class RoleOptForm extends React.Component {
           )}
         </Form.Item>
       </Modal>
-    )
+    );
   }
 }
 

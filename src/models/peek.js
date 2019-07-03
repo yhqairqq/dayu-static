@@ -8,7 +8,7 @@ import {
   previewData,
   getRuleByPeekId,
   getDataTypeRules,
-} from '@/services/peek'
+} from '@/services/peek';
 
 export default {
   namespace: 'peek',
@@ -16,10 +16,10 @@ export default {
   state: {
     data: {
       list: [],
-      pagination: {}
+      pagination: {},
     },
     rules: [],
-    dataTypeRules: {}
+    dataTypeRules: {},
   },
 
   effects: {
@@ -98,15 +98,14 @@ export default {
     saveRules(state, action) {
       return {
         ...state,
-        rules: action.payload
-      }
+        rules: action.payload,
+      };
     },
     saveDataRules(state, action) {
       return {
         ...state,
-        dataTypeRules: action.payload
-      }
-    }
-  }
-
-}
+        dataTypeRules: action.payload,
+      };
+    },
+  },
+};

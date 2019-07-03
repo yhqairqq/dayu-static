@@ -7,9 +7,9 @@ export async function removeModel(params) {
     method: 'POST',
     data: {
       ...params,
-      method: 'delete'
-    }
-  })
+      method: 'delete',
+    },
+  });
 }
 export async function addModel(params) {
   return request('/api/model', {

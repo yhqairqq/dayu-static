@@ -3,7 +3,9 @@ import {
   addRole,
   editRole,
   delRole,
-  queryAllRoles
+  queryAllRoles,
+  saveRoleRes,
+  getRoleRes,
 } from '@/services/role';
 
 export default {
@@ -11,9 +13,9 @@ export default {
   state: {
     data: {
       list: [],
-      pagination: {}
+      pagination: {},
     },
-    allRoles: []
+    allRoles: [],
   },
 
   effects: {
@@ -22,8 +24,8 @@ export default {
       const { state, data = [] } = response;
       yield put({
         type: 'saveAll',
-        payload: data
-      })
+        payload: data,
+      });
       if (response && state === 0) {
         if (callback) callback(data);
       }
@@ -44,6 +46,21 @@ export default {
         if (callback) callback();
       }
     },
+    // 保存角色资源权限
+    *saveRoleRes({ payload, callback }, { call }) {
+      const resp = yield call(saveRoleRes, payload);
+      if (resp && resp.state === 0 && callback) {
+        callback();
+      }
+    },
+    // 拉取指定角色资源权限
+    *fetchRoleRes({ payload, callback }, { call }) {
+      const resp = yield call(getRoleRes, payload);
+      const { state, data } = resp;
+      if (resp && state === 0 && callback) {
+        callback(data);
+      }
+    },
     *remove({ payload, callback }, { call }) {
       const response = yield call(delRole, payload);
       if (response && response.state === 0) {
@@ -62,14 +79,14 @@ export default {
     save(state, action) {
       return {
         ...state,
-        data: action.payload
-      }
+        data: action.payload,
+      };
     },
     saveAll(state, action) {
       return {
         ...state,
-        allRoles: action.payload
-      }
-    }
-  }
-}
+        allRoles: action.payload,
+      };
+    },
+  },
+};

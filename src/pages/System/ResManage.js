@@ -9,7 +9,6 @@ import {
   Select,
   Icon,
   Button,
-  Tag,
   Popconfirm,
   message,
   Divider,
@@ -44,9 +43,8 @@ class ResManage extends React.Component {
 
   // 表格字段
   columns = [
-    { title: '父节点', dataIndex: 'parentId', render: text => this.showParentName(text) },
-    { title: '图标', dataIndex: 'icon' },
     { title: '资源名称', dataIndex: 'name' },
+    { title: '图标', dataIndex: 'icon' },
     { title: '路径', dataIndex: 'path' },
     { title: '描述', dataIndex: 'comment' },
     {
@@ -77,29 +75,6 @@ class ResManage extends React.Component {
       type: 'resource/fetchAllParent',
     });
   }
-
-  showParentName = parentId => {
-    const {
-      resource: { allParents },
-    } = this.props;
-    let name = '';
-    if (parentId === '0') {
-      name = '根节点';
-    } else {
-      const nodes = allParents.filter(n => n.id === parentId);
-      if (nodes && nodes.length > 0) {
-        const { name: tmp } = nodes[0];
-        name = tmp;
-      }
-    }
-    return (
-      <span>
-        <Tag color="blue" key={parentId}>
-          {name}
-        </Tag>
-      </span>
-    );
-  };
 
   handleFormReset = () => {
     const { form, dispatch } = this.props;

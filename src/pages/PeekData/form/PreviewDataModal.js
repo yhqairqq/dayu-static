@@ -1,12 +1,14 @@
-import React from "react";
-import { Empty, Modal, Table } from "antd";
+import React from 'react';
+import { Empty, Modal, Table } from 'antd';
 
 class PreviewDataModal extends React.Component {
   static defaultProps = {
     rules: [],
     columns: [],
-    handleModalVisible: () => { }
-  }
+    handleModalVisible: () => {},
+  };
+
+  state = {};
 
   render() {
     const { data, columns, modalVisible, handleModalVisible } = this.props;
@@ -22,25 +24,18 @@ class PreviewDataModal extends React.Component {
         onCancel={() => handleModalVisible()}
         onOk={() => handleModalVisible()}
       >
-        {
-          data.length <= 0 ?
-            <Empty
-              style={{ marginTop: 20 }}
-              imageStyle={{ height: 50 }}
-              image={Empty.PRESENTED_IMAGE_SIMPLE}
-              description={
-                <span>你的规则没有命中一条数据~~</span>
-              }
-            />
-            :
-            <Table
-              size="small"
-              dataSource={data}
-              columns={columns}
-            />
-        }
+        {data.length <= 0 ? (
+          <Empty
+            style={{ marginTop: 20 }}
+            imageStyle={{ height: 50 }}
+            image={Empty.PRESENTED_IMAGE_SIMPLE}
+            description={<span>你的规则没有命中一条数据~~</span>}
+          />
+        ) : (
+          <Table size="small" dataSource={data} columns={columns} />
+        )}
       </Modal>
-    )
+    );
   }
 }
 

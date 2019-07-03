@@ -29,8 +29,9 @@ const getValue = obj =>
     .join(',');
 
 @Form.create()
-@connect(({ role, loading }) => ({
+@connect(({ role, resource, loading }) => ({
   role,
+  resource,
   loading: loading.models.role,
 }))
 class RoleManage extends React.Component {
@@ -80,6 +81,9 @@ class RoleManage extends React.Component {
     const { dispatch } = this.props;
     dispatch({
       type: 'role/fetch',
+    });
+    dispatch({
+      type: 'resource/allMask',
     });
   }
 
@@ -273,6 +277,7 @@ class RoleManage extends React.Component {
   render() {
     const {
       role: { data },
+      resource: { allMask },
       loading,
     } = this.props;
     const { modalVisible, allotResVisible, expandForm, recordValue, isEditForm } = this.state;
@@ -326,6 +331,7 @@ class RoleManage extends React.Component {
         )}
         {allotResVisible && (
           <AllotRes2Role
+            allMask={allMask}
             handleModalVisible={this.handleAllotModalVisible}
             handleUpdate={this.handleAllotUpdate}
             values={recordValue}

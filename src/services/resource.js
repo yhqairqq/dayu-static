@@ -20,6 +20,16 @@ export async function queryResTree() {
     method: 'POST',
   });
 }
+
+/**
+ * 获取当前权限设置列表
+ */
+export async function allMask() {
+  return request(`${PRE_URL}/allMask`, {
+    method: 'POST',
+  });
+}
+
 /**
  * 根据条件查询资源列表
  * @param {*} params

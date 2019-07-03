@@ -17,4 +17,4 @@ export interface StandardTableProps {
   disabledSelected?: boolean;
 }
 
-export default class StandardTable extends React.Component<StandardTableProps, any> { }
+export default class StandardTable extends React.Component<StandardTableProps, any> {}

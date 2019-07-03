@@ -1,11 +1,12 @@
-import { query as queryAll, 
+import {
+  query as queryAll,
   queryCurrent,
   queryUsers,
   addUser,
   delUser,
   editUser,
-  resetPwd
- } from '@/services/user';
+  resetPwd,
+} from '@/services/user';
 
 export default {
   namespace: 'user',
@@ -15,7 +16,7 @@ export default {
     currentUser: {},
     data: {
       list: [],
-      pagination: {}
+      pagination: {},
     },
   },
 
@@ -24,8 +25,8 @@ export default {
       const resp = yield call(queryUsers, payload);
       yield put({
         type: 'savePage',
-        payload: resp.data
-      })
+        payload: resp.data,
+      });
     },
     // 添加用户
     *add({ payload, callback }, { call }) {
@@ -42,7 +43,7 @@ export default {
       }
     },
     // 重置密码
-    *resetPwd({payload, callback}, {call}) {
+    *resetPwd({ payload, callback }, { call }) {
       const response = yield call(resetPwd, payload);
       if (response && response.state === 0) {
         if (callback) callback();
@@ -75,8 +76,8 @@ export default {
     savePage(state, action) {
       return {
         ...state,
-        data: action.payload
-      }
+        data: action.payload,
+      };
     },
     save(state, action) {
       return {

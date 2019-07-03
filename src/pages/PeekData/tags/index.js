@@ -16,7 +16,7 @@ import {
   message,
   Modal,
   Popconfirm,
-  Row
+  Row,
 } from 'antd';
 import StandardTable from '@/components/StandardTable';
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';

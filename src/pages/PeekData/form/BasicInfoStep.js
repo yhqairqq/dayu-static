@@ -12,8 +12,7 @@ class BasicInfoStep extends React.Component {
 
   onAddField = key => {
     const { onFormValueChange } = this.props;
-    this.setState({
-    });
+    this.setState({});
     const { modelMetas = [], selectedFields = [] } = this.props;
     const field = modelMetas.find(item => item.name === key);
     onFormValueChange('fields', [...selectedFields, field.name]);
@@ -25,8 +24,7 @@ class BasicInfoStep extends React.Component {
   };
 
   render() {
-    const { formLayout, allModels, formVals, form,
-      onFormValueChange } = this.props;
+    const { formLayout, allModels, formVals, form, onFormValueChange } = this.props;
 
     return (
       <div className="peekOptForm-basicInfoStep">
@@ -48,7 +46,7 @@ class BasicInfoStep extends React.Component {
               disabled={formVals.peekId !== 0}
               onChange={value => onFormValueChange('modelId', value)}
             >
-              {allModels.map((item) => (
+              {allModels.map(item => (
                 <Option value={item.id} key={item.id}>
                   {item.name}
                 </Option>

@@ -1,6 +1,6 @@
 import request from '@/utils/request';
 
-const PRE_URL = "/sys/user";
+const PRE_URL = '/sys/user';
 
 export async function query() {
   return request(`${PRE_URL}/users`);
@@ -15,15 +15,15 @@ export async function queryCurrent() {
 }
 /**
  * 根据条件查询用户列表
- * @param {*} params 
+ * @param {*} params
  */
 export async function queryUsers(params) {
   return request(`${PRE_URL}/getByPage`, {
     method: 'POST',
     data: {
-      ...params
-    }
-  })
+      ...params,
+    },
+  });
 }
 
 /**
@@ -31,20 +31,19 @@ export async function queryUsers(params) {
  */
 export async function queryUserMenu() {
   return request(`${PRE_URL}/menuTree`, {
-    method: 'POST'
-  })
+    method: 'POST',
+  });
 }
-
 
 /**
  * 添加用户
- * @param {*} params 
+ * @param {*} params
  */
 export async function addUser(params) {
   return request(`${PRE_URL}/add`, {
     method: 'POST',
     data: {
-      ...params
+      ...params,
     },
   });
 }
@@ -57,9 +56,9 @@ export async function delUser(id) {
   return request(`${PRE_URL}/del`, {
     method: 'POST',
     data: {
-      userId: id
-    }
-  })
+      userId: id,
+    },
+  });
 }
 
 /**
@@ -70,27 +69,27 @@ export async function resetPwd(id) {
   return request(`${PRE_URL}/resetPwd`, {
     method: 'POST',
     data: {
-      userId: id
-    }
-  })
+      userId: id,
+    },
+  });
 }
 
 /**
  * 修改用户信息
- * @param {*} params 
+ * @param {*} params
  */
 export async function editUser(params) {
   return request(`${PRE_URL}/edit`, {
     method: 'POST',
     data: {
-      ...params
+      ...params,
     },
   });
 }
 
 /**
  * 登录
- * @param {*} params 
+ * @param {*} params
  */
 export async function accountLogin(params) {
   return request(`${PRE_URL}/login`, {

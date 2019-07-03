@@ -1,11 +1,6 @@
 import React from 'react';
 import { connect } from 'dva';
-import {
-  Form,
-  Input,
-  Select,
-  Modal,
-} from 'antd';
+import { Form, Input, Select, Modal } from 'antd';
 
 const { Option } = Select;
 
@@ -18,8 +13,8 @@ class FieldOptForm extends React.Component {
   static defaultProps = {
     values: {},
     isEdit: false,
-    handleUpdate: () => { },
-    handleModalVisible: () => { }
+    handleUpdate: () => {},
+    handleModalVisible: () => {},
   };
 
   constructor(props) {
@@ -30,23 +25,23 @@ class FieldOptForm extends React.Component {
         name: values.name,
         showName: values.showName,
         groupName: values.groupName,
-        dataType: values.dataType
+        dataType: values.dataType,
       },
-    }
+    };
     this.formLayout = {
       labelCol: { span: 7 },
       wrapperCol: { span: 13 },
     };
-  };
+  }
 
   // 在render()方法之后立即执行
   componentDidMount() {
     const { dispatch } = this.props;
 
     dispatch({
-      type: 'datasource/getDataTypes'
+      type: 'datasource/getDataTypes',
     });
-  };
+  }
 
   handleFieldUpdate = () => {
     const { form, handleUpdate } = this.props;
@@ -63,11 +58,15 @@ class FieldOptForm extends React.Component {
         }
       );
     });
-  }
+  };
 
   render() {
-    const { form, modalVisible, handleModalVisible, values,
-      datasource: { dataTypes }
+    const {
+      form,
+      modalVisible,
+      handleModalVisible,
+      values,
+      datasource: { dataTypes },
     } = this.props;
     const formItemLayout = {
       labelCol: { span: 7 },
@@ -78,7 +77,7 @@ class FieldOptForm extends React.Component {
         destroyOnClose
         centered
         maskClosable={false}
-        title='修改字段信息'
+        title="修改字段信息"
         visible={modalVisible}
         onCancel={() => handleModalVisible()}
         onOk={() => this.handleFieldUpdate()}
@@ -91,42 +90,49 @@ class FieldOptForm extends React.Component {
           </Form.Item>
           <Form.Item label="显示名称">
             {form.getFieldDecorator('showName', {
-              rules: [{ required: true, message: '显示名称不能为空', }],
+              rules: [{ required: true, message: '显示名称不能为空' }],
               initialValue: values.showName,
             })(<Input />)}
           </Form.Item>
           <Form.Item label="是否可用">
             {form.getFieldDecorator('display', {
-              rules: [{ required: true, message: '显示名称不能为空', }],
+              rules: [{ required: true, message: '显示名称不能为空' }],
               initialValue: values.display,
             })(
               <Select key="display">
-                <Option key={0} value={0}>隐藏</Option>
-                <Option key={1} value={1}>显示</Option>
+                <Option key={0} value={0}>
+                  隐藏
+                </Option>
+                <Option key={1} value={1}>
+                  显示
+                </Option>
               </Select>
             )}
           </Form.Item>
           <Form.Item label="数据类型">
             {form.getFieldDecorator('dataType', {
-              rules: [{ required: true, message: '显示名称不能为空', }],
+              rules: [{ required: true, message: '显示名称不能为空' }],
               initialValue: values.dataType,
             })(
               <Select key="dataType">
-                {dataTypes && dataTypes.map((item) => (
-                  <Option key={item} value={item}>{item}</Option>
-                ))}
+                {dataTypes &&
+                  dataTypes.map(item => (
+                    <Option key={item} value={item}>
+                      {item}
+                    </Option>
+                  ))}
               </Select>
             )}
           </Form.Item>
           <Form.Item label="所属分组">
             {form.getFieldDecorator('groupName', {
-              rules: [{ required: true, message: '显示名称不能为空', }],
+              rules: [{ required: true, message: '显示名称不能为空' }],
               initialValue: values.groupName,
             })(<Input />)}
           </Form.Item>
         </Form>
       </Modal>
-    )
+    );
   }
 }
 

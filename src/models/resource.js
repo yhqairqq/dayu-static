@@ -3,6 +3,7 @@ import {
   addRes,
   editRes,
   delRes,
+  allMask,
   queryAllParents,
   queryResTree,
 } from '@/services/resource';
@@ -15,6 +16,7 @@ export default {
       pagination: {},
     },
     allParents: [],
+    allMask: [], // 权限掩码列表
     resTree: [],
   },
 
@@ -30,6 +32,7 @@ export default {
         if (callback) callback(data);
       }
     },
+    // 获取资源树
     *fetchResTree({ payload, callback }, { call, put }) {
       const resp = yield call(queryResTree, payload);
       const { state, data } = resp;
@@ -39,6 +42,17 @@ export default {
       });
       if (resp && state === 0 && callback) {
         callback();
+      }
+    },
+    // 权限掩码
+    *allMask({ payload, callback }, { call, put }) {
+      const resp = yield call(allMask, payload);
+      yield put({
+        type: 'saveAllMask',
+        payload: resp.data,
+      });
+      if (resp && resp.state === 0) {
+        if (callback) callback(resp.data);
       }
     },
     *fetch({ payload, callback }, { call, put }) {
@@ -88,6 +102,12 @@ export default {
       return {
         ...state,
         resTree: action.payload,
+      };
+    },
+    saveAllMask(state, action) {
+      return {
+        ...state,
+        allMask: action.payload,
       };
     },
   },

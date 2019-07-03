@@ -113,12 +113,7 @@ export default class GlobalHeaderRight extends PureComponent {
           }}
         />
         <Tooltip title={formatMessage({ id: 'component.globalHeader.help' })}>
-          <a
-            target="_blank"
-            href="#"
-            rel="noopener noreferrer"
-            className={styles.action}
-          >
+          <a target="_blank" href="#" rel="noopener noreferrer" className={styles.action}>
             <Icon type="question-circle-o" />
           </a>
         </Tooltip>

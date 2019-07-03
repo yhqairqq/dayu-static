@@ -4,6 +4,8 @@ import { formatMessage, FormattedMessage } from 'umi-plugin-react/locale';
 import Link from 'umi/link';
 import { Checkbox, Alert } from 'antd';
 import Login from '@/components/Login';
+import { md5Pwd } from '@/utils/myMd5';
+
 import styles from './Login.less';
 
 const { UserName, Password, Submit } = Login;
@@ -43,10 +45,12 @@ class LoginPage extends Component {
     const { type } = this.state;
     if (!err) {
       const { dispatch } = this.props;
+      const { password, userName } = values;
       dispatch({
         type: 'login/login',
         payload: {
-          ...values,
+          userName,
+          password: md5Pwd(userName, password), // 进行md值加密
           type,
         },
       });
@@ -76,7 +80,9 @@ class LoginPage extends Component {
             this.loginForm = form;
           }}
         >
-          {login.status === 'error' && login.type === 'account' && !submitting &&
+          {login.status === 'error' &&
+            login.type === 'account' &&
+            !submitting &&
             this.renderMessage(formatMessage({ id: 'app.login.message-invalid-credentials' }))}
           <UserName
             name="userName"

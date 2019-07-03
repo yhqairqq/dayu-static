@@ -72,31 +72,28 @@ const request = extend({
   errorHandler, // 默认错误处理
   credentials: 'include', // 默认请求是否带上cookie,
   // 统一的的头信息(固定不可变的)
-  headers: {
-  },
+  headers: {},
   // 每一个请求都会携带的参数
   params: {
     // uuid: 'xx-xxin-xx-xx'
-  }
+  },
 });
 request.interceptors.request.use((url, options) => {
   const { headers } = options;
   // 向header中添加token
   const nHeaders = {
     ...headers,
-    token: localStorage.getItem('token')
-  }
-  return (
-    {
-      url,
-      options: { ...options, headers: nHeaders }
-    }
-  )
-})
+    token: localStorage.getItem('token'),
+  };
+  return {
+    url,
+    options: { ...options, headers: nHeaders },
+  };
+});
 /**
-*对于状态码实际是 200 的错误
-*/
-request.interceptors.response.use(async (response) => {
+ *对于状态码实际是 200 的错误
+ */
+request.interceptors.response.use(async response => {
   const { status, url } = response;
   if (status === 401) {
     notification.error({
@@ -107,11 +104,11 @@ request.interceptors.response.use(async (response) => {
     window.g_app._store.dispatch({
       type: 'login/logout',
     });
-    return;
+    return null;
   }
 
   const ret = await response.clone().json();
-  const { state, message, code } = ret
+  const { state, message, code } = ret;
   if (state !== 0) {
     if (code === '401') {
       notification.error({
@@ -132,6 +129,6 @@ request.interceptors.response.use(async (response) => {
     }
   }
   return response;
-})
+});
 
 export default request;
