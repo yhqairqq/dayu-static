@@ -63,8 +63,8 @@ export default {
   plugins,
   define: {
     APP_TYPE: APP_TYPE || '',
-    // 'process.env.apiUrl': 'http://localhost:8080',
-    'process.env.apiUrl': 'https://ladon.api.dailuobo.com',
+    'process.env.apiUrl': 'http://localhost:8080',
+    // 'process.env.apiUrl': 'https://ladon.api.dailuobo.com',
   },
   treeShaking: true,
   targets: {
