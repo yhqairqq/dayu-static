@@ -14,17 +14,15 @@ import {
   Icon,
   Input,
   message,
-  Modal,
   Popconfirm,
   Row,
+  Spin,
 } from 'antd';
 import StandardTable from '@/components/StandardTable';
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
-import moment from 'moment';
 
 import styles from './index.less';
 import AggQueryModal from './AggQueryModal';
-
 
 const FormItem = Form.Item;
 
@@ -34,17 +32,17 @@ const getValue = obj =>
     .join(',');
 
 @Form.create()
-@connect(({ user, loading, tag, model }) => ({
+@connect(({ user, loading, tag, model, peek }) => ({
   user,
   tag,
   model,
-  loading: loading.models.tag,
+  peek,
+  loading: loading.models.peek,
 }))
 class AggQuery extends React.Component {
   state = {
     modalVisible: false,
     expandForm: false,
-    formValues: {},
   };
 
   constructor(props) {
@@ -67,7 +65,7 @@ class AggQuery extends React.Component {
               <a>删除</a>
             </Popconfirm>
             <Divider type="vertical" />
-            <a onClick={() => this.handleModalVisible(true, record, true)}>编辑</a>
+            <a onClick={() => this.handleModalVisible(true, record)}>编辑</a>
             <Divider type="vertical" />
             <Popconfirm
               placement="top"
@@ -83,8 +81,8 @@ class AggQuery extends React.Component {
   }
 
   componentDidMount() {
-    const {dispatch} = this.props;
-    dispatch({type: "model/fetchAll"});
+    const { dispatch } = this.props;
+    dispatch({ type: 'model/fetchAll' });
     this.reloadData();
   }
 
@@ -92,11 +90,23 @@ class AggQuery extends React.Component {
   handleDelete = record => {
     const { dispatch } = this.props;
     dispatch({
-      type: 'tag/remove',
+      type: 'peek/remove',
       payload: record.id,
       callback: () => {
         message.success('删除成功');
         // 重载数据
+        this.reloadData();
+      },
+    });
+  };
+
+  exportData = record => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'peek/sendData2Me',
+      payload: record.id,
+      callback: msg => {
+        message.success(msg);
         this.reloadData();
       },
     });
@@ -107,7 +117,8 @@ class AggQuery extends React.Component {
       {
         modalVisible: visible,
         record,
-      }
+      },
+      () => !visible && reload && this.reloadData()
     );
   };
 
@@ -115,8 +126,8 @@ class AggQuery extends React.Component {
   reloadData = (params = {}) => {
     const { dispatch } = this.props;
     dispatch({
-      type: 'tag/fetch',
-      payload: params,
+      type: 'peek/fetch',
+      payload: { params: { ...params, newVersion: true } },
     });
   };
 
@@ -213,38 +224,40 @@ class AggQuery extends React.Component {
     );
   }
 
-  renderModal () {
-    const {modalVisible, record} = this.state;
-    if (!modalVisible){
-      return;
+  renderModal() {
+    const { modalVisible, record } = this.state;
+    if (!modalVisible) {
+      return null;
     }
-    return <AggQueryModal />
+    const parentMethod = {
+      handleSaveEvent: this.handleSaveEvent,
+      handleModalVisible: this.handleModalVisible,
+    };
+    return <AggQueryModal item={record} {...parentMethod} />;
   }
 
-
-
   render() {
-    const {
-      tag: { data },
-      loading,
-    } = this.props;
+    const { peek = {}, loading } = this.props;
+    const { data } = peek;
 
     return (
       <PageHeaderWrapper title="聚合取数" content="支持基于维度指标的聚合取数功能">
-        <Card bordered={false}>
-          <div className={styles.aggQuery}>
-            {this.renderForm()}
-            {this.renderOperators()}
-            <StandardTable
-              data={data}
-              loading={loading}
-              rowKey={record => record.id}
-              columns={this.columns}
-              onChange={this.handleStandardTableChange}
-            />
-            {this.renderModal()}
-          </div>
-        </Card>
+        <Spin spinning={loading} tip="查询中...">
+          <Card bordered={false}>
+            <div className={styles.aggQuery}>
+              {this.renderForm()}
+              {this.renderOperators()}
+              <StandardTable
+                data={data}
+                loading={loading}
+                rowKey={record => record.id}
+                columns={this.columns}
+                onChange={this.handleStandardTableChange}
+              />
+              {this.renderModal()}
+            </div>
+          </Card>
+        </Spin>
       </PageHeaderWrapper>
     );
   }

@@ -109,8 +109,8 @@ export default [
           },
           // 分组管理
           {
-            path: '/peekdata/agg-query-manage',
-            name: '标签管理',
+            path: '/peekdata/query-manage',
+            name: '高级取数管理',
             component: './PeekData/AggQuery',
           },
         ],

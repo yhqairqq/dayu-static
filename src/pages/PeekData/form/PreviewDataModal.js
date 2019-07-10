@@ -32,7 +32,7 @@ class PreviewDataModal extends React.Component {
             description={<span>你的规则没有命中一条数据~~</span>}
           />
         ) : (
-          <Table size="small" dataSource={data} columns={columns} />
+          <Table size="small" dataSource={data} columns={columns} pagination={false} />
         )}
       </Modal>
     );

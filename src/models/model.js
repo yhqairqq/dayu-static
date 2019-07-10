@@ -56,7 +56,9 @@ export default {
         type: 'saveModelMetas',
         payload: response.data,
       });
-      callback && callback(response.data);
+      if (callback) {
+        callback(response.data);
+      }
     },
     *add({ payload, callback }, { call }) {
       const response = yield call(addModel, payload);

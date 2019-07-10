@@ -18,9 +18,9 @@ import {
   Popconfirm,
   Row,
 } from 'antd';
+import moment from 'moment';
 import StandardTable from '@/components/StandardTable';
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
-import moment from 'moment';
 
 import styles from './index.less';
 

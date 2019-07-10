@@ -122,23 +122,22 @@ class ModelUpgradeModal extends React.Component {
 
   processData = (fields, schemaList) => {
     const { tagList } = this.getModalData();
-    const isEdit = this.isEdit();
     // 匹配标签
     const DEFAULT_TAG = tagList.find(item => item.defaulted === 1);
-    const schemaMap = schemaList.reduce((a, b) => {
-      const x = { ...a };
-      x[b.fieldName] = b;
-      return x;
-    }, {});
-    return fields.forEach(item => {
+    const schemaMap = {};
+    schemaList.forEach(item => {
+      schemaMap[item.fieldName] = item;
+    });
+    return fields.map(item => {
       const obj = { ...item };
-      if (!isEdit || this.isUpgrade()) {
+      if (!this.isEdit() || this.isUpgrade()) {
         const findTag = tagList.find(tag => item.name.startsWith(tag.rule)) || DEFAULT_TAG;
         obj.tagId = findTag.id;
         const schema = schemaMap[item.name] || {};
         obj.showName = schema.comments || '';
+        obj.remark = schema.remark;
       }
-      obj.orderName = item.showName;
+      obj.orderName = obj.showName;
       return obj;
     });
   };
@@ -364,6 +363,7 @@ class ModelUpgradeModal extends React.Component {
 
   renderFieldStep = () => {
     const { fieldList } = this.state;
+
     const { tagList, dataTypeList } = this.getModalData();
     const columns = [
       {
