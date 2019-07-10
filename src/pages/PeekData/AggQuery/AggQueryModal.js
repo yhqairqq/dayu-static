@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'dva';
-import { Button, Card, Form, Input, message, Modal, notification, Select, Spin } from 'antd';
+import { Button, Card, Form, Input, message, Modal, notification, Select, Spin, Icon } from 'antd';
 import styles from './index.less';
 import FieldPane from './FieldPane';
 import RulePane from './RulePane';
@@ -16,21 +16,6 @@ import PreviewDataModal from '../form/PreviewDataModal';
 const FormItem = Form.Item;
 const SelectOption = Select.Option;
 
-const tabList = [
-  {
-    key: 'fieldPane',
-    tab: '字段',
-  },
-  {
-    key: 'rulePane',
-    tab: '过滤',
-  },
-  {
-    key: 'sqlPane',
-    tab: <span>SQL</span>,
-  },
-];
-
 const DEFAULT_STATE = {
   id: undefined,
   name: undefined,
@@ -45,6 +30,7 @@ const DEFAULT_STATE = {
   previewModalVisible: false,
   previewColumns: [],
   previewData: [],
+  showSqlTipIcon: false,
 };
 @Form.create()
 @connect(({ user, loading, tag, model, peek }) => ({
@@ -80,7 +66,12 @@ class AggQueryModal extends React.Component {
   }
 
   onTabChange = (key, prop) => {
-    this.setState({ [prop]: key });
+    const param = { [prop]: key };
+    if (key === 'sqlPane') {
+      param.showSqlTipIcon = false;
+    }
+
+    this.setState({ ...param });
   };
 
   onModelChange = modelId => {
@@ -91,6 +82,7 @@ class AggQueryModal extends React.Component {
       {
         modelId,
         modelObj,
+        selectedTagInFieldPane: -1,
       },
       () => {
         dispatch({
@@ -243,25 +235,6 @@ class AggQueryModal extends React.Component {
     });
   };
 
-  onCountSizeEvent = () => {
-    const { dispatch } = this.props;
-    const { modelId, ruleList, selectedList } = this.state;
-    dispatch({
-      type: 'peek/countSize',
-      payload: {
-        modelId,
-        rules: ruleList,
-        fieldList: selectedList,
-      },
-      callback: size => {
-        Modal.success({
-          title: '统计数据',
-          content: `根据规则查询出数据条数：${size}`,
-        });
-      },
-    });
-  };
-
   onCancelEvent = (visible, reload = false) => {
     const { handleModalVisible } = this.props;
     handleModalVisible(false, {}, reload);
@@ -363,7 +336,8 @@ class AggQueryModal extends React.Component {
       peek: { dataTypeRules },
     } = this.props;
 
-    params.onParentStateChange = this.onStateChange;
+    params.onParentStateChange = (param, showSqlTip = true) =>
+      this.onStateChange(showSqlTip ? { ...param, showSqlTipIcon: true } : param);
     params.isEdit = this.isEdit();
     params.tagList = [{ id: -1, name: '全部' }, ...(tagList || [])];
     if (paneKey === 'fieldPane') {
@@ -387,6 +361,32 @@ class AggQueryModal extends React.Component {
     return <PaneComponent {...params} />;
   };
 
+  getTabList = () => {
+    const { showSqlTipIcon } = this.state;
+    const tabList = [
+      {
+        key: 'fieldPane',
+        tab: '查看字段',
+      },
+      {
+        key: 'rulePane',
+        tab: '过滤',
+      },
+      {
+        key: 'sqlPane',
+        tab: (
+          <div>
+            SQL
+            {showSqlTipIcon ? (
+              <Icon type="info-circle" style={{ float: 'right', fontSize: '1px', color: 'red' }} />
+            ) : null}
+          </div>
+        ),
+      },
+    ];
+    return tabList;
+  };
+
   renderContentPane = () => {
     const { paneKey } = this.state;
     return (
@@ -394,7 +394,7 @@ class AggQueryModal extends React.Component {
         className={styles.paneList}
         style={{ width: '100%' }}
         activeTabKey={paneKey}
-        tabList={tabList}
+        tabList={this.getTabList()}
         onTabChange={key => {
           this.onTabChange(key, 'paneKey');
         }}

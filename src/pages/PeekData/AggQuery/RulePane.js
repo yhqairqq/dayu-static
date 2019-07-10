@@ -52,7 +52,7 @@ class RulePane extends React.Component {
     return (
       <div className={styles.addBtn}>
         <Button type="primary" icon="plus" onClick={this.onAddRuleEvent}>
-          新建规则
+          添加过滤条件
         </Button>
       </div>
     );

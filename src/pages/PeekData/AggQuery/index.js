@@ -241,7 +241,7 @@ class AggQuery extends React.Component {
     const { data } = peek;
 
     return (
-      <PageHeaderWrapper title="聚合取数" content="支持基于维度指标的聚合取数功能">
+      <PageHeaderWrapper title="高级取数" content="支持基于聚合函数的取数功能">
         <Spin spinning={loading} tip="查询中...">
           <Card bordered={false}>
             <div className={styles.aggQuery}>

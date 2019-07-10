@@ -107,7 +107,11 @@ class FieldPane extends React.Component {
   };
 
   renderFilterForm = () => {
-    const { tagList = [], selectedTagInFieldPane, onParentStateChange } = this.props;
+    const { tagList = [], dataList = [], selectedTagInFieldPane, onParentStateChange } = this.props;
+    const existedTagMapper = {};
+    dataList.forEach(item => {
+      existedTagMapper[item.tagId] = true;
+    });
     return (
       <div>
         <Form {...formItemLayout}>
@@ -115,13 +119,15 @@ class FieldPane extends React.Component {
             <Select
               placeholder="请选择标签"
               value={selectedTagInFieldPane}
-              onChange={val => onParentStateChange({ selectedTagInFieldPane: val })}
+              onChange={val => onParentStateChange({ selectedTagInFieldPane: val }, false)}
             >
-              {tagList.map(item => (
-                <SelectOption key={item.id} value={item.id}>
-                  {item.name}
-                </SelectOption>
-              ))}
+              {tagList
+                .filter(({ id }) => id === -1 || existedTagMapper[id])
+                .map(item => (
+                  <SelectOption key={item.id} value={item.id}>
+                    {item.name}
+                  </SelectOption>
+                ))}
             </Select>
           </FormItem>
         </Form>
