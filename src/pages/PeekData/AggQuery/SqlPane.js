@@ -1,8 +1,11 @@
 import React from 'react';
 import styles from './index.less';
 
+const isDateField = dataType =>
+  dataType === 'DATE' || dataType === 'DATETIME' || dataType === 'TIME' || dataType === 'TIMESTAMP';
+
 const addQuotaIfNeed = (val, dataType) =>
-  dataType === 'STRING' || this.isDateField(dataType) ? `'${val}'` : val;
+  dataType === 'STRING' || isDateField(dataType) ? `'${val}'` : val;
 
 const RuleFactoryMapper = {
   equals: (val, dataType) => `=  ${addQuotaIfNeed(val, dataType)}`,
@@ -91,15 +94,6 @@ class SqlPane extends React.Component {
       }
     }
     return sqlArr.join(' ');
-  };
-
-  isDateField = dataType => {
-    return (
-      dataType === 'DATE' ||
-      dataType === 'DATETIME' ||
-      dataType === 'TIME' ||
-      dataType === 'TIMESTAMP'
-    );
   };
 
   createRuleString = (metaObj, ruleItem) => {
