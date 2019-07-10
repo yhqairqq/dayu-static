@@ -2,7 +2,7 @@ import React from 'react';
 import { Table, Select, Form, Tooltip, Icon } from 'antd';
 import styles from './index.less';
 
-const AGG_TYPE_LIST = ['SUM', 'COUNT', 'MAX', 'MIN', 'AGG', 'COUNT DISTINCT'];
+const AGG_TYPE_LIST = ['SUM', 'COUNT', 'MAX', 'MIN', 'AVG', 'COUNT DISTINCT'];
 const FormItem = Form.Item;
 const SelectOption = Select.Option;
 
@@ -26,6 +26,7 @@ class FieldPane extends React.Component {
 
   constructor(props) {
     super(props);
+
     this.columns = [
       {
         title: '分组标签',
@@ -45,7 +46,6 @@ class FieldPane extends React.Component {
           const { remark } = record;
           return remark ? (
             <span>
-              {' '}
               {text}
               <Tooltip placement="topLeft" title={remark} arrowPointAtCenter>
                 <Icon type="question-circle" />
@@ -102,8 +102,14 @@ class FieldPane extends React.Component {
   };
 
   onRowSelectionChange = (selectedRowKeys, selectedRows) => {
-    const { onParentStateChange } = this.props;
-    onParentStateChange({ selectedList: [...selectedRows] });
+    const { onParentStateChange, selectedList } = this.props;
+    const dataList = this.getDataList();
+    const mapper = {};
+    dataList.forEach(item => {
+      mapper[item.metaId] = true;
+    });
+    const tempDataList = selectedList.filter(item => !mapper[item.metaId]);
+    onParentStateChange({ selectedList: [...tempDataList, ...selectedRows] });
   };
 
   renderFilterForm = () => {
@@ -157,7 +163,6 @@ class FieldPane extends React.Component {
           columns={this.columns}
           dataSource={this.getDataList()}
           size="small"
-          style={{ maxHeight: '250px' }}
           rowKey="metaId"
           pagination={{ pageSize: 5 }}
         />

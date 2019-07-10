@@ -38,7 +38,7 @@ const DEFAULT_STATE = {
   tag,
   peek,
   model,
-  loading: loading.models.tag || loading.models.peek,
+  loading: loading.models.tag || loading.models.peek || loading.models.model,
 }))
 class AggQueryModal extends React.Component {
   constructor(props) {
@@ -70,7 +70,6 @@ class AggQueryModal extends React.Component {
     if (key === 'sqlPane') {
       param.showSqlTipIcon = false;
     }
-
     this.setState({ ...param });
   };
 
@@ -430,7 +429,6 @@ class AggQueryModal extends React.Component {
     if (!previewModalVisible) {
       return null;
     }
-
     return (
       <PreviewDataModal
         data={previewData}
