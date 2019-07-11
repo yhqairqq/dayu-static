@@ -6,15 +6,15 @@ const FormItem = Form.Item;
 const { TextArea } = Input;
 
 @Form.create()
-@connect(({ resource, loading }) => ({
-  resource,
-  loading: loading.models.resource,
+@connect(({ group, loading }) => ({
+  group,
+  loading: loading.models.group,
 }))
-class ResOptForm extends React.Component {
+class GroupOptForm extends React.Component {
   static defaultProps = {
     values: {
-      appId: 0,
-      type: 0,
+      groupId: 0,
+      parentId: '0',
     },
     isEdit: false,
     handleAdd: () => {},
@@ -34,7 +34,7 @@ class ResOptForm extends React.Component {
   componentDidMount() {
     const { dispatch } = this.props;
     dispatch({
-      type: 'resource/fetchAllParent',
+      type: 'group/getGroupTree',
     });
   }
 
@@ -45,8 +45,8 @@ class ResOptForm extends React.Component {
       form.resetFields();
       if (isEdit) {
         handleUpdate({
+          groupId: values.id,
           ...fieldsValue,
-          resId: values.id,
         });
       } else {
         handleAdd(fieldsValue);
@@ -61,44 +61,39 @@ class ResOptForm extends React.Component {
       handleModalVisible,
       values,
       form,
-      resource: { allParents },
+      group: { trees },
     } = this.props;
+
     return (
       <Modal
         destroyOnClose
         maskClosable={false}
-        width={540}
+        width={640}
         style={{ top: 20 }}
         bodyStyle={{ padding: '10px 40px' }}
-        title={isEdit ? '修改资源' : '新增资源'}
+        title={isEdit ? '修改报表组信息' : '新增报表组信息'}
         visible={modalVisible}
         onCancel={() => handleModalVisible(false, false, values)}
         onOk={this.okHandle}
       >
-        <Form.Item key="parentId" {...this.formLayout} label="父节点">
+        <FormItem key="parentId" {...this.formLayout} label="父报表组">
           {form.getFieldDecorator('parentId', {
-            rules: [{ required: true, message: '请选择父节点！' }],
+            rules: [{ required: true, message: '请选择父报表组' }],
             initialValue: values.parentId,
           })(
             <TreeSelect
-              style={{ width: '100%' }}
+              style={{ width: 300 }}
               dropdownStyle={{ maxHeight: 400, overflow: 'auto', offsetHeight: 10 }}
-              treeData={allParents}
+              treeData={trees}
               treeDefaultExpandAll
-              placeholder="请选择父节点"
+              placeholder="请选择父报表组"
             />
           )}
-        </Form.Item>
-        <FormItem key="name" {...this.formLayout} label="资源名称">
-          {form.getFieldDecorator('name', {
-            rules: [{ required: true, message: '请输入资源名称！' }],
-            initialValue: values.name,
-          })(<Input placeholder="请输入" />)}
         </FormItem>
-        <FormItem key="path" {...this.formLayout} label="路径">
-          {form.getFieldDecorator('path', {
-            rules: [{ required: true, message: '请输入资源路径！' }],
-            initialValue: values.path,
+        <FormItem key="name" {...this.formLayout} label="报表组名称">
+          {form.getFieldDecorator('name', {
+            rules: [{ required: true, message: '请输入报表组名称！' }],
+            initialValue: values.name,
           })(<Input placeholder="请输入" />)}
         </FormItem>
         <FormItem key="icon" {...this.formLayout} label="图标">
@@ -116,4 +111,4 @@ class ResOptForm extends React.Component {
   }
 }
 
-export default ResOptForm;
+export default GroupOptForm;

@@ -1,23 +1,24 @@
 import React, { Fragment } from 'react';
 import { connect } from 'dva';
 import {
-  Row,
-  Col,
+  Table,
   Card,
-  Form,
-  Input,
   Icon,
   Button,
   Popconfirm,
+  Form,
+  Divider,
+  Col,
+  Row,
+  Input,
   TreeSelect,
   message,
-  Divider,
 } from 'antd';
-import StandardTable from '@/components/StandardTable';
-import PageHeaderWrapper from '@/components/PageHeaderWrapper';
-import ResOptForm from './form/ResOptForm';
 
-import styles from '../styles/Manage.less';
+import PageHeaderWrapper from '@/components/PageHeaderWrapper';
+import GroupOptForm from './component/GroupOptForm';
+
+import styles from '../../styles/Manage.less';
 
 const FormItem = Form.Item;
 
@@ -27,11 +28,11 @@ const getValue = obj =>
     .join(',');
 
 @Form.create()
-@connect(({ resource, loading }) => ({
-  resource,
-  loading: loading.models.resource,
+@connect(({ group, loading }) => ({
+  group,
+  loading: loading.models.group,
 }))
-class ResManage extends React.Component {
+class ReportGroup extends React.Component {
   state = {
     modalVisible: false,
     expandForm: false,
@@ -42,9 +43,8 @@ class ResManage extends React.Component {
 
   // 表格字段
   columns = [
-    { title: '资源名称', dataIndex: 'name' },
+    { title: '报表组名称', dataIndex: 'name' },
     { title: '图标', dataIndex: 'icon' },
-    { title: '路径', dataIndex: 'path' },
     { title: '描述', dataIndex: 'comment' },
     {
       title: '操作',
@@ -53,7 +53,7 @@ class ResManage extends React.Component {
         <Fragment>
           <Popconfirm
             placement="top"
-            title="确定删除该资源？"
+            title="确实删除该分组？"
             onConfirm={() => this.handleDelete(record)}
           >
             <a>删除</a>
@@ -68,73 +68,18 @@ class ResManage extends React.Component {
   componentDidMount() {
     const { dispatch } = this.props;
     dispatch({
-      type: 'resource/fetch',
+      type: 'group/fetch',
     });
     dispatch({
-      type: 'resource/fetchAllParent',
+      type: 'group/getGroupTree',
     });
   }
-
-  handleFormReset = () => {
-    const { form, dispatch } = this.props;
-    form.resetFields();
-    this.setState({
-      formValues: {},
-    });
-    dispatch({
-      type: 'resource/fetch',
-      payload: {},
-    });
-  };
-
-  toggleForm = () => {
-    const { expandForm } = this.state;
-    this.setState({
-      expandForm: !expandForm,
-    });
-  };
-
-  handleModalVisible = (flag, record, isEdit) => {
-    this.setState({
-      modalVisible: !!flag,
-      isEditForm: !!isEdit,
-      recordValue: record || {},
-    });
-  };
-
-  handleAdd = fields => {
-    const { dispatch } = this.props;
-    dispatch({
-      type: 'resource/add',
-      payload: fields,
-      callback: () => {
-        message.success('添加成功');
-        this.handleModalVisible();
-        // 重载数据
-        this.reloadData();
-      },
-    });
-  };
-
-  handleUpdate = fields => {
-    const { dispatch } = this.props;
-    dispatch({
-      type: 'resource/update',
-      payload: fields,
-      callback: () => {
-        message.success('修改成功');
-        this.handleModalVisible();
-        // 重载数据
-        this.reloadData();
-      },
-    });
-  };
 
   // 删除操作处理
   handleDelete = record => {
     const { dispatch } = this.props;
     dispatch({
-      type: 'resource/remove',
+      type: 'group/remove',
       payload: record.id,
       callback: () => {
         message.success('删除成功');
@@ -148,7 +93,7 @@ class ResManage extends React.Component {
   reloadData = () => {
     const { dispatch } = this.props;
     dispatch({
-      type: 'resource/fetch',
+      type: 'group/fetch',
       payload: {},
     });
   };
@@ -168,7 +113,7 @@ class ResManage extends React.Component {
       });
 
       dispatch({
-        type: 'resource/fetch',
+        type: 'group/fetch',
         payload: {
           params: values,
         },
@@ -194,7 +139,7 @@ class ResManage extends React.Component {
       params.sorter = `${sorter.field}_${sorter.order}`;
     }
     dispatch({
-      type: 'resource/fetch',
+      type: 'group/fetch',
       payload: {
         params,
         currentPage: pagination.current,
@@ -203,35 +148,86 @@ class ResManage extends React.Component {
     });
   };
 
+  handleFormReset = () => {
+    const { form, dispatch } = this.props;
+    form.resetFields();
+    this.setState({
+      formValues: {},
+    });
+    dispatch({
+      type: 'group/fetch',
+      payload: {},
+    });
+  };
+
+  toggleForm = () => {
+    const { expandForm } = this.state;
+    this.setState({
+      expandForm: !expandForm,
+    });
+  };
+
+  handleModalVisible = (flag, record, isEdit) => {
+    this.setState({
+      modalVisible: !!flag,
+      isEditForm: !!isEdit,
+      recordValue: record || {},
+    });
+  };
+
+  handleAdd = fields => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'group/add',
+      payload: fields,
+      callback: () => {
+        message.success('添加成功');
+        this.handleModalVisible();
+        // 重载数据
+        this.reloadData();
+      },
+    });
+  };
+
+  handleUpdate = fields => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'group/update',
+      payload: fields,
+      callback: () => {
+        message.success('修改成功');
+        this.handleModalVisible();
+        // 重载数据
+        this.reloadData();
+      },
+    });
+  };
+
   // 查询表单
   renderForm() {
     const {
       form: { getFieldDecorator },
-      resource: { allParents },
+      group: { trees },
     } = this.props;
     return (
       <Form onSubmit={this.handleSearch} layout="inline">
         <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
-          <Col md={8} sm={24}>
-            <FormItem key="parentId" label="父节点">
+          <Col md={13} sm={24}>
+            <FormItem key="parentId" label="父报表组">
               {getFieldDecorator('parentId')(
                 <TreeSelect
+                  style={{ width: 300 }}
                   dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
-                  treeData={allParents}
+                  treeData={trees}
                   treeDefaultExpandAll
-                  placeholder="请选择父节点"
+                  placeholder="请选择父报表组"
                 />
               )}
             </FormItem>
           </Col>
           <Col md={8} sm={24}>
-            <FormItem key="name" label="资源名">
-              {getFieldDecorator('name')(<Input placeholder="请输入资源名" />)}
-            </FormItem>
-          </Col>
-          <Col md={8} sm={24}>
-            <FormItem key="code" label="资源编码">
-              {getFieldDecorator('code')(<Input placeholder="请输入资源编码" />)}
+            <FormItem key="name" label="报表组名称">
+              {getFieldDecorator('name')(<Input placeholder="请输入组名称" />)}
             </FormItem>
           </Col>
         </Row>
@@ -242,8 +238,8 @@ class ResManage extends React.Component {
 
   render() {
     const {
-      resource: { data },
       loading,
+      group: { data },
     } = this.props;
     const { modalVisible, expandForm, recordValue, isEditForm } = this.state;
     const parentMethods = {
@@ -252,7 +248,7 @@ class ResManage extends React.Component {
       handleUpdate: this.handleUpdate,
     };
     return (
-      <PageHeaderWrapper title="系统资源管理" content="对系统资源进行增删改查操作~">
+      <PageHeaderWrapper title="报表组管理" content="管理报表分组~">
         <Card bordered={false}>
           <div className={styles.Manage}>
             {expandForm && <div className={styles.ManageForm}>{this.renderForm()}</div>}
@@ -262,7 +258,7 @@ class ResManage extends React.Component {
                 type="primary"
                 onClick={() => this.handleModalVisible(true, {}, false)}
               >
-                添加资源
+                新建
               </Button>
               <span className={styles.querySubmitButtons}>
                 <Button type="primary" onClick={this.handleSearch}>
@@ -277,17 +273,16 @@ class ResManage extends React.Component {
                 </a>
               </span>
             </div>
-            <StandardTable
+            <Table
               loading={loading}
-              data={data}
+              dataSource={data}
               columns={this.columns}
               rowKey={record => record.id}
-              onChange={this.handleStandardTableChange}
             />
           </div>
         </Card>
         {modalVisible && (
-          <ResOptForm
+          <GroupOptForm
             {...parentMethods}
             isEdit={isEditForm}
             values={recordValue}
@@ -299,4 +294,4 @@ class ResManage extends React.Component {
   }
 }
 
-export default ResManage;
+export default ReportGroup;
