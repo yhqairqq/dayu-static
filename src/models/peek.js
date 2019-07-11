@@ -8,6 +8,8 @@ import {
   previewData,
   getRuleByPeekId,
   getDataTypeRules,
+  saveQuery,
+  queryExistedRuleAndFieldList,
 } from '@/services/peek';
 
 export default {
@@ -84,6 +86,20 @@ export default {
       const response = yield call(editPeek, payload);
       if (response && response.state === 0) {
         if (callback) callback();
+      }
+    },
+
+    *saveQuery({ payload, callback }, { call }) {
+      const response = yield call(saveQuery, payload);
+      if (response && response.state === 0) {
+        if (callback) callback();
+      }
+    },
+
+    *queryExistedRuleAndFieldList({ payload, callback }, { call }) {
+      const response = yield call(queryExistedRuleAndFieldList, payload);
+      if (response && response.state === 0) {
+        if (callback) callback(response.data);
       }
     },
   },

@@ -50,12 +50,15 @@ export default {
         payload: response.data,
       });
     },
-    *fetchModelMeta({ payload }, { call, put }) {
+    *fetchModelMeta({ payload, callback }, { call, put }) {
       const response = yield call(getModelMeta, payload);
       yield put({
         type: 'saveModelMetas',
         payload: response.data,
       });
+      if (callback) {
+        callback(response.data);
+      }
     },
     *add({ payload, callback }, { call }) {
       const response = yield call(addModel, payload);

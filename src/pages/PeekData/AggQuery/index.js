@@ -14,15 +14,15 @@ import {
   Icon,
   Input,
   message,
-  Modal,
   Popconfirm,
   Row,
+  Spin,
 } from 'antd';
-import moment from 'moment';
 import StandardTable from '@/components/StandardTable';
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
 
 import styles from './index.less';
+import AggQueryModal from './AggQueryModal';
 
 const FormItem = Form.Item;
 
@@ -31,86 +31,28 @@ const getValue = obj =>
     .map(key => obj[key])
     .join(',');
 
-const TagFormModal = Form.create()(props => {
-  const { record = {}, isEdit = false, form, handleModalVisible, dispatch, loading } = props;
-  const okHandle = () => {
-    form.validateFields((err, fieldsValue) => {
-      if (err) return;
-      dispatch({
-        type: 'tag/saveTag',
-        payload: fieldsValue,
-        callback: () => {
-          message.success(!fieldsValue.id ? '修改成功' : '添加成功');
-          handleModalVisible(false, {}, true);
-        },
-      });
-    });
-  };
-
-  const formLayout = {
-    labelCol: { span: 7 },
-    wrapperCol: { span: 15 },
-  };
-
-  return (
-    <Modal
-      destroyOnClose
-      style={{ top: 20 }}
-      title={isEdit ? '修改标签' : '新增标签'}
-      visible
-      onOk={okHandle}
-      onCancel={() => handleModalVisible()}
-      confirmLoading={loading}
-    >
-      <FormItem key="id" {...formLayout} label="数据源名称" style={{ display: 'none' }}>
-        {form.getFieldDecorator('id', {
-          initialValue: record.id,
-        })(<Input />)}
-      </FormItem>
-      <FormItem key="name" {...formLayout} label="标签名称">
-        {form.getFieldDecorator('name', {
-          rules: [{ required: true, message: '请输入标签名称！', min: 3, max: 20 }],
-          initialValue: record.name,
-        })(<Input placeholder="请输入标签名称" />)}
-      </FormItem>
-      <FormItem key="rule" {...formLayout} label="匹配值">
-        {form.getFieldDecorator('rule', {
-          rules: [{ required: true, message: '请输入匹配值' }],
-          initialValue: record.rule,
-        })(<Input placeholder="请输入匹配值" />)}
-      </FormItem>
-    </Modal>
-  );
-});
-
 @Form.create()
-@connect(({ user, loading, tag }) => ({
+@connect(({ user, loading, tag, model, peek }) => ({
   user,
   tag,
-  loading: loading.models.tag,
+  model,
+  peek,
+  loading: loading.models.peek,
 }))
-class TagList extends React.Component {
+class AggQuery extends React.Component {
   state = {
     modalVisible: false,
     expandForm: false,
-    formValues: {},
   };
 
   constructor(props) {
     super(props);
     // 表格字段列表
     this.columns = [
-      { title: '序号', key: 'seq', render: (text, record, index) => index + 1 },
+      { title: '所属模型', dataIndex: 'modelName', key: 'modelName' },
       { title: '名称', dataIndex: 'name', key: 'name' },
-      { title: '匹配值', dataIndex: 'rule', key: 'rule' },
       { title: '创建人', dataIndex: 'creator', key: 'creator' },
-      {
-        title: '最后修改时间',
-        dataIndex: 'modified',
-        key: 'modified',
-        render: (text, record) =>
-          moment.unix(record.modified || record.created).format('YYYY-MM-DD hh:mm:ss'),
-      },
+      { title: '取数次数', dataIndex: 'peekTime', key: 'peekTime' },
       {
         title: '操作',
         render: (text, record) => (
@@ -122,6 +64,16 @@ class TagList extends React.Component {
             >
               <a>删除</a>
             </Popconfirm>
+            <Divider type="vertical" />
+            <a onClick={() => this.handleModalVisible(true, record)}>编辑</a>
+            <Divider type="vertical" />
+            <Popconfirm
+              placement="top"
+              title="导出数据到邮箱"
+              onConfirm={() => this.exportData(record)}
+            >
+              <a>导出</a>
+            </Popconfirm>
           </Fragment>
         ),
       },
@@ -129,6 +81,8 @@ class TagList extends React.Component {
   }
 
   componentDidMount() {
+    const { dispatch } = this.props;
+    dispatch({ type: 'model/fetchAll' });
     this.reloadData();
   }
 
@@ -136,11 +90,23 @@ class TagList extends React.Component {
   handleDelete = record => {
     const { dispatch } = this.props;
     dispatch({
-      type: 'tag/remove',
+      type: 'peek/remove',
       payload: record.id,
       callback: () => {
         message.success('删除成功');
         // 重载数据
+        this.reloadData();
+      },
+    });
+  };
+
+  exportData = record => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'peek/sendData2Me',
+      payload: record.id,
+      callback: msg => {
+        message.success(msg);
         this.reloadData();
       },
     });
@@ -152,7 +118,7 @@ class TagList extends React.Component {
         modalVisible: visible,
         record,
       },
-      () => reload && this.reloadData()
+      () => !visible && reload && this.reloadData()
     );
   };
 
@@ -160,8 +126,8 @@ class TagList extends React.Component {
   reloadData = (params = {}) => {
     const { dispatch } = this.props;
     dispatch({
-      type: 'tag/fetch',
-      payload: params,
+      type: 'peek/fetch',
+      payload: { params: { ...params, newVersion: true } },
     });
   };
 
@@ -219,10 +185,9 @@ class TagList extends React.Component {
     if (!expandForm) {
       return null;
     }
-
     return (
-      <div className={styles.conditionForm}>
-        <Form key="peekForm" onSubmit={this.handleSearch} layout="inline">
+      <div className={styles.queryForm}>
+        <Form key="peekForm" layout="inline">
           <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
             <Col md={8} sm={24}>
               <FormItem key="name" label="标签名称">
@@ -259,45 +224,43 @@ class TagList extends React.Component {
     );
   }
 
-  renderTagFormModal() {
+  renderModal() {
     const { modalVisible, record } = this.state;
-    const { dispatch, loading } = this.props;
     if (!modalVisible) {
       return null;
     }
-    const params = {
-      record,
-      dispatch,
-      loading,
+    const parentMethod = {
+      handleSaveEvent: this.handleSaveEvent,
       handleModalVisible: this.handleModalVisible,
     };
-    return <TagFormModal {...params} />;
+    return <AggQueryModal item={record} {...parentMethod} />;
   }
 
   render() {
-    const {
-      tag: { data },
-      loading,
-    } = this.props;
+    const { peek = {}, loading } = this.props;
+    const { data } = peek;
+
     return (
-      <PageHeaderWrapper title="分组管理" content="管理模型中字段的分组信息">
-        <Card bordered={false}>
-          <div className={styles.tags}>
-            {this.renderForm()}
-            {this.renderOperators()}
-            <StandardTable
-              data={data}
-              loading={loading}
-              rowKey={record => record.id}
-              columns={this.columns}
-              onChange={this.handleStandardTableChange}
-            />
-          </div>
-          {this.renderTagFormModal()}
-        </Card>
+      <PageHeaderWrapper title="高级取数" content="支持基于聚合函数的取数功能">
+        <Spin spinning={loading} tip="查询中...">
+          <Card bordered={false}>
+            <div className={styles.aggQuery}>
+              {this.renderForm()}
+              {this.renderOperators()}
+              <StandardTable
+                data={data}
+                loading={loading}
+                rowKey={record => record.id}
+                columns={this.columns}
+                onChange={this.handleStandardTableChange}
+              />
+              {this.renderModal()}
+            </div>
+          </Card>
+        </Spin>
       </PageHeaderWrapper>
     );
   }
 }
 
-export default TagList;
+export default AggQuery;

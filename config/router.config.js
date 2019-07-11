@@ -99,11 +99,17 @@ export default [
             name: '取数管理',
             component: './PeekData/PeekManage',
           },
-          //分组管理
+          // 分组管理
           {
             path: '/peekdata/tags',
             name: '标签管理',
             component: './PeekData/tags',
+          },
+          // 分组管理
+          {
+            path: '/peekdata/query-manage',
+            name: '高级取数管理',
+            component: './PeekData/AggQuery',
           },
         ],
       },

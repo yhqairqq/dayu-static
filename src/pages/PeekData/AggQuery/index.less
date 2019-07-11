@@ -1,0 +1,46 @@
+@import '~antd/lib/style/themes/default.less';
+
+.aggQuery {
+  > .queryForm {
+    display: block;
+  }
+  > .operators {
+    margin-bottom: 16px;
+    button {
+      margin-right: 8px;
+    }
+    > .querySubmitButtons {
+      display: block;
+      float: right;
+      margin-bottom: 24px;
+      white-space: nowrap;
+    }
+  }
+}
+
+.aggQueryModel {
+  .paneList {
+    > :global(.ant-card-body) {
+      height: 480px;
+      max-height: 480px;
+      overflow-y: auto;
+      .fieldPane {
+        display: block;
+      }
+      .rulePane {
+        .addBtn {
+          margin-bottom: 20px;
+        }
+      }
+      .sqlPane {
+        .content {
+          display: block;
+        }
+      }
+    }
+  }
+
+  .footer {
+    display: block;
+  }
+}

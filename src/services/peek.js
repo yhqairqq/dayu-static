@@ -107,11 +107,34 @@ export async function getRuleByPeekId(peekId) {
 }
 
 /**
+ * 根据取数Id获取规则
+ * @param {*} peekId
+ */
+export async function queryExistedRuleAndFieldList(peekId) {
+  return request(`${PRE_URL}/queryExistedRuleAndFieldList`, {
+    method: 'POST',
+    data: {
+      peekId,
+    },
+  });
+}
+
+/**
  * 获取所有数据类型的对就有效规则
  */
 export async function getDataTypeRules() {
   return request(`${PRE_URL}/getDataTypeRules`, {
     method: 'POST',
     data: {},
+  });
+}
+
+/**
+ * 获取所有数据类型的对就有效规则
+ */
+export async function saveQuery(params) {
+  return request(`${PRE_URL}/saveQuery`, {
+    method: 'POST',
+    data: params,
   });
 }
