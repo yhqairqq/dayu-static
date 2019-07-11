@@ -3,6 +3,7 @@ import { Table, Select, Form, Tooltip, Icon } from 'antd';
 import styles from './index.less';
 
 const AGG_TYPE_LIST = ['SUM', 'COUNT', 'MAX', 'MIN', 'AVG', 'COUNT DISTINCT'];
+const AGG_TYPE_LIST_STR = ['COUNT', 'COUNT DISTINCT'];
 const FormItem = Form.Item;
 const SelectOption = Select.Option;
 
@@ -63,6 +64,7 @@ class FieldPane extends React.Component {
         key: 'aggExpression',
         width: '25%',
         render: (text, record) => {
+          const funcList = record.dataType === 'STRING' ? AGG_TYPE_LIST_STR : AGG_TYPE_LIST;
           return (
             <Select
               placeholder="请选择聚合函数"
@@ -71,7 +73,7 @@ class FieldPane extends React.Component {
               allowClear
               onChange={this.onRowValueChange('aggExpression', record)}
             >
-              {AGG_TYPE_LIST.map(type => (
+              {funcList.map(type => (
                 <Select.Option key={type} value={type}>
                   {type}
                 </Select.Option>
