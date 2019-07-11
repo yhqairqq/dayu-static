@@ -303,7 +303,7 @@ class ModelUpgradeModal extends React.Component {
       fields: fieldList,
     };
     if (this.isEdit() || this.isUpgrade()) {
-      handleUpdate(params, this.isUpgrade);
+      handleUpdate(params, this.isUpgrade());
     } else {
       handleAdd(params);
     }

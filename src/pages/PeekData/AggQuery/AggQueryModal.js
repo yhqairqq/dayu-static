@@ -365,16 +365,27 @@ class AggQueryModal extends React.Component {
     const tabList = [
       {
         key: 'fieldPane',
-        tab: '查看字段',
+        tab: (
+          <span>
+            <Icon type="database" />
+            查看字段
+          </span>
+        ),
       },
       {
         key: 'rulePane',
-        tab: '过滤',
+        tab: (
+          <span>
+            <Icon type="filter" />
+            过滤
+          </span>
+        ),
       },
       {
         key: 'sqlPane',
         tab: (
           <div>
+            <Icon type="file-text" />
             SQL
             {showSqlTipIcon ? (
               <Icon type="info-circle" style={{ float: 'right', fontSize: '1px', color: 'red' }} />
