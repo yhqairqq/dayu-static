@@ -140,6 +140,7 @@ export default [
           {
             path: '/cerebrum/app-manage',
             name: '埋点应用管理',
+            component: './Cerebrum/AppInfoManage',
           },
           // 埋点管理
           {
