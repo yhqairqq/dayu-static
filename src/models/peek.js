@@ -10,6 +10,9 @@ import {
   getDataTypeRules,
   saveQuery,
   queryExistedRuleAndFieldList,
+  importData,
+  queryImportRecordList,
+  previewImportData,
 } from '@/services/peek';
 
 export default {
@@ -98,6 +101,26 @@ export default {
 
     *queryExistedRuleAndFieldList({ payload, callback }, { call }) {
       const response = yield call(queryExistedRuleAndFieldList, payload);
+      if (response && response.state === 0) {
+        if (callback) callback(response.data);
+      }
+    },
+
+    *importData({ payload, callback }, { call }) {
+      const response = yield call(importData, payload);
+      if (response && response.state === 0) {
+        if (callback) callback();
+      }
+    },
+    *fetchImportRecordList({ payload, callback }, { call }) {
+      const response = yield call(queryImportRecordList, payload);
+      if (response && response.state === 0) {
+        if (callback) callback(response.data);
+      }
+    },
+
+    *previewImportData({ payload, callback }, { call }) {
+      const response = yield call(previewImportData, payload);
       if (response && response.state === 0) {
         if (callback) callback(response.data);
       }
