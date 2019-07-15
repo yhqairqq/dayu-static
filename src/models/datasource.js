@@ -24,13 +24,16 @@ export default {
     },
   },
   effects: {
-    *fetchAll(_, { call, put }) {
+    *fetchAll({ callback }, { call, put }) {
       const response = yield call(queryAllSimpleDatasource);
       const { data } = response;
       yield put({
         type: 'saveAll',
         payload: data,
       });
+      if (callback) {
+        callback(data);
+      }
     },
     *fetchTables({ payload }, { call, put }) {
       const response = yield call(getTables, payload);

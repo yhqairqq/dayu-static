@@ -13,6 +13,12 @@ import styles from './index.less';
 import StandardTable from '../../../components/StandardTable';
 import PreviewModal from './PreviewModal';
 
+const STATUS_LIST = [
+  <Tag color="cyan">导入中</Tag>,
+  <Tag color="green">成功</Tag>,
+  <Tag color="red">失败</Tag>,
+];
+
 const FormItem = Form.Item;
 @Form.create()
 @connect(({ user, loading, model, peek }) => ({
@@ -56,6 +62,11 @@ class DataImportList extends React.Component {
         title: '是否覆盖',
         dataIndex: 'overwrited',
         render: text => (text === 1 ? <Tag color="green">是</Tag> : <Tag color="cyan">否</Tag>),
+      },
+      {
+        title: '状态',
+        dataIndex: 'status',
+        render: text => STATUS_LIST[text],
       },
       {
         title: '操作',

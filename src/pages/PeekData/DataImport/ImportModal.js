@@ -56,6 +56,15 @@ class ImportModal extends React.Component {
     const { dispatch } = this.props;
     dispatch({
       type: 'datasource/fetchAll',
+      callback: datasourceList => {
+        const { datasourceType } = this.state;
+        const findDataSource = datasourceList.find(
+          item => item.useType === 2 && item.type.toLowerCase() === datasourceType
+        );
+        if (findDataSource) {
+          this.onDataSourceChangeEvent(findDataSource.id);
+        }
+      },
     });
   }
 
