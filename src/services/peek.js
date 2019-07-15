@@ -138,3 +138,40 @@ export async function saveQuery(params) {
     data: params,
   });
 }
+
+/**
+ * 根据模型Id获取字段列表
+ * @param {*} modelId Long
+ */
+export async function importData(param) {
+  return request(`/peekdata/import`, {
+    method: 'POST',
+    data: param,
+  });
+}
+
+/**
+ * 分页查询导入记录
+ * @param {*} params
+ */
+export async function queryImportRecordList(params) {
+  return request(`/peekdata/queryImportRecordList`, {
+    method: 'POST',
+    data: {
+      ...params,
+    },
+  });
+}
+
+/**
+ * 预览导入数据
+ * @param {*} params
+ */
+export async function previewImportData(params) {
+  return request(`/peekdata/previewImportData`, {
+    method: 'POST',
+    data: {
+      params,
+    },
+  });
+}
