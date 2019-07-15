@@ -127,6 +127,7 @@ export default [
           {
             path: '/report/design',
             name: '报表管理',
+            component: './Report/report-design',
           },
         ],
       },
