@@ -33,6 +33,7 @@ const errorHandler = error => {
   const { status, url } = response;
 
   if (status === 401) {
+    notification.destroy();
     notification.error({
       message: '未登录或登录已过期，请重新登录。',
     });
@@ -44,6 +45,7 @@ const errorHandler = error => {
     return;
   }
   if (url) {
+    notification.destroy();
     notification.error({
       message: `请求错误 ${status}`,
       description: errortext,
@@ -96,6 +98,7 @@ request.interceptors.request.use((url, options) => {
 request.interceptors.response.use(async response => {
   const { status, url } = response;
   if (status === 401) {
+    notification.destroy();
     notification.error({
       message: '未登录或登录已过期，请重新登录。',
     });
@@ -111,6 +114,7 @@ request.interceptors.response.use(async response => {
   const { state, message, code } = ret;
   if (state !== 0) {
     if (code === '401') {
+      notification.destroy();
       notification.error({
         message: '未登录或登录已过期，请重新登录。',
       });
@@ -122,6 +126,7 @@ request.interceptors.response.use(async response => {
         });
       }
     } else {
+      notification.destroy();
       notification.error({
         message: `请求错误`,
         description: message,

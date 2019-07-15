@@ -101,7 +101,7 @@ class UserOptForm extends React.Component {
         </FormItem>
         <FormItem key="email" {...this.formLayout} label="电子邮箱">
           {form.getFieldDecorator('email', {
-            rules: [{ required: true, message: '请输入电子邮箱！', min: 5, max: 20 }],
+            rules: [{ required: true, message: '请输入电子邮箱！', min: 5, max: 60 }],
             initialValue: values.email,
           })(<Input placeholder="请输入" />)}
         </FormItem>

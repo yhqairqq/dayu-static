@@ -119,6 +119,23 @@ export default [
           },
         ],
       },
+      // 报表管理
+      {
+        path: '/report',
+        name: '报表管理',
+        routes: [
+          // 报表组管理
+          {
+            path: '/report/group',
+            name: '报表组管理',
+            component: './Report/report-group',
+          },
+          {
+            path: '/report/design',
+            name: '报表管理',
+          },
+        ],
+      },
       // 日志埋点管理
       {
         path: '/cerebrum',
