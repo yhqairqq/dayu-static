@@ -12,6 +12,7 @@ import {
   Row,
   Input,
   TreeSelect,
+  Select,
   message,
 } from 'antd';
 import StandardTable from '@/components/StandardTable';
@@ -21,6 +22,7 @@ import ReportOptForm from './component/ReportOptForm';
 import styles from '../../styles/Manage.less';
 
 const FormItem = Form.Item;
+const { Option } = Select;
 
 const getValue = obj =>
   Object.keys(obj)
@@ -28,9 +30,10 @@ const getValue = obj =>
     .join(',');
 
 @Form.create()
-@connect(({ group, report, loading }) => ({
+@connect(({ group, report, user, loading }) => ({
   group,
   report,
+  user,
   loading: loading.models.report,
 }))
 class ReportDesign extends React.Component {
@@ -69,6 +72,7 @@ class ReportDesign extends React.Component {
     { title: '创建人', dataIndex: 'creator' },
     {
       title: '操作',
+      align: 'center',
       dataIndex: 'option',
       render: (text, record) => (
         <Fragment>
@@ -81,6 +85,12 @@ class ReportDesign extends React.Component {
           </Popconfirm>
           <Divider type="vertical" />
           <a onClick={() => this.handleModalVisible(true, record, true)}>编辑</a>
+          <Divider type="vertical" />
+          <a onClick={() => this.handleModalVisible(true, record, true)}>编辑报表头</a>
+          <Divider type="vertical" />
+          <a onClick={() => this.handleModalVisible(true, record, true)}>编辑SQL</a>
+          <Divider type="vertical" />
+          <a onClick={() => this.handleModalVisible(true, record, true)}>编辑字段信息</a>
         </Fragment>
       ),
     },
@@ -94,6 +104,11 @@ class ReportDesign extends React.Component {
     dispatch({
       type: 'group/getGroupTree',
     });
+    // 获取所有用户
+    dispatch({
+      type: 'user/fetch',
+    });
+    // 获取所有报表类型
     dispatch({
       type: 'report/fetchTypes',
       callback: data => {
@@ -253,26 +268,45 @@ class ReportDesign extends React.Component {
     const {
       form: { getFieldDecorator },
       group: { trees },
+      user: { list },
     } = this.props;
     return (
       <Form onSubmit={this.handleSearch} layout="inline">
         <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
-          <Col md={13} sm={24}>
-            <FormItem key="parentId" label="父报表组">
-              {getFieldDecorator('parentId')(
+          <Col md={8} sm={24}>
+            <FormItem key="groupId" label="所属报表组">
+              {getFieldDecorator('groupId')(
                 <TreeSelect
                   style={{ width: 300 }}
                   dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
                   treeData={trees}
                   treeDefaultExpandAll
-                  placeholder="请选择父报表组"
+                  placeholder="请选择报表组"
                 />
               )}
             </FormItem>
           </Col>
           <Col md={8} sm={24}>
-            <FormItem key="name" label="报表组名称">
-              {getFieldDecorator('name')(<Input placeholder="请输入组名称" />)}
+            <FormItem key="createdBy" label="创建人">
+              {getFieldDecorator('createdBy')(
+                <Select key="createdBy" placeholder="请选择创建人">
+                  {list.map(item => (
+                    <Option key={item.id} value={item.id}>
+                      {item.nickname}
+                    </Option>
+                  ))}
+                </Select>
+              )}
+            </FormItem>
+          </Col>
+          <Col md={8} sm={24}>
+            <FormItem key="name" label="报表名称">
+              {getFieldDecorator('name')(<Input placeholder="请输入名称" />)}
+            </FormItem>
+          </Col>
+          <Col md={8} sm={24}>
+            <FormItem key="code" label="报表编码">
+              {getFieldDecorator('code')(<Input placeholder="请输入编码" />)}
             </FormItem>
           </Col>
         </Row>

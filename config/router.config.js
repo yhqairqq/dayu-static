@@ -135,6 +135,11 @@ export default [
             name: '报表管理',
             component: './Report/report-design',
           },
+          {
+            path: '/report/log',
+            name: '报表日志',
+            component: './Report/report-log',
+          },
         ],
       },
       // 日志埋点管理
