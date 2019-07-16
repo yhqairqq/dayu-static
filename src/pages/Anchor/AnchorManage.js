@@ -86,7 +86,9 @@ class CereBrumManage extends React.Component {
     {
       title: '状态',
       dataIndex: 'status',
-      render: text => <Tag color="blue">{text === 0 ? `未上线` : `上线`}</Tag>,
+      render: text => (
+        <Tag color={text === 0 ? 'red' : 'blue'}>{text === 0 ? `未上线` : `上线`}</Tag>
+      ),
     },
     { title: '创建人', dataIndex: 'creator' },
     {
