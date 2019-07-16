@@ -144,27 +144,27 @@ export default [
       },
       // 日志埋点管理
       {
-        path: '/cerebrum',
+        path: '/anchor',
         icon: 'profile',
         name: '埋点管理',
         routes: [
           // 应用管理
           {
-            path: '/cerebrum/app-manage',
+            path: '/anchor/app-info',
             name: '埋点应用管理',
-            component: './Cerebrum/AppInfoManage',
+            component: './Anchor/AppInfoManage',
           },
           // 埋点管理
           {
-            path: '/cerebrum/anchor-manage',
+            path: '/anchor/anchor-info',
             name: '埋点管理',
-            component: './Cerebrum/AnchorManage',
+            component: './Anchor/AnchorManage',
           },
           // 日志上传策略
           {
-            path: '/cerebrum/trans-strategy',
+            path: '/anchor/trans-strategy',
             name: '上传策略管理',
-            component: './Cerebrum/StrategyManage',
+            component: './Anchor/StrategyManage',
           },
         ],
       },
