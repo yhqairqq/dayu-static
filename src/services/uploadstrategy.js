@@ -1,12 +1,12 @@
 import request from '@/utils/request';
 
-const PRE_URL = '/anchor/appinfo';
+const PRE_URL = '/anchor/uploadstrategy';
 
 /**
- * 根据条件查询埋点应用列表
+ * 根据条件查询上传策略列表
  * @param {*} params
  */
-export async function queryAppInfo(params) {
+export async function queryUploadStrategy(params) {
   return request(`${PRE_URL}/getByPage`, {
     method: 'POST',
     data: {
@@ -16,10 +16,10 @@ export async function queryAppInfo(params) {
 }
 
 /**
- * 添加埋点
+ * 添加上传策略
  * @param {*} params
  */
-export async function addAppInfo(params) {
+export async function addUploadStrategy(params) {
   return request(`${PRE_URL}/add`, {
     method: 'POST',
     data: {
@@ -29,37 +29,27 @@ export async function addAppInfo(params) {
 }
 
 /**
- * 删除埋点
- * @param {Long} id 埋点Id
+ * 删除上传策略
+ * @param {Long} id 上传策略Id
  */
-export async function delAppInfo(id) {
+export async function delUploadStrategy(id) {
   return request(`${PRE_URL}/del`, {
     method: 'POST',
     data: {
-      modelId: id,
+      id,
     },
   });
 }
 
 /**
- * 修改埋点应用信息
+ * 修改上传策略
  * @param {*} params
  */
-export async function editAppInfo(params) {
+export async function editUploadStrategy(params) {
   return request(`${PRE_URL}/edit`, {
     method: 'POST',
     data: {
       ...params,
     },
-  });
-}
-
-/**
- * 获取所有埋点应用列表
- */
-export async function queryAllAppInfos() {
-  return request(`${PRE_URL}/getAllAppInfos`, {
-    method: 'POST',
-    data: {},
   });
 }
