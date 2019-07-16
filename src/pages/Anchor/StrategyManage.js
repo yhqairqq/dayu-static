@@ -148,20 +148,6 @@ class StrategyManage extends React.Component {
     });
   };
 
-  // 重置密码
-  resetPwd = record => {
-    const { dispatch } = this.props;
-    dispatch({
-      type: 'user/resetPwd',
-      payload: record.id,
-      callback: () => {
-        message.success('重置密码成功');
-        // 重载数据
-        this.reloadData();
-      },
-    });
-  };
-
   // 重新加载数据
   reloadData = () => {
     const { dispatch } = this.props;
@@ -213,7 +199,7 @@ class StrategyManage extends React.Component {
       params.sorter = `${sorter.field}_${sorter.order}`;
     }
     dispatch({
-      type: 'appinfo/fetchByParams',
+      type: 'uploadstrategy/fetchByParams',
       payload: {
         params,
         currentPage: pagination.current,
