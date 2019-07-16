@@ -12,6 +12,7 @@ import {
   Popconfirm,
   message,
   Divider,
+  Tag,
 } from 'antd';
 import moment from 'moment';
 import StandardTable from '@/components/StandardTable';
@@ -85,10 +86,7 @@ class CereBrumManage extends React.Component {
     {
       title: '状态',
       dataIndex: 'status',
-      render: text => {
-        if (text === 0) return `未上线`;
-        return `上线`;
-      },
+      render: text => <Tag color="blue">{text === 0 ? `未上线` : `上线`}</Tag>,
     },
     { title: '创建人', dataIndex: 'creator' },
     {
@@ -156,7 +154,7 @@ class CereBrumManage extends React.Component {
       formValues: {},
     });
     dispatch({
-      type: 'appinfo/fetchByParams',
+      type: 'anchor/fetchByParams',
       payload: {},
     });
   };
@@ -244,20 +242,6 @@ class CereBrumManage extends React.Component {
     });
   };
 
-  // 重置密码
-  resetPwd = record => {
-    const { dispatch } = this.props;
-    dispatch({
-      type: 'user/resetPwd',
-      payload: record.id,
-      callback: () => {
-        message.success('重置密码成功');
-        // 重载数据
-        this.reloadData();
-      },
-    });
-  };
-
   // 重新加载数据
   reloadData = () => {
     const { dispatch } = this.props;
@@ -321,7 +305,7 @@ class CereBrumManage extends React.Component {
       params.sorter = `${sorter.field}_${sorter.order}`;
     }
     dispatch({
-      type: 'appinfo/fetchByParams',
+      type: 'anchor/fetchByParams',
       payload: {
         params,
         currentPage: pagination.current,
