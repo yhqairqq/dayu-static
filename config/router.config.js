@@ -105,11 +105,17 @@ export default [
             name: '标签管理',
             component: './PeekData/tags',
           },
-          // 分组管理
+          // 高级取数管理
           {
             path: '/peekdata/query-manage',
             name: '高级取数管理',
             component: './PeekData/AggQuery',
+          },
+          // 导入工具
+          {
+            path: '/peekdata/data-import',
+            name: '数据导入',
+            component: './PeekData/DataImport',
           },
         ],
       },
@@ -127,6 +133,12 @@ export default [
           {
             path: '/report/design',
             name: '报表管理',
+            component: './Report/report-design',
+          },
+          {
+            path: '/report/log',
+            name: '报表日志',
+            component: './Report/report-log',
           },
         ],
       },
