@@ -152,16 +152,19 @@ export default [
           {
             path: '/cerebrum/app-manage',
             name: '埋点应用管理',
+            component: './Cerebrum/AppInfoManage',
           },
           // 埋点管理
           {
             path: '/cerebrum/anchor-manage',
             name: '埋点管理',
+            component: './Cerebrum/AnchorManage',
           },
           // 日志上传策略
           {
             path: '/cerebrum/trans-strategy',
             name: '上传策略管理',
+            component: './Cerebrum/StrategyManage',
           },
         ],
       },
