@@ -134,9 +134,9 @@ class ModelUpgradeModal extends React.Component {
         const findTag = tagList.find(tag => item.name.startsWith(tag.rule)) || DEFAULT_TAG;
         obj.tagId = findTag.id;
         const schema = schemaMap[item.name] || {};
-        // console.log(item);
         obj.showName = schema.comments || '';
         obj.remark = schema.remark;
+        obj.dataType = schema.dataType || obj.dataType;
       }
       obj.orderName = obj.showName;
       return obj;

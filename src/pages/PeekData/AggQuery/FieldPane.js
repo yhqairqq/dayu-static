@@ -1,5 +1,5 @@
 import React from 'react';
-import { Table, Select, Form, Tooltip, Icon } from 'antd';
+import { Table, Select, Form, Tooltip, Icon, Input } from 'antd';
 import styles from './index.less';
 
 const AGG_TYPE_LIST = ['SUM', 'COUNT', 'MAX', 'MIN', 'AVG', 'COUNT DISTINCT'];
@@ -32,17 +32,16 @@ class FieldPane extends React.Component {
       {
         title: '分组标签',
         dataIndex: 'tagId',
-        width: '15%',
+        width: '10%',
         render: text => {
           const { tagList } = this.props;
-          return tagList.find(item => item.id === text).name;
+          return (tagList.find(item => item.id === text) || {}).name;
         },
       },
       {
         title: '名称',
-        dataIndex: 'showName',
-        key: 'showName',
-        width: '40%',
+        dataIndex: 'metaShowName',
+        width: '35%',
         render: (text, record) => {
           const { remark } = record;
           return remark ? (
@@ -57,7 +56,7 @@ class FieldPane extends React.Component {
           );
         },
       },
-      { title: '字段类型', dataIndex: 'dataType', key: 'dataType', width: '15%' },
+      { title: '字段类型', dataIndex: 'dataType', key: 'dataType', width: '10%' },
       {
         title: '聚合类型',
         dataIndex: 'aggExpression',
@@ -79,6 +78,21 @@ class FieldPane extends React.Component {
                 </Select.Option>
               ))}
             </Select>
+          );
+        },
+      },
+
+      {
+        title: '别名',
+        dataIndex: 'alias',
+        width: '15%',
+        render: (text, record) => {
+          return (
+            <Input
+              placeholder="填写别名"
+              value={text}
+              onChange={this.onRowValueChange('alias', record, e => e.target.value)}
+            />
           );
         },
       },
@@ -115,11 +129,8 @@ class FieldPane extends React.Component {
   };
 
   renderFilterForm = () => {
-    const { tagList = [], dataList = [], selectedTagInFieldPane, onParentStateChange } = this.props;
-    const existedTagMapper = {};
-    dataList.forEach(item => {
-      existedTagMapper[item.tagId] = true;
-    });
+    const { tagList = [], selectedTagInFieldPane, onParentStateChange } = this.props;
+
     return (
       <div>
         <Form {...formItemLayout}>
@@ -129,13 +140,11 @@ class FieldPane extends React.Component {
               value={selectedTagInFieldPane}
               onChange={val => onParentStateChange({ selectedTagInFieldPane: val }, false)}
             >
-              {tagList
-                .filter(({ id }) => id === -1 || existedTagMapper[id])
-                .map(item => (
-                  <SelectOption key={item.id} value={item.id}>
-                    {item.name}
-                  </SelectOption>
-                ))}
+              {tagList.map(item => (
+                <SelectOption key={item.id} value={item.id}>
+                  {item.name}
+                </SelectOption>
+              ))}
             </Select>
           </FormItem>
         </Form>

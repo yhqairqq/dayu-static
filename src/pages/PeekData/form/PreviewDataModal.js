@@ -1,5 +1,5 @@
 import React from 'react';
-import { Empty, Modal, Table } from 'antd';
+import { Empty, Modal, Table, Alert, Divider } from 'antd';
 
 class PreviewDataModal extends React.Component {
   static defaultProps = {
@@ -24,6 +24,8 @@ class PreviewDataModal extends React.Component {
         onCancel={() => handleModalVisible()}
         onOk={() => handleModalVisible()}
       >
+        <Alert message="只保留10条返回记录，若想看完整结果请导出。" type="info" showIcon />
+        <Divider />
         {data.length <= 0 ? (
           <Empty
             style={{ marginTop: 20 }}

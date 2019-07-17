@@ -57,12 +57,13 @@ class SqlPane extends React.Component {
           groupByArr.push(name);
         });
         measureList.forEach(field => {
-          const { aggExpression } = field;
-          const { name } = modelMetaMapper[field.metaId];
+          const { aggExpression, alias } = field;
+          const { name, showName } = modelMetaMapper[field.metaId];
+          const displayName = alias || showName;
           if (aggExpression === 'COUNT DISTINCT') {
-            selectFieldArr.push(`COUNT (DISTINCT ${name}) as ${name}`);
+            selectFieldArr.push(`COUNT (DISTINCT ${name}) as '${displayName}'`);
           } else {
-            selectFieldArr.push(`${aggExpression}(${name}) as ${name}`);
+            selectFieldArr.push(`${aggExpression}(${name}) as '${displayName}'`);
           }
         });
       } else {

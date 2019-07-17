@@ -15,6 +15,11 @@ import PreviewDataModal from '../form/PreviewDataModal';
 
 const FormItem = Form.Item;
 const SelectOption = Select.Option;
+const DATE_REG = {
+  datetime: /\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}/,
+  date: /\d{4}-\d{2}-\d{2}/,
+  time: /\d{2}:\d{2}:\d{2}/,
+};
 
 const DEFAULT_STATE = {
   id: undefined,
@@ -31,6 +36,7 @@ const DEFAULT_STATE = {
   previewColumns: [],
   previewData: [],
   showSqlTipIcon: false,
+  tagIdMapper: {},
 };
 @Form.create()
 @connect(({ user, loading, tag, model, peek }) => ({
@@ -82,6 +88,7 @@ class AggQueryModal extends React.Component {
         modelId,
         modelObj,
         selectedTagInFieldPane: -1,
+        tagIdMapper: {},
       },
       () => {
         dispatch({
@@ -121,23 +128,27 @@ class AggQueryModal extends React.Component {
       peekId: id,
       aggExpression: metaObj.aggExpression,
       format: undefined,
-      showName: meta.showName,
-      name: meta.name,
+      metaShowName: meta.showName,
+      metaName: meta.name,
       dataType: meta.dataType,
       metaId: meta.id,
       tagId: meta.tagId,
       remark: meta.remark,
+      alias: metaObj.alias,
     };
   };
 
   processData = modelMetaList => {
     const fieldList = [];
+    const tagIdMapper = {};
     modelMetaList.forEach(meta => {
       fieldList.push(this.createField(meta));
+      tagIdMapper[meta.tagId] = true;
     });
     this.setState({
       fieldList,
       modelMetaList,
+      tagIdMapper,
     });
   };
 
@@ -197,6 +208,11 @@ class AggQueryModal extends React.Component {
       message.error('请至少选择一个字段再执行预览操作');
       return;
     }
+
+    if (!this.checkRule()) {
+      return;
+    }
+
     dispatch({
       type: 'peek/previewData',
       payload: {
@@ -240,12 +256,8 @@ class AggQueryModal extends React.Component {
   };
 
   onSaveEvent = () => {
-    const {
-      form,
-      peek: { dataTypeRules },
-      dispatch,
-    } = this.props;
-    const { selectedList = [], ruleList = [], modelMetaList, modelId, id, name } = this.state;
+    const { form, dispatch } = this.props;
+    const { selectedList = [], ruleList = [], modelId, id, name } = this.state;
     form.validateFields(err => {
       if (err) {
         return;
@@ -254,67 +266,22 @@ class AggQueryModal extends React.Component {
         message.error('请选择至少一个取数字段!');
         return;
       }
-      if (ruleList.length > 0) {
-        const ruleObj = {};
-        Object.keys(dataTypeRules).forEach(key => {
-          dataTypeRules[key].forEach(rule => {
-            ruleObj[rule.value] = rule.label;
-          });
+      if (this.checkRule()) {
+        dispatch({
+          type: 'peek/saveQuery',
+          payload: {
+            peekId: id,
+            name,
+            modelId,
+            fieldList: selectedList,
+            rules: ruleList,
+          },
+          callback: () => {
+            message.success('保存取数配置成功');
+            this.onCancelEvent(false, true);
+          },
         });
-
-        const metaObj = {};
-        modelMetaList.forEach(meta => {
-          metaObj[meta.id] = meta;
-        });
-        const cacheObj = {};
-        let hasError = false;
-        let errorText = '';
-        let msg = '';
-        ruleList.forEach(ruleItem => {
-          if (hasError) {
-            return;
-          }
-          if (!ruleItem.metaId || !ruleItem.rule || !ruleItem.value) {
-            hasError = true;
-            errorText = `有条件为空`;
-            msg = '非法的规则';
-            return;
-          }
-          const ruleKey = `${ruleItem.metaId}-${ruleItem.rule}`;
-          if (cacheObj[ruleKey]) {
-            hasError = true;
-            errorText = `${metaObj[ruleItem.metaId].showName} ${ruleObj[ruleItem.rule]} ${
-              ruleItem.value
-            }`;
-            msg = '规则已存在';
-          } else {
-            cacheObj[ruleKey] = true;
-          }
-        });
-
-        if (hasError) {
-          notification.error({
-            message: msg,
-            description: errorText,
-          });
-          return;
-        }
       }
-
-      dispatch({
-        type: 'peek/saveQuery',
-        payload: {
-          peekId: id,
-          name,
-          modelId,
-          fieldList: selectedList,
-          rules: ruleList,
-        },
-        callback: () => {
-          message.success('保存取数配置成功');
-          this.onCancelEvent(false, true);
-        },
-      });
     });
   };
 
@@ -327,6 +294,7 @@ class AggQueryModal extends React.Component {
       selectedTagInFieldPane,
       paneKey,
       modelObj,
+      tagIdMapper,
     } = this.state;
     let PaneComponent = null;
     const params = {};
@@ -338,7 +306,10 @@ class AggQueryModal extends React.Component {
     params.onParentStateChange = (param, showSqlTip = true) =>
       this.onStateChange(showSqlTip ? { ...param, showSqlTipIcon: true } : param);
     params.isEdit = this.isEdit();
-    params.tagList = [{ id: -1, name: '全部' }, ...(tagList || [])];
+    params.tagList = [{ id: -1, name: '全部' }, ...(tagList || [])].filter(
+      tag => tag.id === -1 || tagIdMapper[tag.id]
+    );
+
     if (paneKey === 'fieldPane') {
       PaneComponent = FieldPane;
       params.dataList = fieldList;
@@ -418,7 +389,7 @@ class AggQueryModal extends React.Component {
     return (
       <div className={styles.footer}>
         <Button key="preview" onClick={this.onPreviewDataEvent}>
-          预览
+          查看结果
         </Button>
         <Button key="cancel" onClick={this.onCancelEvent}>
           取消
@@ -434,6 +405,69 @@ class AggQueryModal extends React.Component {
     const { id } = this.state;
     return !!id;
   };
+
+  checkRule() {
+    const { modelMetaList, ruleList = [] } = this.state;
+    if (ruleList.length === 0) {
+      return true;
+    }
+    const {
+      peek: { dataTypeRules },
+    } = this.props;
+
+    const ruleObj = {};
+    Object.keys(dataTypeRules).forEach(key => {
+      dataTypeRules[key].forEach(rule => {
+        ruleObj[rule.value] = rule.label;
+      });
+    });
+    const metaObj = {};
+    modelMetaList.forEach(meta => {
+      metaObj[meta.id] = meta;
+    });
+    const cacheObj = {};
+    let hasError = false;
+    let errorText = '';
+    let msg = '';
+    ruleList.forEach(ruleItem => {
+      if (hasError) {
+        return;
+      }
+      if (!ruleItem.metaId || !ruleItem.rule || !ruleItem.value) {
+        hasError = true;
+        errorText = `有条件为空`;
+        msg = '非法的规则';
+        return;
+      }
+      const ruleKey = `${ruleItem.metaId}-${ruleItem.rule}`;
+      const modelMeta = metaObj[ruleItem.metaId];
+      const { showName, dataType } = modelMeta;
+      if (cacheObj[ruleKey]) {
+        hasError = true;
+        errorText = `${showName} ${ruleObj[ruleItem.rule]} ${ruleItem.value}`;
+        msg = '规则已存在';
+      } else {
+        cacheObj[ruleKey] = true;
+        if (dataType) {
+          const reg = DATE_REG[dataType.toLowerCase()];
+          if (reg && !reg.test(ruleItem.value)) {
+            hasError = true;
+            errorText = `${showName} ${ruleObj[ruleItem.rule]} ${ruleItem.value}`;
+            msg = '错误的日期格式';
+          }
+        }
+      }
+    });
+
+    if (hasError) {
+      notification.error({
+        message: msg,
+        description: errorText,
+      });
+      return false;
+    }
+    return true;
+  }
 
   renderPreviewDataModal = () => {
     const { previewModalVisible, previewData, previewColumns } = this.state;
@@ -456,7 +490,7 @@ class AggQueryModal extends React.Component {
       <Modal
         destroyOnClose
         style={{ top: 20 }}
-        width={900}
+        width={1100}
         visible
         title={this.isEdit() ? '编辑取数' : '新增取数'}
         footer={this.renderFooter()}
