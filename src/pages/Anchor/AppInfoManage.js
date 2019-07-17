@@ -1,96 +1,95 @@
 import React, { Fragment } from 'react';
 import { connect } from 'dva';
 import {
+  Row,
+  Col,
   Card,
+  Form,
+  Input,
+  Select,
   Icon,
   Button,
   Popconfirm,
-  Form,
-  Divider,
-  Col,
-  Tag,
-  Row,
-  Input,
-  TreeSelect,
-  Select,
   message,
+  Divider,
 } from 'antd';
+import moment from 'moment';
 import StandardTable from '@/components/StandardTable';
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
-import ReportOptForm from './component/ReportOptForm';
+import CerebrumOptForm from './form/AppInfoOptForm';
 
-import styles from '../../styles/Manage.less';
+import styles from '../styles/Manage.less';
 
-const FormItem = Form.Item;
 const { Option } = Select;
-
+const FormItem = Form.Item;
 const getValue = obj =>
   Object.keys(obj)
     .map(key => obj[key])
     .join(',');
 
 @Form.create()
-@connect(({ group, report, user, loading }) => ({
-  group,
-  report,
+@connect(({ user, role, loading, appinfo }) => ({
   user,
-  loading: loading.models.report,
+  role,
+  loading: loading.models.user,
+  appinfo,
 }))
-class ReportDesign extends React.Component {
+class CereBrumManage extends React.Component {
   state = {
     modalVisible: false,
     expandForm: false,
     isEditForm: false,
     recordValue: {},
     formValues: {},
-    reportTypes: {},
   };
 
   // 表格字段
   columns = [
     {
-      title: '所属报表组',
-      dataIndex: 'groupNames',
-      render: text => (
-        <span>
-          {text.map(t => (
-            <Tag color="blue" key={t}>
-              {t}
-            </Tag>
-          ))}
-        </span>
-      ),
+      title: '平台',
+      dataIndex: 'platform',
+      render(text) {
+        const str = text;
+        if (str === 0) return `移动端`;
+        if (str === 1) return `html5`;
+        if (str === 2) return `WEB`;
+        if (str === 3) return `小程序`;
+        return ``;
+      },
     },
-    { title: '报表名称', dataIndex: 'name' },
-    { title: '编码', dataIndex: 'code' },
     {
-      title: '类型',
+      title: '应用类型',
       dataIndex: 'type',
-      render: text => <span>{this.tagOfTypes(text)}</span>,
+      render(text) {
+        const str = text;
+        if (str === 0) return `呆萝卜`;
+        if (str === 1) return `合伙人`;
+        return ``;
+      },
     },
-    { title: '描述', dataIndex: 'comment' },
+    { title: '应用名', dataIndex: 'name' },
+    { title: 'appKey', dataIndex: 'appKey' },
+    {
+      title: '创建时间',
+      dataIndex: 'created',
+      render: (text, record) => moment.unix(record.created).format('YYYY-MM-DD hh:mm:ss'),
+    },
     { title: '创建人', dataIndex: 'creator' },
+    { title: '备注', dataIndex: 'comment' },
     {
       title: '操作',
-      align: 'center',
       dataIndex: 'option',
       render: (text, record) => (
         <Fragment>
+          <a onClick={() => this.handleModalVisible(true, record, true)}>编辑</a>
+          <Divider type="vertical" />
           <Popconfirm
             placement="top"
-            title="确实删除该分组？"
+            title="确定删除该应用？"
             onConfirm={() => this.handleDelete(record)}
           >
             <a>删除</a>
           </Popconfirm>
-          <Divider type="vertical" />
-          <a onClick={() => this.handleModalVisible(true, record, true)}>编辑</a>
-          <Divider type="vertical" />
-          <a onClick={() => this.handleModalVisible(true, record, true)}>编辑报表头</a>
-          <Divider type="vertical" />
-          <a onClick={() => this.handleModalVisible(true, record, true)}>编辑SQL</a>
-          <Divider type="vertical" />
-          <a onClick={() => this.handleModalVisible(true, record, true)}>编辑字段信息</a>
         </Fragment>
       ),
     },
@@ -99,50 +98,90 @@ class ReportDesign extends React.Component {
   componentDidMount() {
     const { dispatch } = this.props;
     dispatch({
-      type: 'report/fetch',
+      type: 'appinfo/fetchByParams',
     });
-    dispatch({
-      type: 'group/getGroupTree',
-    });
-    // 获取所有用户
     dispatch({
       type: 'user/fetch',
     });
-    // 获取所有报表类型
-    dispatch({
-      type: 'report/fetchTypes',
-      callback: data => {
-        const map = {};
-        data.forEach(d => {
-          const { key, title } = d;
-          map[key] = title;
-        });
-        this.setState({
-          reportTypes: map,
-        });
-      },
-    });
   }
 
-  // 分解tag值
-  tagOfTypes = txt => {
-    const { reportTypes } = this.state;
-    const tags = txt.split(',');
-    return tags.map(t => (
-      <Tag color="blue" key={t}>
-        {reportTypes[t]}
-      </Tag>
-    ));
+  handleFormReset = () => {
+    const { form, dispatch } = this.props;
+    form.resetFields();
+    this.setState({
+      formValues: {},
+    });
+    dispatch({
+      type: 'appinfo/fetchByParams',
+      payload: {},
+    });
+  };
+
+  toggleForm = () => {
+    const { expandForm } = this.state;
+    this.setState({
+      expandForm: !expandForm,
+    });
+  };
+
+  handleModalVisible = (flag, record, isEdit) => {
+    this.setState({
+      modalVisible: !!flag,
+      isEditForm: !!isEdit,
+      recordValue: record || {},
+    });
+  };
+
+  handleAdd = fields => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'appinfo/add',
+      payload: fields,
+      callback: () => {
+        message.success('添加成功');
+        this.handleModalVisible();
+        // 重载数据
+        this.reloadData();
+      },
+    });
+  };
+
+  handleUpdate = fields => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'appinfo/update',
+      payload: fields,
+      callback: () => {
+        message.success('修改成功');
+        this.handleModalVisible();
+        // 重载数据
+        this.reloadData();
+      },
+    });
   };
 
   // 删除操作处理
   handleDelete = record => {
     const { dispatch } = this.props;
     dispatch({
-      type: 'report/remove',
+      type: 'appinfo/remove',
       payload: record.id,
       callback: () => {
         message.success('删除成功');
+        // 重载数据
+        this.reloadData();
+      },
+    });
+  };
+
+  // 重置密码
+  resetPwd = record => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'user/resetPwd',
+      payload: record.id,
+      callback: () => {
+        message.success('重置密码成功');
         // 重载数据
         this.reloadData();
       },
@@ -153,8 +192,11 @@ class ReportDesign extends React.Component {
   reloadData = () => {
     const { dispatch } = this.props;
     dispatch({
-      type: 'report/fetch',
+      type: 'appinfo/fetchByParams',
       payload: {},
+    });
+    dispatch({
+      type: 'user/fetch',
     });
   };
 
@@ -171,9 +213,8 @@ class ReportDesign extends React.Component {
       this.setState({
         formValues: values,
       });
-
       dispatch({
-        type: 'report/fetch',
+        type: 'appinfo/fetchByParams',
         payload: {
           params: values,
         },
@@ -199,7 +240,7 @@ class ReportDesign extends React.Component {
       params.sorter = `${sorter.field}_${sorter.order}`;
     }
     dispatch({
-      type: 'report/fetch',
+      type: 'appinfo/fetchByParams',
       payload: {
         params,
         currentPage: pagination.current,
@@ -208,81 +249,55 @@ class ReportDesign extends React.Component {
     });
   };
 
-  handleFormReset = () => {
-    const { form, dispatch } = this.props;
-    form.resetFields();
-    this.setState({
-      formValues: {},
-    });
-    dispatch({
-      type: 'report/fetch',
-      payload: {},
-    });
-  };
-
-  toggleForm = () => {
-    const { expandForm } = this.state;
-    this.setState({
-      expandForm: !expandForm,
-    });
-  };
-
-  handleModalVisible = (flag, record, isEdit) => {
-    this.setState({
-      modalVisible: !!flag,
-      isEditForm: !!isEdit,
-      recordValue: record || {},
-    });
-  };
-
-  handleAdd = fields => {
-    const { dispatch } = this.props;
-    dispatch({
-      type: 'report/add',
-      payload: fields,
-      callback: () => {
-        message.success('添加成功');
-        this.handleModalVisible();
-        // 重载数据
-        this.reloadData();
-      },
-    });
-  };
-
-  handleUpdate = fields => {
-    const { dispatch } = this.props;
-    dispatch({
-      type: 'report/update',
-      payload: fields,
-      callback: () => {
-        message.success('修改成功');
-        this.handleModalVisible();
-        // 重载数据
-        this.reloadData();
-      },
-    });
-  };
-
-  // 查询表单
   renderForm() {
     const {
       form: { getFieldDecorator },
-      group: { trees },
       user: { list },
     } = this.props;
     return (
       <Form onSubmit={this.handleSearch} layout="inline">
         <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
           <Col md={8} sm={24}>
-            <FormItem key="groupId" label="所属报表组">
-              {getFieldDecorator('groupId')(
-                <TreeSelect
-                  style={{ width: 300 }}
-                  dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
-                  treeData={trees}
-                  treeDefaultExpandAll
-                  placeholder="请选择报表组"
-                />
+            <FormItem key="appKey" label="appKey">
+              {getFieldDecorator('appKey')(<Input placeholder="请输入appKey" />)}
+            </FormItem>
+          </Col>
+          <Col md={8} sm={24}>
+            <FormItem key="name" label="应用名">
+              {getFieldDecorator('name')(<Input placeholder="请输入应用名" />)}
+            </FormItem>
+          </Col>
+          <Col md={8} sm={24}>
+            <FormItem key="platform" label="平台">
+              {getFieldDecorator('platform')(
+                <Select key="platform" placeholder="请选择平台类型">
+                  <Option value="0" key="0">
+                    移动端
+                  </Option>
+                  <Option value="1" key="1">
+                    html5
+                  </Option>
+                  <Option value="2" key="2">
+                    WEB
+                  </Option>
+                  <Option value="3" key="3">
+                    小程序
+                  </Option>
+                </Select>
+              )}
+            </FormItem>
+          </Col>
+          <Col md={8} sm={24}>
+            <FormItem key="type" label="类型">
+              {getFieldDecorator('type')(
+                <Select key="type" placeholder="请选择应用类型">
+                  <Option value="0" key="0">
+                    呆萝卜
+                  </Option>
+                  <Option value="1" key="1">
+                    合伙人
+                  </Option>
+                </Select>
               )}
             </FormItem>
           </Col>
@@ -299,16 +314,6 @@ class ReportDesign extends React.Component {
               )}
             </FormItem>
           </Col>
-          <Col md={8} sm={24}>
-            <FormItem key="name" label="报表名称">
-              {getFieldDecorator('name')(<Input placeholder="请输入名称" />)}
-            </FormItem>
-          </Col>
-          <Col md={8} sm={24}>
-            <FormItem key="code" label="报表编码">
-              {getFieldDecorator('code')(<Input placeholder="请输入编码" />)}
-            </FormItem>
-          </Col>
         </Row>
         <Divider type="horizontal" />
       </Form>
@@ -317,8 +322,8 @@ class ReportDesign extends React.Component {
 
   render() {
     const {
+      appinfo: { data },
       loading,
-      report: { data },
     } = this.props;
     const { modalVisible, expandForm, recordValue, isEditForm } = this.state;
     const parentMethods = {
@@ -327,7 +332,7 @@ class ReportDesign extends React.Component {
       handleUpdate: this.handleUpdate,
     };
     return (
-      <PageHeaderWrapper title="报表设计管理" content="对报表进行设计、管理操作~">
+      <PageHeaderWrapper title="埋点应用管理" content="对埋点应用进行增删改查等操作~">
         <Card bordered={false}>
           <div className={styles.Manage}>
             {expandForm && <div className={styles.ManageForm}>{this.renderForm()}</div>}
@@ -337,7 +342,7 @@ class ReportDesign extends React.Component {
                 type="primary"
                 onClick={() => this.handleModalVisible(true, {}, false)}
               >
-                新建
+                添加新埋点应用
               </Button>
               <span className={styles.querySubmitButtons}>
                 <Button type="primary" onClick={this.handleSearch}>
@@ -362,7 +367,7 @@ class ReportDesign extends React.Component {
           </div>
         </Card>
         {modalVisible && (
-          <ReportOptForm
+          <CerebrumOptForm
             {...parentMethods}
             isEdit={isEditForm}
             values={recordValue}
@@ -374,4 +379,4 @@ class ReportDesign extends React.Component {
   }
 }
 
-export default ReportDesign;
+export default CereBrumManage;

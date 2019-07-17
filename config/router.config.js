@@ -135,28 +135,36 @@ export default [
             name: '报表管理',
             component: './Report/report-design',
           },
+          {
+            path: '/report/log',
+            name: '报表日志',
+            component: './Report/report-log',
+          },
         ],
       },
       // 日志埋点管理
       {
-        path: '/cerebrum',
+        path: '/anchor',
         icon: 'profile',
         name: '埋点管理',
         routes: [
           // 应用管理
           {
-            path: '/cerebrum/app-manage',
+            path: '/anchor/app-info',
             name: '埋点应用管理',
+            component: './Anchor/AppInfoManage',
           },
           // 埋点管理
           {
-            path: '/cerebrum/anchor-manage',
+            path: '/anchor/anchor-info',
             name: '埋点管理',
+            component: './Anchor/AnchorManage',
           },
           // 日志上传策略
           {
-            path: '/cerebrum/trans-strategy',
+            path: '/anchor/trans-strategy',
             name: '上传策略管理',
+            component: './Anchor/StrategyManage',
           },
         ],
       },
