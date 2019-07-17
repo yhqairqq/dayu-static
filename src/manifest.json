@@ -1,6 +1,6 @@
 {
-  "name": "数据平台",
-  "short_name": "数据平台",
+  "name": "拉冬系统",
+  "short_name": "拉冬系统",
   "display": "standalone",
   "start_url": "./?utm_source=homescreen",
   "theme_color": "#002140",

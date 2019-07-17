@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'dva';
-import { Form, Input, Modal, TreeSelect } from 'antd';
+import { Form, Input, Modal, TreeSelect, Radio } from 'antd';
 
 const FormItem = Form.Item;
 const { TextArea } = Input;
@@ -24,7 +24,12 @@ class ResOptForm extends React.Component {
 
   constructor(props) {
     super(props);
-    this.state = {};
+    const {
+      values: { type },
+    } = props;
+    this.state = {
+      isMenu: type === 0,
+    };
     this.formLayout = {
       labelCol: { span: 7 },
       wrapperCol: { span: 13 },
@@ -37,6 +42,12 @@ class ResOptForm extends React.Component {
       type: 'resource/fetchAllParent',
     });
   }
+
+  onChange = e => {
+    this.setState({
+      isMenu: e.target.value === 0,
+    });
+  };
 
   okHandle = () => {
     const { values, isEdit = false, form, handleAdd, handleUpdate } = this.props;
@@ -63,6 +74,7 @@ class ResOptForm extends React.Component {
       form,
       resource: { allParents },
     } = this.props;
+    const { isMenu } = this.state;
     return (
       <Modal
         destroyOnClose
@@ -93,23 +105,45 @@ class ResOptForm extends React.Component {
           {form.getFieldDecorator('name', {
             rules: [{ required: true, message: '请输入资源名称！' }],
             initialValue: values.name,
-          })(<Input placeholder="请输入" />)}
+          })(<Input placeholder="请输入资源名称" />)}
         </FormItem>
-        <FormItem key="path" {...this.formLayout} label="路径">
-          {form.getFieldDecorator('path', {
-            rules: [{ required: true, message: '请输入资源路径！' }],
-            initialValue: values.path,
-          })(<Input placeholder="请输入" />)}
+        <FormItem key="type" {...this.formLayout} label="资源类型">
+          {form.getFieldDecorator('type', {
+            initialValue: values.type,
+          })(
+            <div>
+              <Radio.Group defaultValue={values.type} onChange={this.onChange}>
+                <Radio.Button value={0}>菜单</Radio.Button>
+                <Radio.Button value={1}>资源项</Radio.Button>
+              </Radio.Group>
+            </div>
+          )}
         </FormItem>
+        {isMenu && (
+          <FormItem key="path" {...this.formLayout} label="路径">
+            {form.getFieldDecorator('path', {
+              rules: [{ required: isMenu, message: '请输入资源路径！' }],
+              initialValue: values.path,
+            })(<Input placeholder="请输入资源路径" />)}
+          </FormItem>
+        )}
+        {!isMenu && (
+          <FormItem key="authCode" {...this.formLayout} label="权限编码">
+            {form.getFieldDecorator('authCode', {
+              rules: [{ required: !isMenu, message: '请输入权限编码！' }],
+              initialValue: values.authCode,
+            })(<Input placeholder="请输入权限编码" />)}
+          </FormItem>
+        )}
         <FormItem key="icon" {...this.formLayout} label="图标">
           {form.getFieldDecorator('icon', {
             initialValue: values.icon,
-          })(<Input placeholder="请输入" />)}
+          })(<Input placeholder="请输入图标" />)}
         </FormItem>
         <FormItem key="comment" {...this.formLayout} label="描述信息">
           {form.getFieldDecorator('comment', {
             initialValue: values.comment,
-          })(<TextArea placeholder="请输入" />)}
+          })(<TextArea placeholder="请输入描述信息" />)}
         </FormItem>
       </Modal>
     );

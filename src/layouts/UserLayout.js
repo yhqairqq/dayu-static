@@ -52,7 +52,7 @@ class UserLayout extends Component {
               <div className={styles.header}>
                 <Link to="/">
                   <img alt="logo" className={styles.logo} src={logo} />
-                  <span className={styles.title}>数据平台</span>
+                  <span className={styles.title}>拉冬系统</span>
                 </Link>
               </div>
               <div className={styles.desc}>在这里让您发现数据之美~~~</div>

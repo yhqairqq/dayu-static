@@ -18,6 +18,7 @@ import {
 import StandardTable from '@/components/StandardTable';
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
 import ReportOptForm from './component/ReportOptForm';
+import ReportSqlEditor from './component/ReportSqlEditor';
 
 import styles from '../../styles/Manage.less';
 
@@ -38,6 +39,7 @@ const getValue = obj =>
 }))
 class ReportDesign extends React.Component {
   state = {
+    sqlModalVisible: false,
     modalVisible: false,
     expandForm: false,
     isEditForm: false,
@@ -88,7 +90,7 @@ class ReportDesign extends React.Component {
           <Divider type="vertical" />
           <a onClick={() => this.handleModalVisible(true, record, true)}>编辑报表头</a>
           <Divider type="vertical" />
-          <a onClick={() => this.handleModalVisible(true, record, true)}>编辑SQL</a>
+          <a onClick={() => this.handleSqlModalVisible(true, record)}>编辑SQL</a>
           <Divider type="vertical" />
           <a onClick={() => this.handleModalVisible(true, record, true)}>编辑字段信息</a>
         </Fragment>
@@ -235,6 +237,27 @@ class ReportDesign extends React.Component {
     });
   };
 
+  handleSqlModalVisible = (flag, record) => {
+    this.setState({
+      sqlModalVisible: !!flag,
+      recordValue: record || {},
+    });
+  };
+
+  saveSqlInfo = fields => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'report/sqlSave',
+      payload: fields,
+      callback: () => {
+        message.success('SQL保存成功');
+        this.handleSqlModalVisible();
+        // 重载数据
+        this.reloadData();
+      },
+    });
+  };
+
   handleAdd = fields => {
     const { dispatch } = this.props;
     dispatch({
@@ -320,7 +343,7 @@ class ReportDesign extends React.Component {
       loading,
       report: { data },
     } = this.props;
-    const { modalVisible, expandForm, recordValue, isEditForm } = this.state;
+    const { modalVisible, sqlModalVisible, expandForm, recordValue, isEditForm } = this.state;
     const parentMethods = {
       handleAdd: this.handleAdd,
       handleModalVisible: this.handleModalVisible,
@@ -367,6 +390,14 @@ class ReportDesign extends React.Component {
             isEdit={isEditForm}
             values={recordValue}
             modalVisible={modalVisible}
+          />
+        )}
+        {sqlModalVisible && (
+          <ReportSqlEditor
+            handleOpt={this.saveSqlInfo}
+            handleModalVisible={this.handleSqlModalVisible}
+            values={recordValue}
+            modalVisible={sqlModalVisible}
           />
         )}
       </PageHeaderWrapper>

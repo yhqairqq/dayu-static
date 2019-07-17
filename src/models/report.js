@@ -1,4 +1,12 @@
-import { addReport, editReport, delReport, queryReport, queryReportTypes } from '@/services/report';
+import {
+  addReport,
+  editReport,
+  delReport,
+  queryReport,
+  queryReportTypes,
+  saveSqlInfo,
+  getSqlInfoById,
+} from '@/services/report';
 
 export default {
   namespace: 'report',
@@ -52,6 +60,20 @@ export default {
       const { state } = resp;
       if (resp && state === 0) {
         if (callback) callback();
+      }
+    },
+    *sqlSave({ payload, callback }, { call }) {
+      const resp = yield call(saveSqlInfo, payload);
+      const { state } = resp;
+      if (resp && state === 0) {
+        if (callback) callback();
+      }
+    },
+    *sqlInfo({ payload, callback }, { call }) {
+      const resp = yield call(getSqlInfoById, payload);
+      const { state, data } = resp;
+      if (resp && state === 0) {
+        if (callback) callback(data);
       }
     },
   },

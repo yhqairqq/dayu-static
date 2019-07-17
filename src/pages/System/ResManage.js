@@ -1,6 +1,7 @@
 import React, { Fragment } from 'react';
 import { connect } from 'dva';
 import {
+  Table,
   Row,
   Col,
   Card,
@@ -13,7 +14,6 @@ import {
   message,
   Divider,
 } from 'antd';
-import StandardTable from '@/components/StandardTable';
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
 import ResOptForm from './form/ResOptForm';
 
@@ -42,9 +42,22 @@ class ResManage extends React.Component {
 
   // 表格字段
   columns = [
-    { title: '资源名称', dataIndex: 'name' },
-    { title: '图标', dataIndex: 'icon' },
+    {
+      title: '资源名称',
+      dataIndex: 'name',
+      render: (text, record) => (
+        <Fragment>
+          {record.icon ? <Icon type={record.icon} /> : ''}&nbsp;&nbsp;<span>{text}</span>
+        </Fragment>
+      ),
+    },
     { title: '路径', dataIndex: 'path' },
+    {
+      title: '菜单',
+      dataIndex: 'type',
+      render: (text, record) => <span>{record.type === 0 ? '是' : '否'}</span>,
+    },
+    { title: '权限编码', dataIndex: 'authCode' },
     { title: '描述', dataIndex: 'comment' },
     {
       title: '操作',
@@ -230,8 +243,8 @@ class ResManage extends React.Component {
             </FormItem>
           </Col>
           <Col md={8} sm={24}>
-            <FormItem key="code" label="资源编码">
-              {getFieldDecorator('code')(<Input placeholder="请输入资源编码" />)}
+            <FormItem key="authCode" label="权限编码">
+              {getFieldDecorator('authCode')(<Input placeholder="请输入权限编码" />)}
             </FormItem>
           </Col>
         </Row>
@@ -277,12 +290,11 @@ class ResManage extends React.Component {
                 </a>
               </span>
             </div>
-            <StandardTable
+            <Table
               loading={loading}
-              data={data}
+              dataSource={data}
               columns={this.columns}
               rowKey={record => record.id}
-              onChange={this.handleStandardTableChange}
             />
           </div>
         </Card>

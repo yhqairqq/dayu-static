@@ -11,10 +11,7 @@ import {
 export default {
   namespace: 'resource',
   state: {
-    data: {
-      list: [],
-      pagination: {},
-    },
+    data: [],
     allParents: [],
     allMask: [], // 权限掩码列表
     resTree: [],

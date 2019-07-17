@@ -63,3 +63,29 @@ export async function queryReportTypes() {
     data: {},
   });
 }
+
+/**
+ * 保存SQL信息
+ * @param {*} params
+ */
+export async function saveSqlInfo(params) {
+  return request(`${PRE_URL}/saveSql`, {
+    method: 'POST',
+    data: {
+      ...params,
+    },
+  });
+}
+
+/**
+ * 获取sql详细信息
+ * @param {*} sqlId
+ */
+export async function getSqlInfoById(sqlId) {
+  return request(`${PRE_URL}/getSqlInfoById`, {
+    method: 'POST',
+    data: {
+      sqlId,
+    },
+  });
+}
