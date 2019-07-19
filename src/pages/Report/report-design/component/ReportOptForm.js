@@ -134,6 +134,16 @@ class ReportOptForm extends React.Component {
             initialValue: values.name,
           })(<Input placeholder="请输入" />)}
         </FormItem>
+        <FormItem key="simpleReport" {...this.formLayout} label="报表种类">
+          {form.getFieldDecorator('simpleReport', {
+            initialValue: values.simpleReport,
+          })(
+            <Radio.Group>
+              <Radio.Button value={0}>普通报表</Radio.Button>
+              <Radio.Button value={1}>LOV报表</Radio.Button>
+            </Radio.Group>
+          )}
+        </FormItem>
         <FormItem key="autoCreate" {...this.formLayout} label="报表编码">
           {!isEdit &&
             form.getFieldDecorator('code', {})(

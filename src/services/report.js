@@ -65,6 +65,39 @@ export async function queryReportTypes() {
 }
 
 /**
+ * 查询数据类型
+ */
+export async function queryDataTypes() {
+  return request(`${PRE_URL}/dataTypes`, {
+    method: 'POST',
+    data: {},
+  });
+}
+
+/**
+ * 查询参数类型
+ */
+export async function queryFieldTypes() {
+  return request(`${PRE_URL}/fieldTypes`, {
+    method: 'POST',
+    data: {},
+  });
+}
+
+/**
+ * 查询报表树
+ * @param {int} simpleReport  0 - 否； 1 - 是； 不传则全部
+ */
+export async function reportTree(simpleReport) {
+  return request(`${PRE_URL}/reportTree`, {
+    method: 'POST',
+    data: {
+      simpleReport,
+    },
+  });
+}
+
+/**
  * 保存SQL信息
  * @param {*} params
  */
@@ -86,6 +119,58 @@ export async function getSqlInfoById(sqlId) {
     method: 'POST',
     data: {
       sqlId,
+    },
+  });
+}
+
+/**
+ * 保存查询参数
+ * @param {*} params
+ */
+export async function saveQueryField(params) {
+  return request(`${PRE_URL}/saveQueryFields`, {
+    method: 'POST',
+    data: {
+      ...params,
+    },
+  });
+}
+
+/**
+ * 根据报表Id获取查询参数
+ * @param {*} params
+ */
+export async function getQueryFieldsByReportId(params) {
+  return request(`${PRE_URL}/getQueryFieldsByReportId`, {
+    method: 'POST',
+    data: {
+      ...params,
+    },
+  });
+}
+
+/**
+ * 保存报表字段信息
+ * @param {*} paarms
+ */
+export async function saveReportColumns(params) {
+  return request(`${PRE_URL}/saveReportColumns`, {
+    method: 'POST',
+    data: {
+      ...params,
+    },
+  });
+}
+
+/**
+ * 根据报表Id获取报表字段
+ * @param {*} reportId
+ */
+export async function getReportColumnsByReportId(reportId) {
+  return request(`${PRE_URL}/getReportColumnsByReportId`, {
+    method: 'POST',
+    data: {
+      reportId,
     },
   });
 }

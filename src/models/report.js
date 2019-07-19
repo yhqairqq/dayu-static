@@ -3,15 +3,25 @@ import {
   editReport,
   delReport,
   queryReport,
+  reportTree,
+  queryDataTypes,
   queryReportTypes,
+  queryFieldTypes,
   saveSqlInfo,
   getSqlInfoById,
+  saveQueryField,
+  getQueryFieldsByReportId,
+  saveReportColumns,
+  getReportColumnsByReportId,
 } from '@/services/report';
 
 export default {
   namespace: 'report',
   state: {
-    types: [],
+    types: [], // 报表类型
+    dataTypes: [], // 数据类型
+    fieldTypes: [], // 参数类型
+    reportTree: [], // 报表树
     data: {
       list: [],
       pagination: {},
@@ -35,6 +45,39 @@ export default {
       const { state, data } = resp;
       yield put({
         type: 'saveTypes',
+        payload: data,
+      });
+      if (resp && state === 0 && callback) {
+        callback(data);
+      }
+    },
+    *fetchDataTypes({ payload, callback }, { call, put }) {
+      const resp = yield call(queryDataTypes, payload);
+      const { state, data } = resp;
+      yield put({
+        type: 'saveDataTypes',
+        payload: data,
+      });
+      if (resp && state === 0 && callback) {
+        callback(data);
+      }
+    },
+    *fetchFieldTypes({ payload, callback }, { call, put }) {
+      const resp = yield call(queryFieldTypes, payload);
+      const { state, data } = resp;
+      yield put({
+        type: 'saveFieldTypes',
+        payload: data,
+      });
+      if (resp && state === 0 && callback) {
+        callback(data);
+      }
+    },
+    *fetchReportTree({ payload, callback }, { call, put }) {
+      const resp = yield call(reportTree, payload);
+      const { state, data } = resp;
+      yield put({
+        type: 'saveReportTree',
         payload: data,
       });
       if (resp && state === 0 && callback) {
@@ -76,6 +119,34 @@ export default {
         if (callback) callback(data);
       }
     },
+    *queryFieldsSave({ payload, callback }, { call }) {
+      const resp = yield call(saveQueryField, payload);
+      const { state } = resp;
+      if (resp && state === 0) {
+        if (callback) callback();
+      }
+    },
+    *queryFields({ payload, callback }, { call }) {
+      const resp = yield call(getQueryFieldsByReportId, payload);
+      const { state, data } = resp;
+      if (resp && state === 0) {
+        if (callback) callback(data);
+      }
+    },
+    *reportColumnsSave({ payload, callback }, { call }) {
+      const resp = yield call(saveReportColumns, payload);
+      const { state } = resp;
+      if (resp && state === 0) {
+        if (callback) callback();
+      }
+    },
+    *reportColums({ payload, callback }, { call }) {
+      const resp = yield call(getReportColumnsByReportId, payload);
+      const { state, data } = resp;
+      if (resp && state === 0) {
+        if (callback) callback(data);
+      }
+    },
   },
 
   reducers: {
@@ -89,6 +160,24 @@ export default {
       return {
         ...state,
         types: action.payload,
+      };
+    },
+    saveDataTypes(state, action) {
+      return {
+        ...state,
+        dataTypes: action.payload,
+      };
+    },
+    saveFieldTypes(state, action) {
+      return {
+        ...state,
+        fieldTypes: action.payload,
+      };
+    },
+    saveReportTree(state, action) {
+      return {
+        ...state,
+        reportTree: action.payload,
       };
     },
   },

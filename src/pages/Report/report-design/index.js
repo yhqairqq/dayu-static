@@ -19,6 +19,7 @@ import StandardTable from '@/components/StandardTable';
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
 import ReportOptForm from './component/ReportOptForm';
 import ReportSqlEditor from './component/ReportSqlEditor';
+import QueryFieldForm from './component/QueryFieldForm';
 
 import styles from '../../styles/Manage.less';
 
@@ -39,6 +40,7 @@ const getValue = obj =>
 }))
 class ReportDesign extends React.Component {
   state = {
+    fieldModalVisible: false,
     sqlModalVisible: false,
     modalVisible: false,
     expandForm: false,
@@ -88,11 +90,11 @@ class ReportDesign extends React.Component {
           <Divider type="vertical" />
           <a onClick={() => this.handleModalVisible(true, record, true)}>编辑</a>
           <Divider type="vertical" />
-          <a onClick={() => this.handleModalVisible(true, record, true)}>编辑报表头</a>
+          <a onClick={() => this.handleQueryFieldModalVisible(true, record)}>查询参数</a>
           <Divider type="vertical" />
-          <a onClick={() => this.handleSqlModalVisible(true, record)}>编辑SQL</a>
+          <a onClick={() => this.handleSqlModalVisible(true, record)}>SQL</a>
           <Divider type="vertical" />
-          <a onClick={() => this.handleModalVisible(true, record, true)}>编辑字段信息</a>
+          <a onClick={() => this.handleModalVisible(true, record, true)}>表字段信息</a>
         </Fragment>
       ),
     },
@@ -237,6 +239,7 @@ class ReportDesign extends React.Component {
     });
   };
 
+  // sql编辑器
   handleSqlModalVisible = (flag, record) => {
     this.setState({
       sqlModalVisible: !!flag,
@@ -244,6 +247,15 @@ class ReportDesign extends React.Component {
     });
   };
 
+  // 查询字段编辑
+  handleQueryFieldModalVisible = (flag, record) => {
+    this.setState({
+      fieldModalVisible: !!flag,
+      recordValue: record || {},
+    });
+  };
+
+  // 保存sql信息
   saveSqlInfo = fields => {
     const { dispatch } = this.props;
     dispatch({
@@ -252,6 +264,21 @@ class ReportDesign extends React.Component {
       callback: () => {
         message.success('SQL保存成功');
         this.handleSqlModalVisible();
+        // 重载数据
+        this.reloadData();
+      },
+    });
+  };
+
+  // 保存查询参数信息
+  saveQueryFieldInfo = fields => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'report/queryFieldsSave',
+      payload: fields,
+      callback: () => {
+        message.success('查询参数保存成功');
+        this.handleQueryFieldModalVisible();
         // 重载数据
         this.reloadData();
       },
@@ -343,7 +370,14 @@ class ReportDesign extends React.Component {
       loading,
       report: { data },
     } = this.props;
-    const { modalVisible, sqlModalVisible, expandForm, recordValue, isEditForm } = this.state;
+    const {
+      modalVisible,
+      sqlModalVisible,
+      fieldModalVisible,
+      expandForm,
+      recordValue,
+      isEditForm,
+    } = this.state;
     const parentMethods = {
       handleAdd: this.handleAdd,
       handleModalVisible: this.handleModalVisible,
@@ -398,6 +432,14 @@ class ReportDesign extends React.Component {
             handleModalVisible={this.handleSqlModalVisible}
             values={recordValue}
             modalVisible={sqlModalVisible}
+          />
+        )}
+        {fieldModalVisible && (
+          <QueryFieldForm
+            handleOpt={this.saveQueryFieldInfo}
+            handleModalVisible={this.handleQueryFieldModalVisible}
+            reportId={recordValue.id}
+            modalVisible={fieldModalVisible}
           />
         )}
       </PageHeaderWrapper>

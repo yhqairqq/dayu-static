@@ -33,7 +33,7 @@ class ReportSqlEditor extends React.Component {
         sqlId: detailSqlId,
         cached: 0,
         cachedTime: 5,
-        timeout: 60,
+        timeout: 10,
         needDetailLog: 0,
       },
       currentStep: 0,
