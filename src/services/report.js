@@ -86,13 +86,13 @@ export async function queryFieldTypes() {
 
 /**
  * 查询报表树
- * @param {int} simpleReport  0 - 否； 1 - 是； 不传则全部
+ * @param {*} params
  */
-export async function reportTree(simpleReport) {
+export async function reportTree(params) {
   return request(`${PRE_URL}/reportTree`, {
     method: 'POST',
     data: {
-      simpleReport,
+      ...params,
     },
   });
 }
@@ -151,7 +151,7 @@ export async function getQueryFieldsByReportId(params) {
 
 /**
  * 保存报表字段信息
- * @param {*} paarms
+ * @param {*} params
  */
 export async function saveReportColumns(params) {
   return request(`${PRE_URL}/saveReportColumns`, {
@@ -164,13 +164,13 @@ export async function saveReportColumns(params) {
 
 /**
  * 根据报表Id获取报表字段
- * @param {*} reportId
+ * @param {*} params
  */
-export async function getReportColumnsByReportId(reportId) {
+export async function getReportColumnsByReportId(params) {
   return request(`${PRE_URL}/getReportColumnsByReportId`, {
     method: 'POST',
     data: {
-      reportId,
+      ...params,
     },
   });
 }

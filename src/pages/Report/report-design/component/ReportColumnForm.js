@@ -1,8 +1,8 @@
 import React, { Fragment } from 'react';
 import { connect } from 'dva';
-import { Form, Modal, Table, Button, Divider, Popconfirm, Tag } from 'antd';
+import { Form, Modal, Table, Button, Divider, Popconfirm } from 'antd';
 
-import QueryFieldOptForm from './QueryFieldOptForm';
+import ReportColumnOptForm from './ReportColumnOptForm';
 
 @Form.create()
 @connect(({ group, report, loading }) => ({
@@ -10,7 +10,7 @@ import QueryFieldOptForm from './QueryFieldOptForm';
   report,
   loading: loading.models.group,
 }))
-class QueryFieldForm extends React.Component {
+class ReportColumnForm extends React.Component {
   static defaultProps = {
     reportId: 0,
     handleOpt: () => {},
@@ -19,21 +19,41 @@ class QueryFieldForm extends React.Component {
 
   columns = [
     { title: '显示名', dataIndex: 'showName', width: 100 },
-    { title: '参数名', dataIndex: 'queryName', width: 100 },
+    { title: '列名', dataIndex: 'name', width: 100 },
     { title: '数据类型', dataIndex: 'dataType' },
     {
-      title: '必填',
-      dataIndex: 'mustFillIn',
+      title: '原生列',
+      dataIndex: 'raw',
       width: 60,
       render: text => <span>{text === 1 ? '是' : '否'}</span>,
     },
     {
-      title: '参数类型',
-      dataIndex: 'type',
-      render: text => <span>{this.tagOfTypes(text)}</span>,
+      title: '隐藏',
+      dataIndex: 'hidden',
+      width: 60,
+      render: text => <span>{text === 1 ? '是' : '否'}</span>,
     },
-    { title: '默认值', dataIndex: 'valDefault' },
-    { title: '级联依赖', dataIndex: 'dependOn' },
+    {
+      title: '冻结列',
+      dataIndex: 'frozen',
+      width: 60,
+      render: text => <span>{text === 1 ? '是' : '否'}</span>,
+    },
+    {
+      title: '下钻',
+      dataIndex: 'drill',
+      width: 60,
+      render: text => <span>{text === 1 ? '是' : '否'}</span>,
+    },
+    {
+      title: '分裂',
+      dataIndex: 'split',
+      width: 60,
+      render: text => <span>{text === 1 ? '是' : '否'}</span>,
+    },
+    { title: '格式化宏', dataIndex: 'formatMacro' },
+    { title: '切分字符', dataIndex: 'splitChar' },
+    { title: 'KV分隔符', dataIndex: 'splitKvChar' },
     {
       title: '操作',
       dataIndex: 'option',
@@ -43,7 +63,7 @@ class QueryFieldForm extends React.Component {
           <Popconfirm
             placement="top"
             title="确实删除该查询参数？"
-            onConfirm={() => this.handleFieldDelete(index)}
+            onConfirm={() => this.handleDelete(index)}
           >
             <a>删除</a>
           </Popconfirm>
@@ -61,8 +81,7 @@ class QueryFieldForm extends React.Component {
       editIndex: -1,
       isEditForm: false,
       recordValue: {},
-      queryFields: [],
-      fieldTypeMap: {},
+      reportColumns: [],
     };
     this.formLayout = {
       labelCol: { span: 7 },
@@ -73,62 +92,31 @@ class QueryFieldForm extends React.Component {
   componentDidMount() {
     const { dispatch, reportId } = this.props;
     dispatch({
-      type: 'report/queryFields',
+      type: 'report/reportColumns',
       payload: {
         reportId,
       },
       callback: data => {
         this.setState({
-          queryFields: data,
+          reportColumns: data,
         });
       },
     });
     dispatch({
       type: 'report/fetchTypes',
     });
-    dispatch({
-      type: 'report/fetchFieldTypes',
-      callback: data => {
-        const fieldTypeMap = {};
-        data.forEach(el => {
-          fieldTypeMap[el.left] = el.right;
-        });
-        this.setState({
-          fieldTypeMap,
-        });
-      },
-    });
   }
-
-  tagOfTypes = value => {
-    const { fieldTypeMap } = this.state;
-    const {
-      report: { fieldTypes },
-    } = this.props;
-    const tags = [];
-    fieldTypes.forEach(f => {
-      const tmp = value & f.left; // eslint-disable-line no-bitwise
-      if (tmp === f.left) {
-        tags.push(f.left);
-      }
-    });
-    return tags.map(t => (
-      <Tag color="blue" key={t}>
-        {fieldTypeMap[t]}
-      </Tag>
-    ));
-  };
 
   okHandle = () => {
     const { handleOpt, reportId } = this.props;
-    const { queryFields } = this.state;
+    const { reportColumns } = this.state;
     handleOpt({
       reportId,
-      queryFields,
+      reportColumns,
     });
   };
 
-  // 查询参数详情页面
+  // 表格字段详情页面
   handleDetailModalVisible = (flag, record, isEdit, index) => {
     this.setState({
       deltailModalVisible: !!flag,
@@ -138,43 +126,43 @@ class QueryFieldForm extends React.Component {
     });
   };
 
-  // 查询参数删除
-  handleFieldDelete = index => {
-    const { queryFields } = this.state;
-    queryFields.splice(index, 1);
+  // 表格字段配置删除
+  handleDelete = index => {
+    const { reportColumns } = this.state;
+    reportColumns.splice(index, 1);
     this.setState({
-      queryFields,
+      reportColumns,
     });
   };
 
-  // 查询参数添加
-  handleFieldAdd = fields => {
-    const { queryFields } = this.state;
-    queryFields.push(fields);
+  // 表格字段添加
+  handleAdd = fields => {
+    const { reportColumns } = this.state;
+    reportColumns.push(fields);
     this.setState({
-      queryFields,
+      reportColumns,
     });
     this.handleDetailModalVisible();
   };
 
-  // 查询参数更新
-  handleFieldUpdate = fields => {
+  // 表格字段更新
+  handleUpdate = fields => {
     this.handleDetailModalVisible();
-    const { queryFields, editIndex } = this.state;
-    queryFields.splice(editIndex, 1, fields);
+    const { reportColumns, editIndex } = this.state;
+    reportColumns.splice(editIndex, 1, fields);
     this.setState({
-      queryFields,
+      reportColumns,
     });
   };
 
   render() {
-    const { isEditForm, recordValue, deltailModalVisible, queryFields } = this.state;
+    const { isEditForm, recordValue, deltailModalVisible, reportColumns } = this.state;
     const { modalVisible, handleModalVisible, reportId } = this.props;
 
     const parentMethods = {
-      handleAdd: this.handleFieldAdd,
+      handleAdd: this.handleAdd,
       handleModalVisible: this.handleDetailModalVisible,
-      handleUpdate: this.handleFieldUpdate,
+      handleUpdate: this.handleUpdate,
     };
     return (
       <Modal
@@ -183,7 +171,7 @@ class QueryFieldForm extends React.Component {
         width={1000}
         style={{ top: 20 }}
         bodyStyle={{ padding: '10px 40px' }}
-        title="查询参数"
+        title="报表字段管理"
         visible={modalVisible}
         onCancel={() => handleModalVisible()}
         onOk={this.okHandle}
@@ -191,23 +179,36 @@ class QueryFieldForm extends React.Component {
         <Button
           icon="plus"
           type="primary"
-          onClick={() => this.handleDetailModalVisible(true, {}, false)}
+          onClick={() =>
+            this.handleDetailModalVisible(
+              true,
+              {
+                raw: 1,
+                split: 0,
+                frozen: 0,
+                hidden: 0,
+                drill: 0,
+                supportSort: 0,
+              },
+              false
+            )
+          }
         >
           新建
         </Button>
         <Table
           size="small"
           columns={this.columns}
-          dataSource={queryFields}
+          dataSource={reportColumns}
           rowKey={record => record.queryName}
         />
         {deltailModalVisible && (
-          <QueryFieldOptForm
+          <ReportColumnOptForm
             {...parentMethods}
             isEdit={isEditForm}
             values={recordValue}
             reportId={reportId}
-            dependOnFields={queryFields}
+            reportColumns={reportColumns}
             modalVisible={deltailModalVisible}
           />
         )}
@@ -216,4 +217,4 @@ class QueryFieldForm extends React.Component {
   }
 }
 
-export default QueryFieldForm;
+export default ReportColumnForm;

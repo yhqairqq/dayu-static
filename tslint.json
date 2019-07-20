@@ -6,6 +6,15 @@
     "object-literal-sort-keys": false,
     "jsx-no-lambda": false,
     "no-implicit-dependencies": false,
-    "no-console": false
+    "no-console": false,
+    "no-bitwise": [
+      2,
+      {
+        "allow": ["&"]
+      },
+      {
+        "int32Hint": true
+      }
+    ]
   }
 }

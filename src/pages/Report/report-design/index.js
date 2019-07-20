@@ -20,6 +20,7 @@ import PageHeaderWrapper from '@/components/PageHeaderWrapper';
 import ReportOptForm from './component/ReportOptForm';
 import ReportSqlEditor from './component/ReportSqlEditor';
 import QueryFieldForm from './component/QueryFieldForm';
+import ReportColumnForm from './component/ReportColumnForm';
 
 import styles from '../../styles/Manage.less';
 
@@ -40,9 +41,10 @@ const getValue = obj =>
 }))
 class ReportDesign extends React.Component {
   state = {
-    fieldModalVisible: false,
-    sqlModalVisible: false,
-    modalVisible: false,
+    columnModalVisible: false, // 表字段编辑框
+    fieldModalVisible: false, // 查询参数编辑框
+    sqlModalVisible: false, // SQL编辑框
+    modalVisible: false, // 报表信息编辑框
     expandForm: false,
     isEditForm: false,
     recordValue: {},
@@ -94,7 +96,7 @@ class ReportDesign extends React.Component {
           <Divider type="vertical" />
           <a onClick={() => this.handleSqlModalVisible(true, record)}>SQL</a>
           <Divider type="vertical" />
-          <a onClick={() => this.handleModalVisible(true, record, true)}>表字段信息</a>
+          <a onClick={() => this.handleColumnModalVisible(true, record, true)}>表字段信息</a>
         </Fragment>
       ),
     },
@@ -255,6 +257,14 @@ class ReportDesign extends React.Component {
     });
   };
 
+  // 表字段编辑
+  handleColumnModalVisible = (flag, record) => {
+    this.setState({
+      columnModalVisible: !!flag,
+      recordValue: record || {},
+    });
+  };
+
   // 保存sql信息
   saveSqlInfo = fields => {
     const { dispatch } = this.props;
@@ -279,6 +289,21 @@ class ReportDesign extends React.Component {
       callback: () => {
         message.success('查询参数保存成功');
         this.handleQueryFieldModalVisible();
+        // 重载数据
+        this.reloadData();
+      },
+    });
+  };
+
+  // 保存表格字段信息
+  saveReportColumnInfo = fields => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'report/reportColumnsSave',
+      payload: fields,
+      callback: () => {
+        message.success('表格字段保存成功');
+        this.handleColumnModalVisible();
         // 重载数据
         this.reloadData();
       },
@@ -374,6 +399,7 @@ class ReportDesign extends React.Component {
       modalVisible,
       sqlModalVisible,
       fieldModalVisible,
+      columnModalVisible,
       expandForm,
       recordValue,
       isEditForm,
@@ -440,6 +466,14 @@ class ReportDesign extends React.Component {
             handleModalVisible={this.handleQueryFieldModalVisible}
             reportId={recordValue.id}
             modalVisible={fieldModalVisible}
+          />
+        )}
+        {columnModalVisible && (
+          <ReportColumnForm
+            handleOpt={this.saveReportColumnInfo}
+            handleModalVisible={this.handleColumnModalVisible}
+            reportId={recordValue.id}
+            modalVisible={columnModalVisible}
           />
         )}
       </PageHeaderWrapper>

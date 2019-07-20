@@ -140,7 +140,7 @@ export default {
         if (callback) callback();
       }
     },
-    *reportColums({ payload, callback }, { call }) {
+    *reportColumns({ payload, callback }, { call }) {
       const resp = yield call(getReportColumnsByReportId, payload);
       const { state, data } = resp;
       if (resp && state === 0) {

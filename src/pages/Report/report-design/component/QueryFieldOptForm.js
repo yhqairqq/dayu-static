@@ -44,7 +44,7 @@ class QueryFieldOptForm extends React.Component {
   }
 
   componentDidMount() {
-    const { dispatch } = this.props;
+    const { dispatch, reportId } = this.props;
     dispatch({
       type: 'report/fetchDataTypes',
     });
@@ -53,6 +53,11 @@ class QueryFieldOptForm extends React.Component {
     });
     dispatch({
       type: 'report/fetchReportTree',
+      payload: {
+        simpleReport: 1, // 获取简单的报表
+        fixOption: 'NULL', // 携带未选择
+        filterIds: [reportId], // 需要过滤掉的报表（自身）
+      },
     });
   }
 
@@ -196,12 +201,19 @@ class QueryFieldOptForm extends React.Component {
         </FormItem>
         <FormItem key="dependOn" {...this.formLayout} label="父级级联" {...lovItemStyle}>
           {form.getFieldDecorator('dependOn', {
-            initialValue: values.dependOn,
+            initialValue: values.dependOn ? values.dependOn : '-1',
           })(
             <Select style={{ width: 300 }} placeholder="请选择父级级联">
+              <Option key="-1" value="-1">
+                --无--
+              </Option>
               {dependOnFields.map(t => (
-                <Option key={t.queryName} value={t.queryName}>
-                  {t.showName}
+                <Option
+                  key={t.queryName}
+                  value={t.queryName}
+                  disabled={t.queryName === values.queryName}
+                >
+                  {`${t.showName}(${t.queryName})`}
                 </Option>
               ))}
             </Select>
