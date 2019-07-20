@@ -87,8 +87,8 @@ class DatasourceManage extends PureComponent {
     },
     {
       title: '创建人',
-      dataIndex: 'createdBy',
-      key: 'createdBy',
+      dataIndex: 'creator',
+      key: 'creator',
     },
     {
       title: '操作',

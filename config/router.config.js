@@ -142,6 +142,18 @@ export default [
           },
         ],
       },
+      {
+        path: '/query',
+        name: '报表查询',
+        routes: [
+          // 通用报表查询
+          {
+            path: '/query/:reportId/:radmon',
+            hideInMenu: true,
+            component: './Report/report-query',
+          },
+        ],
+      },
       // 日志埋点管理
       {
         path: '/anchor',
