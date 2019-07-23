@@ -45,6 +45,14 @@ class Register extends Component {
     help: '',
   };
 
+  constructor(props) {
+    super(props);
+    this.formLayout = {
+      labelCol: { span: 7 },
+      wrapperCol: { span: 17 },
+    };
+  }
+
   componentDidUpdate() {
     const {
       form,
@@ -159,12 +167,24 @@ class Register extends Component {
     const { help, visible } = this.state;
     return (
       <div className={styles.main}>
-        <h3>
-          <FormattedMessage id="app.register.register" />
-        </h3>
         <Form onSubmit={this.handleSubmit}>
-          <FormItem>
+          <FormItem label="登录名">
             {getFieldDecorator('username', {
+              rules: [
+                {
+                  required: true,
+                  message: '登录名不能为空',
+                },
+              ],
+            })(<Input size="large" placeholder="公司邮箱、常用手机号、ERP系统用户名等" />)}
+          </FormItem>
+          <FormItem label="真实姓名">
+            {getFieldDecorator('nickname', {
+              rules: [{ required: true, message: '用户姓名必须真实有效' }],
+            })(<Input size="large" placeholder="用户真实姓名" />)}
+          </FormItem>
+          <FormItem label="邮箱地址">
+            {getFieldDecorator('email', {
               rules: [
                 {
                   required: true,
@@ -175,29 +195,19 @@ class Register extends Component {
                   message: formatMessage({ id: 'validation.email.wrong-format' }),
                 },
               ],
-            })(<Input size="large" placeholder="公司邮箱地址（做为登录名使用）" />)}
+            })(<Input size="large" placeholder="请填写公司邮箱地址" />)}
           </FormItem>
-          <FormItem>
-            {getFieldDecorator('nickname', {
-              rules: [
-                {
-                  required: true,
-                  message: '用户姓名必须真实有效',
-                },
-              ],
-            })(<Input size="large" placeholder="用户真实姓名" />)}
+          <FormItem label="手机号">
+            {getFieldDecorator('phone', {
+              rules: [{ required: true, message: '请输入有效手机号' }],
+            })(<Input size="large" placeholder="常用手机号" />)}
           </FormItem>
-          <FormItem>
+          <FormItem label="所在部门">
             {getFieldDecorator('department', {
-              rules: [
-                {
-                  required: true,
-                  message: '所有职能部门不能为空',
-                },
-              ],
+              rules: [{ required: true, message: '所有职能部门不能为空' }],
             })(<Input size="large" placeholder="用户职能部门" />)}
           </FormItem>
-          <FormItem help={help}>
+          <FormItem help={help} label="登录密码">
             <Popover
               getPopupContainer={node => node.parentNode}
               content={
@@ -215,9 +225,8 @@ class Register extends Component {
             >
               {getFieldDecorator('password', {
                 rules: [
-                  {
-                    validator: this.checkPassword,
-                  },
+                  { required: true, message: '请输入有效手机号' },
+                  { validator: this.checkPassword },
                 ],
               })(
                 <Input
@@ -228,16 +237,11 @@ class Register extends Component {
               )}
             </Popover>
           </FormItem>
-          <FormItem>
+          <FormItem label="确认密码">
             {getFieldDecorator('confirm', {
               rules: [
-                {
-                  required: true,
-                  message: formatMessage({ id: 'validation.confirm-password.required' }),
-                },
-                {
-                  validator: this.checkConfirm,
-                },
+                { required: true, message: '请输入确认密码' },
+                { validator: this.checkConfirm },
               ],
             })(
               <Input

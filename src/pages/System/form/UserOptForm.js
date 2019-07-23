@@ -80,7 +80,9 @@ class UserOptForm extends React.Component {
           })(<Input placeholder="请输入" />)}
         </FormItem>
         <FormItem key="password" {...this.formLayout} label="登录密码">
-          {form.getFieldDecorator('password', {})(<Input placeholder="默认自动生成" />)}
+          {form.getFieldDecorator('password', {})(
+            <Input type="password" placeholder="默认自动生成" />
+          )}
         </FormItem>
         <FormItem key="department" {...this.formLayout} label="所在部门">
           {form.getFieldDecorator('department', {

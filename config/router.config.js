@@ -77,7 +77,12 @@ export default [
           {
             path: '/common/datasource-manage',
             name: '数据源管理',
-            component: './SysCommon/DatasourceManage',
+            component: './SysCommon/datasource',
+          },
+          {
+            path: '/common/common-info',
+            name: '基础信息管理',
+            component: './SysCommon/common-info',
           },
         ],
       },

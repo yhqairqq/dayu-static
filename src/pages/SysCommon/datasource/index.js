@@ -17,8 +17,8 @@ import {
 import StandardTable from '@/components/StandardTable';
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
 
-import DsOptForm from './form/DsOptForm';
-import styles from './DatasourceManage.less';
+import DsOptForm from './components/DsOptForm';
+import styles from '../../styles/Manage.less';
 
 const FormItem = Form.Item;
 const { Option } = Select;
@@ -286,7 +286,7 @@ class DatasourceManage extends PureComponent {
       datasource: { allTypes },
     } = this.props;
     return (
-      <Form key="search_form" onSubmit={this.handleSearch} layout="inline">
+      <Form onSubmit={this.handleSearch} layout="inline">
         <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
           <Col md={8} sm={24}>
             <FormItem key="type" label="数据源">
@@ -359,13 +359,13 @@ class DatasourceManage extends PureComponent {
     return (
       <PageHeaderWrapper title="数据源管理" content="管理所有可用的数据源，为系统其他业务服务~">
         <Card bordered={false}>
-          <div className={styles.tableList}>
-            {expandForm && <div className={styles.tableListForm}>{this.renderForm()}</div>}
-            <div className={styles.tableListOperator}>
+          <div className={styles.Manage}>
+            {expandForm && <div className={styles.ManageForm}>{this.renderForm()}</div>}
+            <div className={styles.ManageOperator}>
               <Button type="primary" icon="plus" onClick={() => this.handleModalVisible(true)}>
                 新建
               </Button>
-              <span className={styles.submitButtons}>
+              <span className={styles.querySubmitButtons}>
                 <Button type="primary" onClick={this.handleSearch}>
                   查询
                 </Button>

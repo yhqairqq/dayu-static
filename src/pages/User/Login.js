@@ -120,8 +120,8 @@ class LoginPage extends Component {
             <FormattedMessage id="app.login.login" />
           </Submit>
           <div className={styles.other}>
-            <FormattedMessage id="app.login.sign-in-with" />
-            <span className={styles.ssoLogin}>SSO登录</span>
+            {/* <FormattedMessage id="app.login.sign-in-with" /> */}
+            {/* <span className={styles.ssoLogin}>SSO登录</span> */}
             <Link className={styles.register} to="/user/register">
               <FormattedMessage id="app.login.signup" />
             </Link>
