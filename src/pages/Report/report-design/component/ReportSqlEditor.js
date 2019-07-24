@@ -183,12 +183,10 @@ class ReportSqlEditor extends React.Component {
         {form.getFieldDecorator('cached', {
           initialValue: formVals.cached,
         })(
-          <div>
-            <Radio.Group defaultValue={formVals.cached} onChange={this.onChange}>
-              <Radio.Button value={0}>否</Radio.Button>
-              <Radio.Button value={1}>是</Radio.Button>
-            </Radio.Group>
-          </div>
+          <Radio.Group onChange={this.onChange}>
+            <Radio.Button value={0}>否</Radio.Button>
+            <Radio.Button value={1}>是</Radio.Button>
+          </Radio.Group>
         )}
       </FormItem>,
       <FormItem key="cachedTime" {...this.formLayout} label="缓存时间(秒)">
@@ -207,12 +205,10 @@ class ReportSqlEditor extends React.Component {
         {form.getFieldDecorator('needDetailLog', {
           initialValue: formVals.needDetailLog,
         })(
-          <div>
-            <Radio.Group defaultValue={formVals.needDetailLog}>
-              <Radio.Button value={0}>否</Radio.Button>
-              <Radio.Button value={1}>是</Radio.Button>
-            </Radio.Group>
-          </div>
+          <Radio.Group>
+            <Radio.Button value={0}>否</Radio.Button>
+            <Radio.Button value={1}>是</Radio.Button>
+          </Radio.Group>
         )}
       </FormItem>,
       <FormItem key="comment" {...this.formLayout} label="描述信息">
