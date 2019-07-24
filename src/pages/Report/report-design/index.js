@@ -146,7 +146,9 @@ class ReportDesign extends React.Component {
     const { dispatch } = this.props;
     dispatch({
       type: 'report/remove',
-      payload: record.id,
+      payload: {
+        reportId: record.id,
+      },
       callback: () => {
         message.success('删除成功');
         // 重载数据

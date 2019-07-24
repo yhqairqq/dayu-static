@@ -22,9 +22,7 @@ export async function addReport(params) {
 export async function delReport(id) {
   return request(`${PRE_URL}/del`, {
     method: 'POST',
-    data: {
-      groupId: id,
-    },
+    data: id,
   });
 }
 

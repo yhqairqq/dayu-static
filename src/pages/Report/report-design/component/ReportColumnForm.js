@@ -51,6 +51,7 @@ class ReportColumnForm extends React.Component {
       width: 60,
       render: text => <span>{text === 1 ? '是' : '否'}</span>,
     },
+    { title: '单位', dataIndex: 'unit' },
     { title: '格式化宏', dataIndex: 'formatMacro' },
     { title: '切分字符', dataIndex: 'splitChar' },
     { title: 'KV分隔符', dataIndex: 'splitKvChar' },

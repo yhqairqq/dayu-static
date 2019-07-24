@@ -1,14 +1,16 @@
 import React from 'react';
 import { connect } from 'dva';
-import { Form, Input, Modal, Steps, Spin, Button, Checkbox } from 'antd';
+import { Form, Input, Modal, Steps, Spin, Button, Checkbox, Row, Col, Divider } from 'antd';
 import styles from '../../../styles/Manage.less';
 
 const FormItem = Form.Item;
 const { Step } = Steps;
 
 @Form.create()
-@connect(({ commonInfo, loading }) => ({
+@connect(({ commonInfo, user, loading }) => ({
   commonInfo,
+  user,
+  userLoading: loading.models.user,
   commonLoading: loading.models.commonInfo,
 }))
 class DataDimensionOpt extends React.Component {
@@ -25,14 +27,20 @@ class DataDimensionOpt extends React.Component {
     } = props;
     this.state = {
       formVals: {
-        erpUserId: -1,
         userId: id,
+        erpUserId: -1,
         cities: [],
         classifies: [],
       },
       currentStep: 0,
       cities: [], // 城市列表
       classifies: [], // 品类列表
+      citiesOfChecked: [], // 已选城市列表
+      cityIndeterminate: true,
+      checkAllCity: false,
+      classifyOfChecked: [], // 已选品类列表
+      classifyIndeterminate: true,
+      checkAllClassify: false,
     };
     this.formLayout = {
       labelCol: { span: 7 },
@@ -62,8 +70,13 @@ class DataDimensionOpt extends React.Component {
         userId,
       },
       callback: data => {
+        const { cities, classifies } = data;
         this.setState({
           formVals: data,
+          citiesOfChecked: cities,
+          cityIndeterminate: cities && cities.length > 0,
+          classifyOfChecked: classifies,
+          classifyIndeterminate: classifies && classifies.length > 0,
         });
       },
     });
@@ -86,16 +99,21 @@ class DataDimensionOpt extends React.Component {
       handleOpt,
       values: { id },
     } = this.props;
-    const { formVals } = this.state;
-    const { fields } = formVals;
+    const { citiesOfChecked, classifyOfChecked, formVals } = this.state;
+    const { erpUserId } = formVals;
 
     form.validateFields((err, fieldsValue) => {
       if (err) return;
-      const newFormValues = { ...formVals, ...fieldsValue, fields, ...{ userId: id } };
+      const newFormValues = { ...formVals, ...fieldsValue };
       this.setState({
         formVals: newFormValues,
       });
-      handleOpt(newFormValues);
+      handleOpt({
+        userId: id,
+        erpUserId,
+        cities: citiesOfChecked,
+        classifies: classifyOfChecked,
+      });
     });
   };
 
@@ -187,9 +205,32 @@ class DataDimensionOpt extends React.Component {
     ];
   };
 
+  onChangeOfCity = checkList => {
+    const { cities } = this.state;
+    this.setState({
+      citiesOfChecked: checkList,
+      cityIndeterminate: !!checkList.length && checkList.length < cities.length,
+      checkAllCity: checkList.length === cities.length,
+    });
+  };
+
+  onCheckAllCityChange = e => {
+    const { cities } = this.state;
+    const options = [];
+    cities.forEach(c => {
+      const { id } = c;
+      options.push(id);
+    });
+
+    this.setState({
+      citiesOfChecked: e.target.checked ? options : [],
+      cityIndeterminate: false,
+      checkAllCity: e.target.checked,
+    });
+  };
+
   renderCityStep = () => {
-    const { form } = this.props;
-    const { cities, formVals } = this.state;
+    const { cities, cityIndeterminate, checkAllCity, citiesOfChecked } = this.state;
     const options = [];
     cities.forEach(c => {
       const { id, name } = c;
@@ -199,17 +240,60 @@ class DataDimensionOpt extends React.Component {
       });
     });
     return [
-      <FormItem key="cities" {...this.formLayout}>
-        {form.getFieldDecorator('cities', {
-          initialValue: formVals.cities,
-        })(<Checkbox.Group options={options} />)}
-      </FormItem>,
+      <Divider key="city_div_0" type="horizontal" />,
+      <Checkbox
+        key="city_all_checkbox"
+        indeterminate={cityIndeterminate}
+        onChange={this.onCheckAllCityChange}
+        checked={checkAllCity}
+      >
+        全选
+      </Checkbox>,
+      <Divider key="city_div_1" type="horizontal" />,
+      <Checkbox.Group
+        style={{ width: '100%', marginBottom: '10px' }}
+        value={citiesOfChecked}
+        onChange={this.onChangeOfCity}
+      >
+        <Row>
+          {options.map(item => (
+            <Col key={item.value} span={6}>
+              <Checkbox key={item.value} value={item.value}>
+                {item.label}
+              </Checkbox>
+            </Col>
+          ))}
+        </Row>
+      </Checkbox.Group>,
     ];
   };
 
+  onChangeOfClassify = checkList => {
+    const { classifies } = this.state;
+    this.setState({
+      classifyOfChecked: checkList,
+      classifyIndeterminate: !!checkList.length && checkList.length < classifies.length,
+      checkAllClassify: checkList.length === classifies.length,
+    });
+  };
+
+  onCheckAllClassifyChange = e => {
+    const { classifies } = this.state;
+    const options = [];
+    classifies.forEach(c => {
+      const { id } = c;
+      options.push(id);
+    });
+
+    this.setState({
+      classifyOfChecked: e.target.checked ? options : [],
+      classifyIndeterminate: false,
+      checkAllClassify: e.target.checked,
+    });
+  };
+
   renderClassifyStep = () => {
-    const { form } = this.props;
-    const { classifies, formVals } = this.state;
+    const { classifies, classifyIndeterminate, checkAllClassify, classifyOfChecked } = this.state;
     const options = [];
     classifies.forEach(c => {
       const { id, name } = c;
@@ -219,16 +303,34 @@ class DataDimensionOpt extends React.Component {
       });
     });
     return [
-      <FormItem key="classifies" {...this.formLayout}>
-        {form.getFieldDecorator('classifies', {
-          initialValue: formVals.classifies,
-        })(<Checkbox.Group options={options} />)}
-      </FormItem>,
+      <Divider key="classify_div_0" type="horizontal" />,
+      <Checkbox
+        key="classify_all_checkbox"
+        indeterminate={classifyIndeterminate}
+        onChange={this.onCheckAllClassifyChange}
+        checked={checkAllClassify}
+      >
+        全选
+      </Checkbox>,
+      <Divider key="classify_div_1" type="horizontal" />,
+      <Checkbox.Group
+        style={{ width: '100%', marginBottom: '10px' }}
+        value={classifyOfChecked}
+        onChange={this.onChangeOfClassify}
+      >
+        <Row>
+          {options.map(item => (
+            <Col span={6}>
+              <Checkbox value={item.value}>{item.label}</Checkbox>
+            </Col>
+          ))}
+        </Row>
+      </Checkbox.Group>,
     ];
   };
 
   render() {
-    const { modalVisible, handleModalVisible, commonLoading } = this.props;
+    const { modalVisible, handleModalVisible, commonLoading, userLoading } = this.props;
     const { currentStep } = this.state;
     return (
       <Modal
@@ -243,7 +345,7 @@ class DataDimensionOpt extends React.Component {
         onCancel={() => handleModalVisible(false)}
         afterClose={() => handleModalVisible()}
       >
-        <Spin spinning={commonLoading}>
+        <Spin spinning={commonLoading || userLoading}>
           <Steps style={{ marginBottom: 15 }} size="small" current={currentStep}>
             <Step title="关联ERP用户" />
             <Step title="城市维度选择" />

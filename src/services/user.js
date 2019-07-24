@@ -136,3 +136,12 @@ export async function saveDataDimension(params) {
     },
   });
 }
+
+/**
+ * 获取ERP系统用户信息列表
+ */
+export async function getErpUserInfo() {
+  return request(`${PRE_URL}/getErpUserInfo`, {
+    method: 'POST',
+  });
+}

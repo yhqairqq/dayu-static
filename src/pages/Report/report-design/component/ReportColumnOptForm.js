@@ -143,6 +143,11 @@ class ReportColumnOptForm extends React.Component {
             </Select>
           )}
         </FormItem>
+        <FormItem key="unit" {...this.formLayout} label="数据单位">
+          {form.getFieldDecorator('unit', {
+            initialValue: values.unit,
+          })(<Input placeholder="请输入单位" />)}
+        </FormItem>
         <FormItem key="raw" {...this.formLayout} label="是否为原生字段">
           {form.getFieldDecorator('raw', {
             rules: [{ required: true, message: '请选择' }],

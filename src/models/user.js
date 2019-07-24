@@ -8,6 +8,7 @@ import {
   resetPwd,
   saveDataDimension,
   getDataDimension,
+  getErpUserInfo,
 } from '@/services/user';
 
 export default {
@@ -85,6 +86,17 @@ export default {
         if (callback) callback(data);
       }
     },
+    *fetchErpUserInfo({ payload, callback }, { call, put }) {
+      const resp = yield call(getErpUserInfo, payload);
+      const { state, data } = resp;
+      yield put({
+        type: 'saveErpUserInfo',
+        payload: data,
+      });
+      if (resp && state === 0) {
+        if (callback) callback(data);
+      }
+    },
   },
 
   reducers: {
@@ -92,6 +104,12 @@ export default {
       return {
         ...state,
         data: action.payload,
+      };
+    },
+    saveErpUserInfo(state, action) {
+      return {
+        ...state,
+        erpUserInfo: action.payload,
       };
     },
     save(state, action) {

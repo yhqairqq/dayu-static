@@ -195,10 +195,10 @@ class ReportSqlEditor extends React.Component {
         {form.getFieldDecorator('cachedTime', {
           rules: [{ required: isCache, message: '请输入缓存时间' }],
           initialValue: formVals.cachedTime,
-        })(<InputNumber style={{ width: '50%' }} min={0} max={60} />)}
+        })(<InputNumber style={{ width: '50%' }} min={0} max={3600} />)}
       </FormItem>,
       <FormItem key="timeout" {...this.formLayout} label="超时时间(秒)">
-        {form.getFieldDecorator('cachedTime', {
+        {form.getFieldDecorator('timeout', {
           rules: [{ required: true, message: '请输入超时时间' }],
           initialValue: formVals.timeout,
         })(<InputNumber style={{ width: '50%' }} min={0} max={360} />)}
