@@ -201,6 +201,7 @@ class ReportColumnForm extends React.Component {
           size="small"
           columns={this.columns}
           dataSource={reportColumns}
+          pagination={false}
           rowKey={record => record.queryName}
         />
         {deltailModalVisible && (

@@ -199,6 +199,7 @@ class QueryFieldForm extends React.Component {
           size="small"
           columns={this.columns}
           dataSource={queryFields}
+          pagination={false}
           rowKey={record => record.queryName}
         />
         {deltailModalVisible && (
