@@ -16,9 +16,10 @@ import {
 } from 'antd';
 import StandardTable from '@/components/StandardTable';
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
-import UserOptForm from './form/UserOptForm';
+import UserOptForm from './components/UserOptForm';
+import DataDimensionOpt from './components/DataDimensionOpt';
 
-import styles from '../styles/Manage.less';
+import styles from '../../styles/Manage.less';
 
 const { Option } = Select;
 const FormItem = Form.Item;
@@ -36,6 +37,7 @@ const getValue = obj =>
 class UserManage extends React.Component {
   state = {
     modalVisible: false,
+    modalDataAuthVisible: false,
     expandForm: false,
     isEditForm: false,
     recordValue: {},
@@ -85,6 +87,8 @@ class UserManage extends React.Component {
           </Popconfirm>
           <Divider type="vertical" />
           <a onClick={() => this.handleModalVisible(true, record, true)}>编辑</a>
+          <Divider type="vertical" />
+          <a onClick={() => this.handleDataAuthVisible(true, record)}>数据维度权限</a>
         </Fragment>
       ),
     },
@@ -124,6 +128,13 @@ class UserManage extends React.Component {
     this.setState({
       modalVisible: !!flag,
       isEditForm: !!isEdit,
+      recordValue: record || {},
+    });
+  };
+
+  handleDataAuthVisible = (flag, record) => {
+    this.setState({
+      modalDataAuthVisible: !!flag,
       recordValue: record || {},
     });
   };
@@ -216,6 +227,29 @@ class UserManage extends React.Component {
     });
   };
 
+  // 数据维度设置
+  handleDataAuthModalVisible = (flag, record) => {
+    this.setState({
+      modalDataAuthVisible: !!flag,
+      recordValue: record || {},
+    });
+  };
+
+  // 保存数据维度信息
+  saveDataDimension = fields => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'user/dataDimensionSave',
+      payload: fields,
+      callback: () => {
+        message.success('表格字段保存成功');
+        this.handleDataAuthModalVisible();
+        // 重载数据
+        this.reloadData();
+      },
+    });
+  };
+
   // 分页、过滤、排序处理
   handleStandardTableChange = (pagination, filtersArg, sorter) => {
     const { dispatch } = this.props;
@@ -281,7 +315,7 @@ class UserManage extends React.Component {
       user: { data },
       loading,
     } = this.props;
-    const { modalVisible, expandForm, recordValue, isEditForm } = this.state;
+    const { modalVisible, modalDataAuthVisible, expandForm, recordValue, isEditForm } = this.state;
     const parentMethods = {
       handleAdd: this.handleAdd,
       handleModalVisible: this.handleModalVisible,
@@ -328,6 +362,14 @@ class UserManage extends React.Component {
             isEdit={isEditForm}
             values={recordValue}
             modalVisible={modalVisible}
+          />
+        )}
+        {modalDataAuthVisible && (
+          <DataDimensionOpt
+            handleOpt={this.saveDataDimension}
+            handleModalVisible={this.handleDataAuthModalVisible}
+            values={recordValue}
+            modalVisible={modalDataAuthVisible}
           />
         )}
       </PageHeaderWrapper>

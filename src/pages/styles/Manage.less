@@ -48,6 +48,17 @@
   white-space: nowrap;
 }
 
+.modelOptFormFooter {
+  :global {
+    .ant-btn {
+      display: none;
+      &.true {
+        display: inline;
+      }
+    }
+  }
+}
+
 @media screen and (max-width: @screen-lg) {
   .ManageForm :global(.ant-form-item) {
     margin-right: 24px;

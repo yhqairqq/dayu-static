@@ -6,6 +6,8 @@ import {
   delUser,
   editUser,
   resetPwd,
+  saveDataDimension,
+  getDataDimension,
 } from '@/services/user';
 
 export default {
@@ -69,6 +71,19 @@ export default {
         type: 'saveCurrentUser',
         payload: response.data,
       });
+    },
+    *dataDimensionSave({ payload, callback }, { call }) {
+      const resp = yield call(saveDataDimension, payload);
+      if (resp && resp.state === 0) {
+        if (callback) callback();
+      }
+    },
+    *fetchDimensionSave({ payload, callback }, { call }) {
+      const resp = yield call(getDataDimension, payload);
+      const { state, data } = resp;
+      if (resp && state === 0) {
+        if (callback) callback(data);
+      }
     },
   },
 

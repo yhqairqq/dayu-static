@@ -1,4 +1,11 @@
-import { addInfo, editInfo, delInfo, getAllTypes, query } from '@/services/commonInfo';
+import {
+  addInfo,
+  editInfo,
+  delInfo,
+  getAllTypes,
+  query,
+  getByClassify,
+} from '@/services/commonInfo';
 
 export default {
   namespace: 'commonInfo',
@@ -28,6 +35,13 @@ export default {
         type: 'save',
         payload: data,
       });
+    },
+    *fetchByClassify({ payload, callback }, { call }) {
+      const resp = yield call(getByClassify, payload);
+      const { data, state } = resp;
+      if (resp && state === 0) {
+        if (callback) callback(data);
+      }
     },
     *add({ payload, callback }, { call }) {
       const response = yield call(addInfo, payload);

@@ -15,10 +15,10 @@ import {
 } from 'antd';
 import StandardTable from '@/components/StandardTable';
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
-import RoleOptForm from './form/RoleOptForm';
-import AllotRes2Role from './form/AllotRes2Role';
+import RoleOptForm from './components/RoleOptForm';
+import AllotRes2Role from './components/AllotRes2Role';
 
-import styles from '../styles/Manage.less';
+import styles from '../../styles/Manage.less';
 
 const FormItem = Form.Item;
 const { Option } = Select;

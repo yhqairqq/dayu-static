@@ -53,17 +53,17 @@ export default [
           {
             path: '/system/user-manage',
             name: '用户管理',
-            component: './System/UserManage',
+            component: './System/user',
           },
           {
             path: '/system/role-manage',
             name: '角色管理',
-            component: './System/RoleManage',
+            component: './System/role',
           },
           {
             path: '/system/res-manage',
             name: '资源管理',
-            component: './System/ResManage',
+            component: './System/resource',
           },
         ],
       },

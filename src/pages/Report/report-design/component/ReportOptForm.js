@@ -144,6 +144,18 @@ class ReportOptForm extends React.Component {
             </Radio.Group>
           )}
         </FormItem>
+        <FormItem key="xAxis" {...this.formLayout} label="X轴列名">
+          {form.getFieldDecorator('xAxis', {
+            rules: [{ required: true, message: '请输入X轴列名！' }],
+            initialValue: values.xAxis,
+          })(<TextArea placeholder='请输入,多个以";"隔开' />)}
+        </FormItem>
+        <FormItem key="yAxis" {...this.formLayout} label="Y轴列名">
+          {form.getFieldDecorator('yAxis', {
+            rules: [{ required: true, message: '请输入Y轴列名！' }],
+            initialValue: values.yAxis,
+          })(<TextArea placeholder='请输入,多个以";"隔开' />)}
+        </FormItem>
         <FormItem key="autoCreate" {...this.formLayout} label="报表编码">
           {!isEdit &&
             form.getFieldDecorator('code', {})(

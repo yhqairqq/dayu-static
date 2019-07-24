@@ -110,3 +110,29 @@ export async function accountLogin(params) {
     data: params,
   });
 }
+
+/**
+ * 获取用户的数据维度
+ * @param {*} params
+ */
+export async function getDataDimension(params) {
+  return request(`${PRE_URL}/getDataDimension`, {
+    method: 'POST',
+    data: {
+      ...params,
+    },
+  });
+}
+
+/**
+ * 保存用户的数据维度
+ * @param {*} params
+ */
+export async function saveDataDimension(params) {
+  return request(`${PRE_URL}/saveDataDimension`, {
+    method: 'POST',
+    data: {
+      ...params,
+    },
+  });
+}

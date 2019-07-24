@@ -15,9 +15,9 @@ import {
   Divider,
 } from 'antd';
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
-import ResOptForm from './form/ResOptForm';
+import ResOptForm from './components/ResOptForm';
 
-import styles from '../styles/Manage.less';
+import styles from '../../styles/Manage.less';
 
 const FormItem = Form.Item;
 

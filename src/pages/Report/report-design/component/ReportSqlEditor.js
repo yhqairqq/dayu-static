@@ -191,7 +191,7 @@ class ReportSqlEditor extends React.Component {
           </div>
         )}
       </FormItem>,
-      <FormItem key="cachedTime" {...this.formLayout} label="缓存时间(分)">
+      <FormItem key="cachedTime" {...this.formLayout} label="缓存时间(秒)">
         {form.getFieldDecorator('cachedTime', {
           rules: [{ required: isCache, message: '请输入缓存时间' }],
           initialValue: formVals.cachedTime,

@@ -25,6 +25,19 @@ export async function getAllTypes() {
 }
 
 /**
+ * 根据类型获取
+ * @param {*} params
+ */
+export async function getByClassify(params) {
+  return request(`${PRE_URL}/getByClassify`, {
+    method: 'POST',
+    data: {
+      ...params,
+    },
+  });
+}
+
+/**
  * 修改信息
  * @param {*} params
  */
