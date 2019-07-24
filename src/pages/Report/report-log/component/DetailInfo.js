@@ -1,111 +1,71 @@
 import React from 'react';
 import { connect } from 'dva';
-import { Form, Input, Modal, TreeSelect } from 'antd';
+import { Form, Modal, Tabs } from 'antd';
 
-const FormItem = Form.Item;
-const { TextArea } = Input;
+const { TabPane } = Tabs;
 
 @Form.create()
-@connect(({ group, loading }) => ({
-  group,
-  loading: loading.models.group,
+@connect(({ sqlRunLog, loading }) => ({
+  sqlRunLog,
+  loading: loading.models.sqlRunLog,
 }))
 class DetailInfo extends React.Component {
   static defaultProps = {
     values: {
       groupId: 0,
-      parentId: '0',
     },
-    isEdit: false,
-    handleAdd: () => {},
-    handleUpdate: () => {},
     handleModalVisible: () => {},
   };
 
   constructor(props) {
     super(props);
     this.state = {};
-    this.formLayout = {
-      labelCol: { span: 7 },
-      wrapperCol: { span: 13 },
-    };
   }
 
   componentDidMount() {
     const { dispatch } = this.props;
+    const {
+      values: { id },
+    } = this.props;
     dispatch({
-      type: 'group/getGroupTree',
+      type: 'sqlRunLog/fetchById',
+      payload: {
+        logId: id,
+      },
+      callback: data => {
+        const { text, errInfo } = data;
+        this.setState({
+          text,
+          errInfo,
+        });
+      },
     });
   }
 
-  okHandle = () => {
-    const { values, isEdit = false, form, handleAdd, handleUpdate } = this.props;
-    form.validateFields((err, fieldsValue) => {
-      if (err) return;
-      form.resetFields();
-      if (isEdit) {
-        handleUpdate({
-          groupId: values.id,
-          ...fieldsValue,
-        });
-      } else {
-        handleAdd(fieldsValue);
-      }
-    });
-  };
-
   render() {
-    const {
-      isEdit,
-      modalVisible,
-      handleModalVisible,
-      values,
-      form,
-      group: { trees },
-    } = this.props;
+    const { modalVisible, handleModalVisible } = this.props;
+    const { text, errInfo } = this.state;
 
     return (
       <Modal
         destroyOnClose
-        maskClosable={false}
-        width={640}
+        width={1000}
         style={{ top: 20 }}
         bodyStyle={{ padding: '10px 40px' }}
-        title={isEdit ? '修改报表组信息' : '新增报表组信息'}
+        title="详情"
         visible={modalVisible}
-        onCancel={() => handleModalVisible(false, false, values)}
-        onOk={this.okHandle}
+        footer={null}
+        onCancel={() => handleModalVisible(false)}
+        onOk={() => handleModalVisible(false)}
       >
-        <FormItem key="parentId" {...this.formLayout} label="父报表组">
-          {form.getFieldDecorator('parentId', {
-            rules: [{ required: true, message: '请选择父报表组' }],
-            initialValue: values.parentId,
-          })(
-            <TreeSelect
-              style={{ width: 300 }}
-              dropdownStyle={{ maxHeight: 400, overflow: 'auto', offsetHeight: 10 }}
-              treeData={trees}
-              treeDefaultExpandAll
-              placeholder="请选择父报表组"
-            />
-          )}
-        </FormItem>
-        <FormItem key="name" {...this.formLayout} label="报表组名称">
-          {form.getFieldDecorator('name', {
-            rules: [{ required: true, message: '请输入报表组名称！' }],
-            initialValue: values.name,
-          })(<Input placeholder="请输入" />)}
-        </FormItem>
-        <FormItem key="icon" {...this.formLayout} label="图标">
-          {form.getFieldDecorator('icon', {
-            initialValue: values.icon,
-          })(<Input placeholder="请输入" />)}
-        </FormItem>
-        <FormItem key="comment" {...this.formLayout} label="描述信息">
-          {form.getFieldDecorator('comment', {
-            initialValue: values.comment,
-          })(<TextArea placeholder="请输入" />)}
-        </FormItem>
+        <Tabs defaultActiveKey="1" style={{ marginBottom: '15px' }}>
+          <TabPane tab="运行SQL" key="1">
+            {text}
+          </TabPane>
+          <TabPane tab="错误日志" key="2">
+            {errInfo}
+          </TabPane>
+        </Tabs>
       </Modal>
     );
   }

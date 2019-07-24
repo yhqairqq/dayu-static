@@ -37,11 +37,5 @@ export default {
         data: action.payload,
       };
     },
-    saveTypes(state, action) {
-      return {
-        ...state,
-        types: action.payload,
-      };
-    },
   },
 };

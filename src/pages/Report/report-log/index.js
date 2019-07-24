@@ -1,6 +1,7 @@
 import React, { Fragment } from 'react';
 import { connect } from 'dva';
 import { Card, Icon, Button, Form, Divider, Col, Row, Tag, Input } from 'antd';
+import moment from 'moment';
 
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
 import StandardTable from '@/components/StandardTable';
@@ -24,7 +25,6 @@ class ReportLog extends React.Component {
   state = {
     modalVisible: false,
     expandForm: false,
-    isEditForm: false,
     recordValue: {},
     formValues: {},
   };
@@ -34,6 +34,11 @@ class ReportLog extends React.Component {
     { title: '所属数据源', dataIndex: 'dsName' },
     { title: '报表名称', dataIndex: 'reportName' },
     { title: '耗时', dataIndex: 'elapsedTime', render: text => <span>{`${text}ms`}</span> },
+    {
+      title: '执行时间',
+      dataIndex: 'created',
+      render: text => <span>{this.formatTimestamp(text)}</span>,
+    },
     {
       title: '状态',
       dataIndex: 'complete',
@@ -60,6 +65,10 @@ class ReportLog extends React.Component {
       type: 'sqlRunLog/fetch',
     });
   }
+
+  formatTimestamp = timestamp => {
+    return moment.unix(timestamp).format('YYYY-MM-DD HH:mm:ss');
+  };
 
   // 重新加载数据
   reloadData = () => {
@@ -139,10 +148,9 @@ class ReportLog extends React.Component {
     });
   };
 
-  handleModalVisible = (flag, record, isEdit) => {
+  handleModalVisible = (flag, record) => {
     this.setState({
       modalVisible: !!flag,
-      isEditForm: !!isEdit,
       recordValue: record || {},
     });
   };
@@ -177,10 +185,7 @@ class ReportLog extends React.Component {
       loading,
       sqlRunLog: { data },
     } = this.props;
-    const { modalVisible, expandForm, recordValue, isEditForm } = this.state;
-    const parentMethods = {
-      handleModalVisible: this.handleModalVisible,
-    };
+    const { modalVisible, expandForm, recordValue } = this.state;
     return (
       <PageHeaderWrapper title="报表日志查询" content="这里查询报表运行时日志~">
         <Card bordered={false}>
@@ -209,8 +214,7 @@ class ReportLog extends React.Component {
         </Card>
         {modalVisible && (
           <DetailInfo
-            {...parentMethods}
-            isEdit={isEditForm}
+            handleModalVisible={this.handleModalVisible}
             values={recordValue}
             modalVisible={modalVisible}
           />
