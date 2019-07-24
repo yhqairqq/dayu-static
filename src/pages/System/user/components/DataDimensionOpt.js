@@ -91,6 +91,9 @@ class DataDimensionOpt extends React.Component {
         });
       },
     });
+    dispatch({
+      type: 'user/fetchErpUserInfo',
+    });
   }
 
   handleSave = () => {
