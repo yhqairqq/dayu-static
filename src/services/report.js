@@ -148,6 +148,19 @@ export async function getQueryFieldsByReportId(params) {
 }
 
 /**
+ * 根据报表Id获取报表详情
+ * @param {*} params
+ */
+export async function getDetailById(params) {
+  return request(`${PRE_URL}/getDetailById`, {
+    method: 'POST',
+    data: {
+      ...params,
+    },
+  });
+}
+
+/**
  * 保存报表字段信息
  * @param {*} params
  */

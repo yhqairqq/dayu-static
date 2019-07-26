@@ -140,8 +140,11 @@ export async function saveDataDimension(params) {
 /**
  * 获取ERP系统用户信息列表
  */
-export async function getErpUserInfo() {
+export async function getErpUserInfo(params) {
   return request(`${PRE_URL}/getErpUserInfo`, {
     method: 'POST',
+    data: {
+      ...params,
+    },
   });
 }

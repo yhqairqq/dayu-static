@@ -74,10 +74,12 @@ class UserOptForm extends React.Component {
           })(<Input placeholder="请输入" />)}
         </FormItem>
         <FormItem key="username" {...this.formLayout} label="用户登录名">
-          {form.getFieldDecorator('username', {
-            rules: [{ required: true, message: '请输入用户登录名！' }],
-            initialValue: values.username,
-          })(<Input placeholder="请输入" />)}
+          {!isEdit &&
+            form.getFieldDecorator('username', {
+              rules: [{ required: true, message: '请输入用户登录名！' }],
+              initialValue: values.username,
+            })(<Input placeholder="请输入" />)}
+          {isEdit && <span style={{ color: '#aaa' }}>{values.username}</span>}
         </FormItem>
         <FormItem key="password" {...this.formLayout} label="登录密码">
           {form.getFieldDecorator('password', {})(

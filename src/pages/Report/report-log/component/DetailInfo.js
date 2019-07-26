@@ -11,9 +11,7 @@ const { TabPane } = Tabs;
 }))
 class DetailInfo extends React.Component {
   static defaultProps = {
-    values: {
-      groupId: 0,
-    },
+    values: {},
     handleModalVisible: () => {},
   };
 

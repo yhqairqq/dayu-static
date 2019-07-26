@@ -1,10 +1,12 @@
 import React from 'react';
 import { connect } from 'dva';
-import { Form, Input, Modal, Steps, Spin, Button, Checkbox, Row, Col, Divider } from 'antd';
+import { Form, Modal, Steps, Spin, Button, Select, Checkbox, Row, Col, Divider, Input } from 'antd';
 import styles from '../../../styles/Manage.less';
 
 const FormItem = Form.Item;
 const { Step } = Steps;
+const { Option } = Select;
+const { Search } = Input;
 
 @Form.create()
 @connect(({ commonInfo, user, loading }) => ({
@@ -41,6 +43,7 @@ class DataDimensionOpt extends React.Component {
       classifyOfChecked: [], // 已选品类列表
       classifyIndeterminate: true,
       checkAllClassify: false,
+      erpUsers: [],
     };
     this.formLayout = {
       labelCol: { span: 7 },
@@ -90,9 +93,6 @@ class DataDimensionOpt extends React.Component {
           classifies: data,
         });
       },
-    });
-    dispatch({
-      type: 'user/fetchErpUserInfo',
     });
   }
 
@@ -191,18 +191,47 @@ class DataDimensionOpt extends React.Component {
     );
   };
 
+  // 查询ERP用户
+  searchErpUser = value => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'user/fetchErpUserInfo',
+      payload: {
+        username: value,
+      },
+      callback: data => {
+        const { rows } = data;
+        this.setState({
+          erpUsers: rows,
+        });
+      },
+    });
+  };
+
   renderUserRelStep = () => {
-    const { formVals } = this.state;
+    const { formVals, erpUsers } = this.state;
     const { form } = this.props;
     return [
-      <FormItem key="erpUserId" {...this.formLayout} label="ERP用户关联">
+      <FormItem key="names" {...this.formLayout} label="ERP用户查询">
+        <Search
+          placeholder="请输入ERP用户登录名或昵称"
+          enterButton="查询"
+          onSearch={val => this.searchErpUser(val)}
+        />
+      </FormItem>,
+      <FormItem key="erpUserId" {...this.formLayout} label="用户关联">
         {form.getFieldDecorator('erpUserId', {
           initialValue: formVals.erpUserId,
         })(
-          // <Select style={{ width: '100%' }}>
-          //   <Option value="全部">全部</Option>
-          // </Select>
-          <Input placeholder="请输入ERP用户Id" />
+          <Select mode="multiple" style={{ width: '100%' }} placeholder="请关联ERP用户">
+            <Option value="0">全部</Option>
+            <Option value="-1">未选择</Option>
+            {erpUsers.map(u => (
+              <Option value={u.id}>
+                {u.name}({u.loginname})
+              </Option>
+            ))}
+          </Select>
         )}
       </FormItem>,
     ];

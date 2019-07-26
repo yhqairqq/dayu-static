@@ -86,13 +86,9 @@ export default {
         if (callback) callback(data);
       }
     },
-    *fetchErpUserInfo({ payload, callback }, { call, put }) {
+    *fetchErpUserInfo({ payload, callback }, { call }) {
       const resp = yield call(getErpUserInfo, payload);
       const { state, data } = resp;
-      yield put({
-        type: 'saveErpUserInfo',
-        payload: data,
-      });
       if (resp && state === 0) {
         if (callback) callback(data);
       }
@@ -104,12 +100,6 @@ export default {
       return {
         ...state,
         data: action.payload,
-      };
-    },
-    saveErpUserInfo(state, action) {
-      return {
-        ...state,
-        erpUserInfo: action.payload,
       };
     },
     save(state, action) {

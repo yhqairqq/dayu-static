@@ -1,6 +1,6 @@
 import React, { Fragment } from 'react';
 import { connect } from 'dva';
-import { Card, Icon, Button, Form, Divider, Col, Row, Tag, Input } from 'antd';
+import { Card, Icon, Button, Form, Divider, Col, Row, Tag, Input, Select } from 'antd';
 import moment from 'moment';
 
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
@@ -10,6 +10,7 @@ import DetailInfo from './component/DetailInfo';
 import styles from '../../styles/Manage.less';
 
 const FormItem = Form.Item;
+const { Option } = Select;
 
 const getValue = obj =>
   Object.keys(obj)
@@ -17,8 +18,9 @@ const getValue = obj =>
     .join(',');
 
 @Form.create()
-@connect(({ sqlRunLog, loading }) => ({
+@connect(({ sqlRunLog, user, loading }) => ({
   sqlRunLog,
+  user,
   loading: loading.models.sqlRunLog,
 }))
 class ReportLog extends React.Component {
@@ -33,7 +35,9 @@ class ReportLog extends React.Component {
   columns = [
     { title: '所属数据源', dataIndex: 'dsName' },
     { title: '报表名称', dataIndex: 'reportName' },
+    { title: '报表编码', dataIndex: 'reportCode' },
     { title: '耗时', dataIndex: 'elapsedTime', render: text => <span>{`${text}ms`}</span> },
+    { title: '执行人', dataIndex: 'creator' },
     {
       title: '执行时间',
       dataIndex: 'created',
@@ -63,6 +67,10 @@ class ReportLog extends React.Component {
     const { dispatch } = this.props;
     dispatch({
       type: 'sqlRunLog/fetch',
+    });
+    // 获取所有用户
+    dispatch({
+      type: 'user/fetch',
     });
   }
 
@@ -159,10 +167,24 @@ class ReportLog extends React.Component {
   renderForm() {
     const {
       form: { getFieldDecorator },
+      user: { list },
     } = this.props;
     return (
       <Form onSubmit={this.handleSearch} layout="inline">
         <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
+          <Col md={8} sm={24}>
+            <FormItem key="createdBy" label="执行人">
+              {getFieldDecorator('createdBy')(
+                <Select key="createdBy" placeholder="请选择执行人">
+                  {list.map(item => (
+                    <Option key={item.id} value={item.id}>
+                      {item.nickname}
+                    </Option>
+                  ))}
+                </Select>
+              )}
+            </FormItem>
+          </Col>
           <Col md={8} sm={24}>
             <FormItem key="reportName" label="报表名称">
               {getFieldDecorator('reportName')(<Input placeholder="请输入报表名称" />)}

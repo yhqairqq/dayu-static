@@ -11,6 +11,7 @@ import {
   getSqlInfoById,
   saveQueryField,
   getQueryFieldsByReportId,
+  getDetailById,
   saveReportColumns,
   getReportColumnsByReportId,
 } from '@/services/report';
@@ -128,6 +129,13 @@ export default {
     },
     *queryFields({ payload, callback }, { call }) {
       const resp = yield call(getQueryFieldsByReportId, payload);
+      const { state, data } = resp;
+      if (resp && state === 0) {
+        if (callback) callback(data);
+      }
+    },
+    *fetchDetail({ payload, callback }, { call }) {
+      const resp = yield call(getDetailById, payload);
       const { state, data } = resp;
       if (resp && state === 0) {
         if (callback) callback(data);
