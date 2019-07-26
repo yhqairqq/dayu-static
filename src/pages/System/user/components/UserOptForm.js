@@ -38,6 +38,7 @@ class UserOptForm extends React.Component {
       if (isEdit) {
         handleUpdate({
           userId: values.id,
+          username: values.username,
           ...fieldsValue,
         });
       } else {
@@ -77,7 +78,6 @@ class UserOptForm extends React.Component {
           {!isEdit &&
             form.getFieldDecorator('username', {
               rules: [{ required: true, message: '请输入用户登录名！' }],
-              initialValue: values.username,
             })(<Input placeholder="请输入" />)}
           {isEdit && <span style={{ color: '#aaa' }}>{values.username}</span>}
         </FormItem>
