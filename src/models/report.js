@@ -14,6 +14,7 @@ import {
   getDetailById,
   saveReportColumns,
   getReportColumnsByReportId,
+  queryData,
 } from '@/services/report';
 
 export default {
@@ -136,6 +137,14 @@ export default {
     },
     *fetchDetail({ payload, callback }, { call }) {
       const resp = yield call(getDetailById, payload);
+      const { state, data } = resp;
+      if (resp && state === 0) {
+        if (callback) callback(data);
+      }
+    },
+    // 查询报表数据
+    *queryData({ payload, callback }, { call }) {
+      const resp = yield call(queryData, payload);
       const { state, data } = resp;
       if (resp && state === 0) {
         if (callback) callback(data);
