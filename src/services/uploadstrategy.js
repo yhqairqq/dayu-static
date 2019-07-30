@@ -53,3 +53,13 @@ export async function editUploadStrategy(params) {
     },
   });
 }
+
+/**
+ * 获取所有上传策略
+ */
+export async function queryAllStrategyTypes() {
+  return request(`${PRE_URL}/getAllStrategyTypes`, {
+    method: 'POST',
+    data: {},
+  });
+}

@@ -5,10 +5,11 @@ import { Form, Input, Modal, Radio, Checkbox, Select } from 'antd';
 const FormItem = Form.Item;
 
 @Form.create()
-@connect(({ role, loading, appinfo }) => ({
+@connect(({ role, loading, appinfo, uploadstrategy }) => ({
   role,
   loading: loading.models.role,
   appinfo,
+  uploadstrategy,
 }))
 class StrategyOptForm extends React.Component {
   static defaultProps = {
@@ -54,6 +55,7 @@ class StrategyOptForm extends React.Component {
       values,
       form,
       appinfo: { allAppInfos },
+      uploadstrategy: { allStrategyTypes },
     } = this.props;
     return (
       <Modal
@@ -95,16 +97,17 @@ class StrategyOptForm extends React.Component {
         <Form.Item key="upload" {...this.formLayout} label="上传策略">
           {form.getFieldDecorator('upload', {
             rules: [{ required: true, message: '请选择上传策略！' }],
-            initialValue: values.upload,
+            initialValue: values.upload !== undefined ? values.upload.split(',') : '',
           })(
-            <Checkbox.Group
-              options={[
-                { label: '启动上传', value: '0' },
-                { label: '后台上传', value: '1' },
-                { label: '进入前台上传', value: '2' },
-                { label: '累计N个点上传', value: '3' },
-              ]}
-            />
+            <Checkbox.Group>
+              {allStrategyTypes.map(r => {
+                return (
+                  <Checkbox value={r.code} key={r.id}>
+                    {r.name}
+                  </Checkbox>
+                );
+              })}
+            </Checkbox.Group>
           )}
         </Form.Item>
         <Form.Item key="accNum" {...this.formLayout} label="累计点数">
@@ -127,6 +130,17 @@ class StrategyOptForm extends React.Component {
             <Radio.Group>
               <Radio value={0}>打开</Radio>
               <Radio value={1}>关闭</Radio>
+            </Radio.Group>
+          )}
+        </FormItem>
+        <FormItem key="autoTrack" {...this.formLayout} label="设置全埋点开关">
+          {form.getFieldDecorator('autoTrack', {
+            rules: [{ required: true, message: '请设置全埋点开关！' }],
+            initialValue: values.autoTrack,
+          })(
+            <Radio.Group>
+              <Radio value={1}>打开</Radio>
+              <Radio value={0}>关闭</Radio>
             </Radio.Group>
           )}
         </FormItem>

@@ -45,6 +45,13 @@ class StrategyManage extends React.Component {
     { title: '上传策略', dataIndex: 'upload' },
     { title: '累计点数', dataIndex: 'accNum' },
     {
+      title: '全埋点开关',
+      dataIndex: 'autoTrack',
+      render: text => {
+        return text === 0 ? `关闭` : `打开`;
+      },
+    },
+    {
       title: '创建时间',
       dataIndex: 'created',
       render: (text, record) => moment.unix(record.created).format('YYYY-MM-DD hh:mm:ss'),
@@ -76,6 +83,9 @@ class StrategyManage extends React.Component {
     });
     dispatch({
       type: 'appinfo/fetchAll',
+    });
+    dispatch({
+      type: 'uploadstrategy/fetchAllStrategyTypes',
     });
   }
 
@@ -156,6 +166,9 @@ class StrategyManage extends React.Component {
     });
     dispatch({
       type: 'appinfo/fetchAll',
+    });
+    dispatch({
+      type: 'uploadstrategy/fetchAllStrategyTypes',
     });
   };
 
