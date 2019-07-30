@@ -3,6 +3,7 @@ import {
   delUploadStrategy,
   editUploadStrategy,
   addUploadStrategy,
+  queryAllStrategyTypes,
 } from '@/services/uploadstrategy';
 
 export default {
@@ -25,14 +26,14 @@ export default {
         payload: resp.data,
       });
     },
-    // 删除埋点应用
+    // 删除上传策略
     *remove({ payload, callback }, { call }) {
       const response = yield call(delUploadStrategy, payload);
       if (response && response.state === 0) {
         if (callback) callback();
       }
     },
-    // 更新埋点应用信息
+    // 更新上传策略信息
     *update({ payload, callback }, { call }) {
       const response = yield call(editUploadStrategy, payload);
       if (response && response.state === 0) {
@@ -44,6 +45,17 @@ export default {
       const response = yield call(addUploadStrategy, payload);
       if (response && response.state === 0) {
         if (callback) callback();
+      }
+    },
+    *fetchAllStrategyTypes({ payload, callback }, { call, put }) {
+      const response = yield call(queryAllStrategyTypes, payload);
+      const { state, data = [] } = response;
+      yield put({
+        type: 'saveAllStrategyTypes',
+        payload: data,
+      });
+      if (response && state === 0) {
+        if (callback) callback(data);
       }
     },
   },
@@ -61,16 +73,10 @@ export default {
         allAppInfos: action.payload,
       };
     },
-    saveAllAnchorTypes(state, action) {
+    saveAllStrategyTypes(state, action) {
       return {
         ...state,
-        allAnchorTypes: action.payload,
-      };
-    },
-    saveAllEventTypes(state, action) {
-      return {
-        ...state,
-        allEventTypes: action.payload,
+        allStrategyTypes: action.payload,
       };
     },
     saveTree(state, action) {
