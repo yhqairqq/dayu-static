@@ -56,6 +56,7 @@ export default {
     'process.env.apiUrl': 'https://ladon.api.dailuobo.com',
   },
   treeShaking: true,
+  hash: true,
   targets: {
     ie: 11,
   },
