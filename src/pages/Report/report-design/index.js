@@ -17,6 +17,7 @@ import {
 } from 'antd';
 import StandardTable from '@/components/StandardTable';
 import Ellipsis from '@/components/Ellipsis';
+import AuthorizedButton from '@/components/AuthorizedButton';
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
 import ReportOptForm from './component/ReportOptForm';
 import ReportSqlEditor from './component/ReportSqlEditor';
@@ -90,16 +91,19 @@ class ReportDesign extends React.Component {
     {
       title: '操作',
       align: 'center',
+      width: 220,
       dataIndex: 'option',
       render: (text, record) => (
         <Fragment>
-          <Popconfirm
-            placement="top"
-            title="确实删除该分组？"
-            onConfirm={() => this.handleDelete(record)}
-          >
-            <a>删除</a>
-          </Popconfirm>
+          <AuthorizedButton mask="DEL">
+            <Popconfirm
+              placement="top"
+              title="确实删除该分组？"
+              onConfirm={() => this.handleDelete(record)}
+            >
+              <a>删除</a>
+            </Popconfirm>
+          </AuthorizedButton>
           <Divider type="vertical" />
           <a onClick={() => this.handleModalVisible(true, record, true)}>编辑</a>
           <Divider type="vertical" />
@@ -107,7 +111,9 @@ class ReportDesign extends React.Component {
           <Divider type="vertical" />
           <a onClick={() => this.handleSqlModalVisible(true, record)}>SQL</a>
           <Divider type="vertical" />
-          <a onClick={() => this.handleColumnModalVisible(true, record, true)}>表字段信息</a>
+          <AuthorizedButton mask="EDIT">
+            <a onClick={() => this.handleColumnModalVisible(true, record, true)}>表字段信息</a>
+          </AuthorizedButton>
         </Fragment>
       ),
     },

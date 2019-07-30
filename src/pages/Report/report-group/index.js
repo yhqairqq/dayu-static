@@ -16,6 +16,7 @@ import {
 } from 'antd';
 
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
+import AuthorizedButton from '@/components/AuthorizedButton';
 import GroupOptForm from './component/GroupOptForm';
 
 import styles from '../../styles/Manage.less';
@@ -59,7 +60,9 @@ class ReportGroup extends React.Component {
             <a>删除</a>
           </Popconfirm>
           <Divider type="vertical" />
-          <a onClick={() => this.handleModalVisible(true, record, true)}>编辑</a>
+          <AuthorizedButton>
+            <a onClick={() => this.handleModalVisible(true, record, true)}>编辑</a>
+          </AuthorizedButton>
         </Fragment>
       ),
     },
