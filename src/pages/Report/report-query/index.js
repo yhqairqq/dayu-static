@@ -13,6 +13,7 @@ import { splitType, includeTable } from './utils/report-type';
 }))
 class ReportQuery extends React.Component {
   state = {
+    reportId: null,
     report: {},
     fields: [],
     hasTable: false, // 是否有表格
@@ -24,9 +25,40 @@ class ReportQuery extends React.Component {
   componentDidMount() {
     const {
       match: { params },
-      dispatch,
+      history,
     } = this.props;
     const { reportId } = params;
+    this.setState(
+      {
+        reportId,
+      },
+      () => {
+        this.loadReportInfoData();
+      }
+    );
+
+    // 路由监听
+    history.listen(route => {
+      const { pathname } = route;
+      const arr = pathname.trim().split('/');
+      const tmpReportId = arr[2];
+      if (reportId !== tmpReportId) {
+        this.setState(
+          {
+            reportId: tmpReportId,
+          },
+          () => {
+            this.loadReportInfoData();
+          }
+        );
+      }
+    });
+  }
+
+  // 加载报表数据
+  loadReportInfoData = () => {
+    const { dispatch } = this.props;
+    const { reportId } = this.state;
     dispatch({
       type: 'report/fetchDetail',
       payload: {
@@ -45,7 +77,7 @@ class ReportQuery extends React.Component {
         });
       },
     });
-  }
+  };
 
   // 数据查询操作
   formQuery = fields => {
