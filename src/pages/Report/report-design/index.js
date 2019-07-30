@@ -16,6 +16,7 @@ import {
   message,
 } from 'antd';
 import StandardTable from '@/components/StandardTable';
+import Ellipsis from '@/components/Ellipsis';
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
 import ReportOptForm from './component/ReportOptForm';
 import ReportSqlEditor from './component/ReportSqlEditor';
@@ -74,7 +75,17 @@ class ReportDesign extends React.Component {
       dataIndex: 'type',
       render: text => <span>{this.tagOfTypes(text)}</span>,
     },
-    { title: '描述', dataIndex: 'comment' },
+    {
+      title: '描述',
+      dataIndex: 'comment',
+      render: text => (
+        <div style={{ width: 120 }}>
+          <Ellipsis tooltip lines={1}>
+            {text}
+          </Ellipsis>
+        </div>
+      ),
+    },
     { title: '创建人', dataIndex: 'creator' },
     {
       title: '操作',

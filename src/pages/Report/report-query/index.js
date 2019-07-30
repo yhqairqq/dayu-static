@@ -15,7 +15,7 @@ class ReportQuery extends React.Component {
   state = {
     reportId: null,
     report: {},
-    fields: [],
+    queryArgs: [],
     hasTable: false, // 是否有表格
     // graph: [], // 显示图形类型
     dataSource: [],
@@ -65,12 +65,12 @@ class ReportQuery extends React.Component {
         reportId,
       },
       callback: data => {
-        const { report, fields } = data;
+        const { report, queryArgs } = data;
         const { type } = report; // 报表展示类型
         const graph = splitType(type);
         const hasTable = includeTable(graph);
         this.setState({
-          fields,
+          queryArgs,
           report,
           // graph,
           hasTable,
@@ -136,13 +136,13 @@ class ReportQuery extends React.Component {
   };
 
   render() {
-    const { fields, report, hasTable, dataSource, columns } = this.state;
+    const { queryArgs, report, hasTable, dataSource, columns } = this.state;
     const { name, comment, queryFieldLabelLen, queryFieldMediaLen } = report;
     return (
       <PageHeaderWrapper title={name} content={comment}>
         <Card bordered={false}>
           <ReportQueryForm
-            items={fields}
+            items={queryArgs}
             labelSpan={queryFieldLabelLen}
             mediaSpan={queryFieldMediaLen}
             dependOnChange={this.dependOnChange}
