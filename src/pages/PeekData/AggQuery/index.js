@@ -26,11 +26,6 @@ import AggQueryModal from './AggQueryModal';
 
 const FormItem = Form.Item;
 
-const getValue = obj =>
-  Object.keys(obj)
-    .map(key => obj[key])
-    .join(',');
-
 @Form.create()
 @connect(({ user, loading, tag, model, peek }) => ({
   user,
@@ -123,12 +118,24 @@ class AggQuery extends React.Component {
   };
 
   // 重新加载数据
-  reloadData = (queryParams = {}) => {
+  reloadData = pagination => {
+    const { pageSize = 10, current = 1 } = pagination || {};
+    const { form } = this.props;
+    form.validateFields((err, fieldsValue) => {
+      if (err) return;
+      this.doQuery({
+        params: { ...fieldsValue, newVersion: true },
+        pageSize,
+        currentPage: current,
+      });
+    });
+  };
+
+  doQuery = params => {
     const { dispatch } = this.props;
-    const { params, ...otherParam } = queryParams;
     dispatch({
       type: 'peek/fetch',
-      payload: { params: { ...params, newVersion: true }, ...otherParam },
+      payload: params,
     });
   };
 
@@ -147,34 +154,12 @@ class AggQuery extends React.Component {
 
   handleSearch = e => {
     e.preventDefault();
-    const { form } = this.props;
-    form.validateFields((err, fieldsValue) => {
-      if (err) return;
-      this.reloadData({ params: fieldsValue });
-    });
+    this.reloadData();
   };
 
   // 分页、过滤、排序处理
-  handleStandardTableChange = (pagination, filtersArg, sorter) => {
-    const { formValues } = this.state;
-    const filters = Object.keys(filtersArg).reduce((obj, key) => {
-      const newObj = { ...obj };
-      newObj[key] = getValue(filtersArg[key]);
-      return newObj;
-    }, {});
-
-    const params = {
-      ...formValues,
-      ...filters,
-    };
-    if (sorter.field) {
-      params.sorter = `${sorter.field}_${sorter.order}`;
-    }
-    this.reloadData({
-      params,
-      currentPage: pagination.current,
-      pageSize: pagination.pageSize,
-    });
+  handleStandardTableChange = pagination => {
+    this.reloadData(pagination);
   };
 
   // 查询form表单

@@ -138,6 +138,11 @@ class FieldPane extends React.Component {
             <Select
               placeholder="请选择标签"
               value={selectedTagInFieldPane}
+              filterOption={(input, option) =>
+                option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+              }
+              optionFilterProp="children"
+              showSearch
               onChange={val => onParentStateChange({ selectedTagInFieldPane: val }, false)}
             >
               {tagList.map(item => (

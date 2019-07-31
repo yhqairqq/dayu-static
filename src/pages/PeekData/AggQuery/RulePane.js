@@ -74,6 +74,11 @@ class RulePane extends React.Component {
             <Select
               value={record.tagId}
               style={{ width: '100%' }}
+              filterOption={(input, option) =>
+                option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+              }
+              optionFilterProp="children"
+              showSearch
               onChange={value => this.onTagChange(index, value)}
             >
               {tagList.map(item => (

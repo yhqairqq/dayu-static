@@ -7,6 +7,19 @@ const isDateField = dataType =>
 const addQuotaIfNeed = (val, dataType) =>
   dataType === 'STRING' || isDateField(dataType) ? `'${val}'` : val;
 
+const toInStr = (val, dataType) => {
+  let temp = '';
+  if (val) {
+    temp = val
+      .split(',')
+      .map(item => item.trim())
+      .filter(item => item)
+      .map(item => addQuotaIfNeed(item, dataType))
+      .join(',');
+  }
+  return ` (${temp}) `;
+};
+
 const RuleFactoryMapper = {
   equals: (val, dataType) => `=  ${addQuotaIfNeed(val, dataType)}`,
   equalsIgnoreCase: (val, dataType) => `=  ${addQuotaIfNeed(val, dataType)}`,
@@ -17,12 +30,9 @@ const RuleFactoryMapper = {
   lte: (val, dataType) => `<=  ${addQuotaIfNeed(val, dataType)}`,
   startWith: val => `LIKE '${val}%'`,
   endWith: val => `LIKE '%${val}'`,
-  includes: (val, dataType) => {
-    if (dataType === 'STRING') {
-      return `LIKE '%${val}%'`;
-    }
-    return `IN (${val})`;
-  },
+  contains: val => `LIKE '%${val}%'`,
+  includes: (val, dataType) => `IN ${toInStr(val, dataType)}`,
+  notIncludes: (val, dataType) => `NOT IN ${toInStr(val, dataType)}`,
 };
 /**
  * Author: feixy
