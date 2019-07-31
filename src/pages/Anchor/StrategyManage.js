@@ -4,6 +4,7 @@ import { Row, Col, Card, Form, Select, Icon, Button, Popconfirm, message, Divide
 import moment from 'moment';
 import StandardTable from '@/components/StandardTable';
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
+import AuthorizedButton from '@/components/AuthorizedButton';
 import StrategyOptForm from './form/StrategyOptForm';
 
 import styles from '../styles/Manage.less';
@@ -62,15 +63,18 @@ class StrategyManage extends React.Component {
       dataIndex: 'option',
       render: (text, record) => (
         <Fragment>
-          <a onClick={() => this.handleModalVisible(true, record, true)}>编辑</a>
-          <Divider type="vertical" />
-          <Popconfirm
-            placement="top"
-            title="确定删除该应用？"
-            onConfirm={() => this.handleDelete(record)}
-          >
-            <a>删除</a>
-          </Popconfirm>
+          <AuthorizedButton mask={['DEL']}>
+            <Popconfirm
+              placement="top"
+              title="确定删除该应用？"
+              onConfirm={() => this.handleDelete(record)}
+            >
+              <a>删除</a>
+            </Popconfirm>
+          </AuthorizedButton>
+          <AuthorizedButton mask={['EDIT']}>
+            <a onClick={() => this.handleModalVisible(true, record, true)}>编辑</a>
+          </AuthorizedButton>
         </Fragment>
       ),
     },
@@ -279,13 +283,15 @@ class StrategyManage extends React.Component {
           <div className={styles.Manage}>
             {expandForm && <div className={styles.ManageForm}>{this.renderForm()}</div>}
             <div className={styles.ManageOperator}>
-              <Button
-                icon="plus"
-                type="primary"
-                onClick={() => this.handleModalVisible(true, {}, false)}
-              >
-                添加上传策略
-              </Button>
+              <AuthorizedButton mask={['ADD']}>
+                <Button
+                  icon="plus"
+                  type="primary"
+                  onClick={() => this.handleModalVisible(true, {}, false)}
+                >
+                  添加上传策略
+                </Button>
+              </AuthorizedButton>
               <span className={styles.querySubmitButtons}>
                 <Button type="primary" onClick={this.handleSearch}>
                   查询

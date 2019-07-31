@@ -16,14 +16,13 @@ export default {
       const response = yield call(accountLogin, payload);
       const { state, data } = response;
 
-      yield put({
-        type: 'changeLoginStatus',
-        payload: data,
-      });
       // Login successfully
       if (state === 0) {
-        const { token } = data;
+        const { token, optPermissions } = data;
         localStorage.setItem('token', token);
+        localStorage.setItem('optPermissions', JSON.stringify(optPermissions));
+
+        // 获取是否需要重定向
         const urlParams = new URL(window.location.href);
         const params = getPageQuery();
         let { redirect } = params;

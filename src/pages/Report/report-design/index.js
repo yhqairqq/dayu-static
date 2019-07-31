@@ -104,14 +104,16 @@ class ReportDesign extends React.Component {
               <a>删除</a>
             </Popconfirm>
           </AuthorizedButton>
-          <Divider type="vertical" />
-          <a onClick={() => this.handleModalVisible(true, record, true)}>编辑</a>
-          <Divider type="vertical" />
-          <a onClick={() => this.handleQueryFieldModalVisible(true, record)}>查询参数</a>
-          <Divider type="vertical" />
-          <a onClick={() => this.handleSqlModalVisible(true, record)}>SQL</a>
-          <Divider type="vertical" />
-          <AuthorizedButton mask="EDIT">
+          <AuthorizedButton mask={['EDIT']}>
+            <a onClick={() => this.handleModalVisible(true, record, true)}>编辑</a>
+          </AuthorizedButton>
+          <AuthorizedButton mask={['EDIT']}>
+            <a onClick={() => this.handleQueryFieldModalVisible(true, record)}>查询参数</a>
+          </AuthorizedButton>
+          <AuthorizedButton mask={['EDIT']}>
+            <a onClick={() => this.handleSqlModalVisible(true, record)}>SQL</a>
+          </AuthorizedButton>
+          <AuthorizedButton mask={['EDIT']}>
             <a onClick={() => this.handleColumnModalVisible(true, record, true)}>表字段信息</a>
           </AuthorizedButton>
         </Fragment>
@@ -434,13 +436,15 @@ class ReportDesign extends React.Component {
           <div className={styles.Manage}>
             {expandForm && <div className={styles.ManageForm}>{this.renderForm()}</div>}
             <div className={styles.ManageOperator}>
-              <Button
-                icon="plus"
-                type="primary"
-                onClick={() => this.handleModalVisible(true, {}, false)}
-              >
-                新建
-              </Button>
+              <AuthorizedButton mask={['ADD']}>
+                <Button
+                  icon="plus"
+                  type="primary"
+                  onClick={() => this.handleModalVisible(true, {}, false)}
+                >
+                  新建
+                </Button>
+              </AuthorizedButton>
               <span className={styles.querySubmitButtons}>
                 <Button type="primary" onClick={this.handleSearch}>
                   查询

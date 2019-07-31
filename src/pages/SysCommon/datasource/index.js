@@ -17,6 +17,7 @@ import {
 import StandardTable from '@/components/StandardTable';
 import Ellipsis from '@/components/Ellipsis';
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
+import AuthorizedButton from '@/components/AuthorizedButton';
 
 import DsOptForm from './components/DsOptForm';
 import styles from '../../styles/Manage.less';
@@ -103,23 +104,27 @@ class DatasourceManage extends PureComponent {
       key: 'action',
       render: (text, record) => (
         <Fragment>
-          <Popconfirm
-            placement="top"
-            title="确定删除该数据源？"
-            onConfirm={() => this.handleDelete(record)}
-          >
-            <a>删除</a>
-          </Popconfirm>
-          <Divider type="vertical" />
-          <a onClick={() => this.handleModalVisible(true, record, true)}>编辑</a>
-          <Divider type="vertical" />
-          <Popconfirm
-            placement="top"
-            title={record.status === 0 ? '确定停用' : '确定启用'}
-            onConfirm={() => this.handleStatus(record)}
-          >
-            <a>{record.status === 0 ? '停用' : '启用'}</a>
-          </Popconfirm>
+          <AuthorizedButton mask={['DEL']}>
+            <Popconfirm
+              placement="top"
+              title="确定删除该数据源？"
+              onConfirm={() => this.handleDelete(record)}
+            >
+              <a>删除</a>
+            </Popconfirm>
+          </AuthorizedButton>
+          <AuthorizedButton mask={['EDIT']}>
+            <a onClick={() => this.handleModalVisible(true, record, true)}>编辑</a>
+          </AuthorizedButton>
+          <AuthorizedButton mask={['EDIT']}>
+            <Popconfirm
+              placement="top"
+              title={record.status === 0 ? '确定停用' : '确定启用'}
+              onConfirm={() => this.handleStatus(record)}
+            >
+              <a>{record.status === 0 ? '停用' : '启用'}</a>
+            </Popconfirm>
+          </AuthorizedButton>
         </Fragment>
       ),
     },
@@ -370,9 +375,11 @@ class DatasourceManage extends PureComponent {
           <div className={styles.Manage}>
             {expandForm && <div className={styles.ManageForm}>{this.renderForm()}</div>}
             <div className={styles.ManageOperator}>
-              <Button type="primary" icon="plus" onClick={() => this.handleModalVisible(true)}>
-                新建
-              </Button>
+              <AuthorizedButton mask={['ADD']}>
+                <Button type="primary" icon="plus" onClick={() => this.handleModalVisible(true)}>
+                  新建
+                </Button>
+              </AuthorizedButton>
               <span className={styles.querySubmitButtons}>
                 <Button type="primary" onClick={this.handleSearch}>
                   查询

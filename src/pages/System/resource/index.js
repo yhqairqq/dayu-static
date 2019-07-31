@@ -16,6 +16,7 @@ import {
 } from 'antd';
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
 import ResOptForm from './components/ResOptForm';
+import AuthorizedButton from '@/components/AuthorizedButton';
 
 import styles from '../../styles/Manage.less';
 
@@ -64,15 +65,18 @@ class ResManage extends React.Component {
       dataIndex: 'option',
       render: (text, record) => (
         <Fragment>
-          <Popconfirm
-            placement="top"
-            title="确定删除该资源？"
-            onConfirm={() => this.handleDelete(record)}
-          >
-            <a>删除</a>
-          </Popconfirm>
-          <Divider type="vertical" />
-          <a onClick={() => this.handleModalVisible(true, record, true)}>编辑</a>
+          <AuthorizedButton mask={['DEL']}>
+            <Popconfirm
+              placement="top"
+              title="确定删除该资源？"
+              onConfirm={() => this.handleDelete(record)}
+            >
+              <a>删除</a>
+            </Popconfirm>
+          </AuthorizedButton>
+          <AuthorizedButton mask={['EDIT']}>
+            <a onClick={() => this.handleModalVisible(true, record, true)}>编辑</a>
+          </AuthorizedButton>
         </Fragment>
       ),
     },
@@ -270,13 +274,15 @@ class ResManage extends React.Component {
           <div className={styles.Manage}>
             {expandForm && <div className={styles.ManageForm}>{this.renderForm()}</div>}
             <div className={styles.ManageOperator}>
-              <Button
-                icon="plus"
-                type="primary"
-                onClick={() => this.handleModalVisible(true, {}, false)}
-              >
-                添加资源
-              </Button>
+              <AuthorizedButton mask={['ADD']}>
+                <Button
+                  icon="plus"
+                  type="primary"
+                  onClick={() => this.handleModalVisible(true, {}, false)}
+                >
+                  添加资源
+                </Button>
+              </AuthorizedButton>
               <span className={styles.querySubmitButtons}>
                 <Button type="primary" onClick={this.handleSearch}>
                   查询

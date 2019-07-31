@@ -20,6 +20,7 @@ import {
 } from 'antd';
 import StandardTable from '@/components/StandardTable';
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
+import AuthorizedButton from '@/components/AuthorizedButton';
 
 import styles from './index.less';
 import AggQueryModal from './AggQueryModal';
@@ -57,16 +58,18 @@ class AggQuery extends React.Component {
         title: '操作',
         render: (text, record) => (
           <Fragment>
-            <Popconfirm
-              placement="top"
-              title="确定删除该模型？"
-              onConfirm={() => this.handleDelete(record)}
-            >
-              <a>删除</a>
-            </Popconfirm>
-            <Divider type="vertical" />
-            <a onClick={() => this.handleModalVisible(true, record)}>编辑</a>
-            <Divider type="vertical" />
+            <AuthorizedButton mask={['DEL']}>
+              <Popconfirm
+                placement="top"
+                title="确定删除该模型？"
+                onConfirm={() => this.handleDelete(record)}
+              >
+                <a>删除</a>
+              </Popconfirm>
+            </AuthorizedButton>
+            <AuthorizedButton mask={['EDIT']}>
+              <a onClick={() => this.handleModalVisible(true, record)}>编辑</a>
+            </AuthorizedButton>
             <Popconfirm
               placement="top"
               title="导出数据到邮箱"
@@ -205,9 +208,11 @@ class AggQuery extends React.Component {
     const { expandForm } = this.state;
     return (
       <div className={styles.operators}>
-        <Button icon="plus" type="primary" onClick={() => this.handleModalVisible(true)}>
-          新建
-        </Button>
+        <AuthorizedButton mask={['ADD']}>
+          <Button icon="plus" type="primary" onClick={() => this.handleModalVisible(true)}>
+            新建
+          </Button>
+        </AuthorizedButton>
         <span className={styles.querySubmitButtons}>
           <Button type="primary" onClick={this.handleSearch}>
             查询

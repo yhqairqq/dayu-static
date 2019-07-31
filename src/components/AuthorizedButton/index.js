@@ -1,18 +1,31 @@
 import React, { Component } from 'react';
 
+import check from './CheckPermissions';
+
 import styles from './index.less';
 
 class AuthorizedButton extends Component {
   constructor(props) {
     super(props);
-    this.state = {};
+    this.state = {
+      showElement: false,
+    };
   }
 
-  componentDidMount() {}
+  componentDidMount() {
+    const {
+      location: { pathname },
+    } = window;
+    const { mask } = this.props;
+    this.setState({
+      showElement: check(pathname, mask), // 判断是否有权限显示
+    });
+  }
 
   render() {
     const { children } = this.props;
-    return <div className={styles.btnWrapper}>{children}</div>;
+    const { showElement } = this.state;
+    return showElement ? <div className={styles.btnWrapper}>{children}</div> : null;
   }
 }
 

@@ -52,15 +52,16 @@ class ReportGroup extends React.Component {
       dataIndex: 'option',
       render: (text, record) => (
         <Fragment>
-          <Popconfirm
-            placement="top"
-            title="确实删除该分组？"
-            onConfirm={() => this.handleDelete(record)}
-          >
-            <a>删除</a>
-          </Popconfirm>
-          <Divider type="vertical" />
-          <AuthorizedButton>
+          <AuthorizedButton mask={['DEL']}>
+            <Popconfirm
+              placement="top"
+              title="确实删除该分组？"
+              onConfirm={() => this.handleDelete(record)}
+            >
+              <a>删除</a>
+            </Popconfirm>
+          </AuthorizedButton>
+          <AuthorizedButton mask={['EDIT']}>
             <a onClick={() => this.handleModalVisible(true, record, true)}>编辑</a>
           </AuthorizedButton>
         </Fragment>
@@ -256,13 +257,15 @@ class ReportGroup extends React.Component {
           <div className={styles.Manage}>
             {expandForm && <div className={styles.ManageForm}>{this.renderForm()}</div>}
             <div className={styles.ManageOperator}>
-              <Button
-                icon="plus"
-                type="primary"
-                onClick={() => this.handleModalVisible(true, {}, false)}
-              >
-                新建
-              </Button>
+              <AuthorizedButton mask={['ADD']}>
+                <Button
+                  icon="plus"
+                  type="primary"
+                  onClick={() => this.handleModalVisible(true, {}, false)}
+                >
+                  新建
+                </Button>
+              </AuthorizedButton>
               <span className={styles.querySubmitButtons}>
                 <Button type="primary" onClick={this.handleSearch}>
                   查询

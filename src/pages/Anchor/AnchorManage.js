@@ -17,6 +17,8 @@ import {
 import moment from 'moment';
 import StandardTable from '@/components/StandardTable';
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
+import Ellipsis from '@/components/Ellipsis';
+import AuthorizedButton from '@/components/AuthorizedButton';
 import AnchorOptForm from './form/AnchorOptForm';
 
 import styles from '../styles/Manage.less';
@@ -96,31 +98,54 @@ class CereBrumManage extends React.Component {
       dataIndex: 'created',
       render: (text, record) => moment.unix(record.created).format('YYYY-MM-DD hh:mm:ss'),
     },
-    { title: '备注', dataIndex: 'comment' },
+    {
+      title: '备注',
+      dataIndex: 'comment',
+      render: text => (
+        <div style={{ width: 120 }}>
+          <Ellipsis tooltip lines={1}>
+            {text}
+          </Ellipsis>
+        </div>
+      ),
+    },
     {
       title: '操作',
       dataIndex: 'option',
       render: (text, record) => {
-        if (record.status === 0) {
-          return (
-            <Fragment>
-              <a onClick={() => this.handleModalVisible(true, record, true)}>编辑</a>
-              <Divider type="vertical" />
-              <a onClick={() => this.handleOnline(record)}>上线</a>
-              <Divider type="vertical" />
+        return (
+          <Fragment>
+            <AuthorizedButton mask={['DEL']}>
               <Popconfirm
                 placement="top"
                 title="确定删除该应用？"
                 onConfirm={() => this.handleDelete(record)}
               >
-                <a>删除</a>
+                <a style={{ display: record.status === 0 ? '' : 'none' }}>删除</a>
               </Popconfirm>
-            </Fragment>
-          );
-        }
-        return (
-          <Fragment>
-            <a onClick={() => this.handleOffline(record)}>下线</a>
+            </AuthorizedButton>
+            <AuthorizedButton mask={['EDIT']}>
+              <a
+                style={{ display: record.status === 0 ? '' : 'none' }}
+                onClick={() => this.handleModalVisible(true, record, true)}
+              >
+                编辑
+              </a>
+            </AuthorizedButton>
+            <AuthorizedButton mask={['EDIT']}>
+              <a
+                style={{ display: record.status === 0 ? '' : 'none' }}
+                onClick={() => this.handleOnline(record)}
+              >
+                上线
+              </a>
+              <a
+                style={{ display: record.status === 1 ? '' : 'none' }}
+                onClick={() => this.handleOffline(record)}
+              >
+                下线
+              </a>
+            </AuthorizedButton>
           </Fragment>
         );
       },

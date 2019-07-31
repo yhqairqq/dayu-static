@@ -17,6 +17,7 @@ import StandardTable from '@/components/StandardTable';
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
 import RoleOptForm from './components/RoleOptForm';
 import AllotRes2Role from './components/AllotRes2Role';
+import AuthorizedButton from '@/components/AuthorizedButton';
 
 import styles from '../../styles/Manage.less';
 
@@ -61,17 +62,21 @@ class RoleManage extends React.Component {
       dataIndex: 'option',
       render: (text, record) => (
         <Fragment>
-          <Popconfirm
-            placement="top"
-            title="确定删除该角色？"
-            onConfirm={() => this.handleDelete(record)}
-          >
-            <a>删除</a>
-          </Popconfirm>
-          <Divider type="vertical" />
-          <a onClick={() => this.handleAllotModalVisible(true, record)}>分配资源</a>
-          <Divider type="vertical" />
-          <a onClick={() => this.handleModalVisible(true, record, true)}>编辑</a>
+          <AuthorizedButton mask={['DEL']}>
+            <Popconfirm
+              placement="top"
+              title="确定删除该角色？"
+              onConfirm={() => this.handleDelete(record)}
+            >
+              <a>删除</a>
+            </Popconfirm>
+          </AuthorizedButton>
+          <AuthorizedButton mask={['EDIT']}>
+            <a onClick={() => this.handleAllotModalVisible(true, record)}>分配资源</a>
+          </AuthorizedButton>
+          <AuthorizedButton mask={['EDIT']}>
+            <a onClick={() => this.handleModalVisible(true, record, true)}>编辑</a>
+          </AuthorizedButton>
         </Fragment>
       ),
     },
@@ -292,13 +297,15 @@ class RoleManage extends React.Component {
           <div className={styles.Manage}>
             {expandForm && <div className={styles.ManageForm}>{this.renderForm()}</div>}
             <div className={styles.ManageOperator}>
-              <Button
-                icon="plus"
-                type="primary"
-                onClick={() => this.handleModalVisible(true, {}, false)}
-              >
-                添加新角色
-              </Button>
+              <AuthorizedButton mask={['ADD']}>
+                <Button
+                  icon="plus"
+                  type="primary"
+                  onClick={() => this.handleModalVisible(true, {}, false)}
+                >
+                  添加新角色
+                </Button>
+              </AuthorizedButton>
               <span className={styles.querySubmitButtons}>
                 <Button type="primary" onClick={this.handleSearch}>
                   查询
