@@ -1,6 +1,7 @@
 import React from 'react';
 import { connect } from 'dva';
 import { Form, Modal, Tabs } from 'antd';
+import SqlEditor from '@/components/SqlEditor';
 
 const { TabPane } = Tabs;
 
@@ -43,7 +44,6 @@ class DetailInfo extends React.Component {
   render() {
     const { modalVisible, handleModalVisible } = this.props;
     const { text, errInfo } = this.state;
-
     return (
       <Modal
         destroyOnClose
@@ -58,7 +58,7 @@ class DetailInfo extends React.Component {
       >
         <Tabs defaultActiveKey="1" style={{ marginBottom: '15px' }}>
           <TabPane tab="运行SQL" key="1">
-            {text}
+            <SqlEditor value={text} readOnly={false} />
           </TabPane>
           <TabPane tab="错误日志" key="2">
             {errInfo}

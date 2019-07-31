@@ -15,6 +15,7 @@ import {
   Divider,
 } from 'antd';
 import StandardTable from '@/components/StandardTable';
+import Ellipsis from '@/components/Ellipsis';
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
 
 import DsOptForm from './components/DsOptForm';
@@ -61,6 +62,13 @@ class DatasourceManage extends PureComponent {
       title: '数据源URL',
       dataIndex: 'jdbcUrl',
       key: 'jdbcUrl',
+      render: text => (
+        <div style={{ width: 120 }}>
+          <Ellipsis tooltip lines={1}>
+            {text}
+          </Ellipsis>
+        </div>
+      ),
     },
     {
       title: '登录账号',

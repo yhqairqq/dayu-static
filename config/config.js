@@ -57,6 +57,7 @@ export default {
     // 'process.env.apiUrl': 'http://ladon.api.caicaivip.com',
   },
   treeShaking: true,
+  hash: true,
   targets: {
     ie: 11,
   },

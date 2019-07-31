@@ -144,6 +144,16 @@ class ReportOptForm extends React.Component {
             </Radio.Group>
           )}
         </FormItem>
+        <FormItem key="statical" {...this.formLayout} label="报表状态">
+          {form.getFieldDecorator('statical', {
+            initialValue: values.statical,
+          })(
+            <Radio.Group>
+              <Radio.Button value={0}>动态报表</Radio.Button>
+              <Radio.Button value={1}>静态报表</Radio.Button>
+            </Radio.Group>
+          )}
+        </FormItem>
         <FormItem key="xAxis" {...this.formLayout} label="X轴列名">
           {form.getFieldDecorator('xAxis', {
             initialValue: values.xAxis,

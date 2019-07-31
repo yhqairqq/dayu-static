@@ -13,8 +13,9 @@ import { splitType, includeTable } from './utils/report-type';
 }))
 class ReportQuery extends React.Component {
   state = {
+    reportId: null,
     report: {},
-    fields: [],
+    queryArgs: [],
     hasTable: false, // 是否有表格
     // graph: [], // 显示图形类型
     dataSource: [],
@@ -24,28 +25,59 @@ class ReportQuery extends React.Component {
   componentDidMount() {
     const {
       match: { params },
-      dispatch,
+      history,
     } = this.props;
     const { reportId } = params;
+    this.setState(
+      {
+        reportId,
+      },
+      () => {
+        this.loadReportInfoData();
+      }
+    );
+
+    // 路由监听
+    history.listen(route => {
+      const { pathname } = route;
+      const arr = pathname.trim().split('/');
+      const tmpReportId = arr[2];
+      if (reportId !== tmpReportId) {
+        this.setState(
+          {
+            reportId: tmpReportId,
+          },
+          () => {
+            this.loadReportInfoData();
+          }
+        );
+      }
+    });
+  }
+
+  // 加载报表数据
+  loadReportInfoData = () => {
+    const { dispatch } = this.props;
+    const { reportId } = this.state;
     dispatch({
       type: 'report/fetchDetail',
       payload: {
         reportId,
       },
       callback: data => {
-        const { report, fields } = data;
+        const { report, queryArgs } = data;
         const { type } = report; // 报表展示类型
         const graph = splitType(type);
         const hasTable = includeTable(graph);
         this.setState({
-          fields,
+          queryArgs,
           report,
           // graph,
           hasTable,
         });
       },
     });
-  }
+  };
 
   // 数据查询操作
   formQuery = fields => {
@@ -104,13 +136,13 @@ class ReportQuery extends React.Component {
   };
 
   render() {
-    const { fields, report, hasTable, dataSource, columns } = this.state;
+    const { queryArgs, report, hasTable, dataSource, columns } = this.state;
     const { name, comment, queryFieldLabelLen, queryFieldMediaLen } = report;
     return (
       <PageHeaderWrapper title={name} content={comment}>
         <Card bordered={false}>
           <ReportQueryForm
-            items={fields}
+            items={queryArgs}
             labelSpan={queryFieldLabelLen}
             mediaSpan={queryFieldMediaLen}
             dependOnChange={this.dependOnChange}

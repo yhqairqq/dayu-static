@@ -76,7 +76,7 @@ class CommonOptForm extends React.Component {
             rules: [{ required: true, message: '类型必须选择' }],
             initialValue: values.classify,
           })(
-            <Select style={{ width: '100%' }} placeholder="请选择类型">
+            <Select style={{ width: '100%' }} placeholder="请选择类型" disabled={isEdit}>
               {allTypes.map(item => (
                 <Option value={item.left} key={item.left}>
                   {item.right}

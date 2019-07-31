@@ -15,6 +15,7 @@ import {
 } from 'antd';
 import StandardTable from '@/components/StandardTable';
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
+import Ellipsis from '@/components/Ellipsis';
 
 import styles from './PeekData.less';
 import ModelUpgradeModal from './form/ModelUpgradeModal';
@@ -54,7 +55,17 @@ class ModelManage extends React.Component {
       },
     },
     { title: '创建人', dataIndex: 'creator' },
-    { title: '描述', dataIndex: 'desc' },
+    {
+      title: '描述',
+      dataIndex: 'desc',
+      render: text => (
+        <div style={{ width: 220 }}>
+          <Ellipsis tooltip lines={1}>
+            {text}
+          </Ellipsis>
+        </div>
+      ),
+    },
     {
       title: '操作',
       render: (text, record) => (
