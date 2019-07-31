@@ -123,11 +123,12 @@ class AggQuery extends React.Component {
   };
 
   // 重新加载数据
-  reloadData = (params = {}) => {
+  reloadData = (queryParams = {}) => {
     const { dispatch } = this.props;
+    const { params, ...otherParam } = queryParams;
     dispatch({
       type: 'peek/fetch',
-      payload: { params: { ...params, newVersion: true } },
+      payload: { params: { ...params, newVersion: true }, ...otherParam },
     });
   };
 
