@@ -32,10 +32,8 @@ class DataImportList extends React.Component {
     importModalVisible: false,
     expandForm: false,
     item: {},
-
     data: {
       list: [],
-      pagination: { pageSize: 10, current: 1, total: 0 },
     },
     queryParams: {},
   };
@@ -106,17 +104,24 @@ class DataImportList extends React.Component {
     });
   };
 
-  doQuery = () => {
+  doQuery = pagination => {
+    const { pageSize = 10, currentPage = 1 } = pagination || {};
     const { dispatch } = this.props;
     dispatch({
       type: 'peek/fetchImportRecordList',
-      payload: { params: this.getQueryParams() },
+      payload: { params: this.getQueryParams(), pageSize, currentPage },
       callback: data => {
         this.setState({
           data,
         });
       },
     });
+  };
+
+  // 分页、过滤、排序处理
+  handleStandardTableChange = pagination => {
+    const { pageSize, current } = pagination;
+    this.doQuery({ pageSize, currentPage: current });
   };
 
   renderImportModal = () => {
@@ -229,6 +234,7 @@ class DataImportList extends React.Component {
                 loading={loading}
                 rowKey={record => record.id}
                 columns={this.columns}
+                onChange={this.handleStandardTableChange}
               />
               {this.renderImportModal()}
               {this.renderPreviewModal()}
