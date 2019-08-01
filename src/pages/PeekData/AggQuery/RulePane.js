@@ -105,6 +105,11 @@ class RulePane extends React.Component {
                 value={record.metaId}
                 style={{ width: '90%' }}
                 allowClear
+                filterOption={(input, option) =>
+                  option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                }
+                optionFilterProp="children"
+                showSearch
                 onChange={value => this.onFieldChange(index, value, modelMetaMap[value])}
               >
                 {fieldList.map(item => (

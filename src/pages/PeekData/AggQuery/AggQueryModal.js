@@ -131,6 +131,7 @@ class AggQueryModal extends React.Component {
       metaShowName: meta.showName,
       metaName: meta.name,
       dataType: meta.dataType,
+      originDataType: meta.originDataType,
       metaId: meta.id,
       tagId: meta.tagId,
       remark: meta.remark,
