@@ -2,8 +2,6 @@ import React from 'react';
 import { Table, Select, Form, Tooltip, Icon, Input } from 'antd';
 import styles from './index.less';
 
-const AGG_TYPE_LIST = ['SUM', 'COUNT', 'MAX', 'MIN', 'AVG', 'COUNT DISTINCT'];
-const AGG_TYPE_LIST_STR = ['COUNT', 'COUNT DISTINCT'];
 const FormItem = Form.Item;
 const SelectOption = Select.Option;
 
@@ -17,6 +15,17 @@ const formItemLayout = {
     sm: { span: 6 },
   },
 };
+
+const getFuncList = dataType => {
+  if (dataType === 'STRING') {
+    return ['COUNT', 'COUNT DISTINCT'];
+  }
+  if (dataType === 'DATE' || dataType === 'DATETIME' || dataType === 'TIME') {
+    return ['COUNT', 'COUNT DISTINCT', 'MAX', 'MIN'];
+  }
+  return ['SUM', 'COUNT', 'MAX', 'MIN', 'AVG', 'COUNT DISTINCT'];
+};
+
 /**
  * Author: feixy
  * Date: 2019-07-04
@@ -63,7 +72,7 @@ class FieldPane extends React.Component {
         key: 'aggExpression',
         width: '25%',
         render: (text, record) => {
-          const funcList = record.dataType === 'STRING' ? AGG_TYPE_LIST_STR : AGG_TYPE_LIST;
+          const funcList = getFuncList(record.dataType);
           return (
             <Select
               placeholder="请选择聚合函数"
