@@ -8,6 +8,7 @@ import {
   getDataTypes,
   getTables,
   getAllDsTypes,
+  testConnection,
 } from '@/services/datasource';
 
 export default {
@@ -91,6 +92,15 @@ export default {
         type: 'saveDataTypes',
         payload: response.data,
       });
+    },
+
+    *testConnection({ payload, callback }, { call }) {
+      const response = yield call(testConnection, payload);
+      if (response.state === 0) {
+        if (callback) {
+          callback();
+        }
+      }
     },
   },
 

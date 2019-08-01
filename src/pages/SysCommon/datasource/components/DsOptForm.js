@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'dva';
-import { Form, Input, Select, Modal } from 'antd';
+import { Form, Input, Select, Modal, Button, message } from 'antd';
 
 const FormItem = Form.Item;
 const { Option } = Select;
@@ -37,10 +37,8 @@ class DsOptForm extends React.Component {
   }
 
   okHandle = () => {
-    const { values, isEdit = false, form, handleAdd, handleUpdate } = this.props;
-    form.validateFields((err, fieldsValue) => {
-      if (err) return;
-      form.resetFields();
+    this.doTest(fieldsValue => {
+      const { values, isEdit = false, handleAdd, handleUpdate } = this.props;
       if (isEdit) {
         handleUpdate({
           dsId: values.id,
@@ -71,6 +69,39 @@ class DsOptForm extends React.Component {
     });
   };
 
+  doTest = (callback = () => {}) => {
+    const { form, dispatch } = this.props;
+    form.validateFields((err, fieldsValue) => {
+      if (err) return;
+      dispatch({
+        type: 'datasource/testConnection',
+        payload: fieldsValue,
+        callback: () => callback(fieldsValue),
+      });
+    });
+  };
+
+  renderFooter = () => {
+    const { handleModalVisible } = this.props;
+    return (
+      <div>
+        <Button
+          key="test"
+          style={{ float: 'left' }}
+          onClick={() => this.doTest(() => message.success('数据源连接成功'))}
+        >
+          测试
+        </Button>
+        <Button key="cancel" onClick={() => handleModalVisible()}>
+          取消
+        </Button>
+        <Button key="submit" type="primary" onClick={this.okHandle}>
+          保存
+        </Button>
+      </div>
+    );
+  };
+
   render() {
     const {
       isEdit,
@@ -87,7 +118,7 @@ class DsOptForm extends React.Component {
         style={{ top: 20 }}
         title={isEdit ? '修改数据源' : '新增数据源'}
         visible={modalVisible}
-        onOk={this.okHandle}
+        footer={this.renderFooter()}
         onCancel={() => handleModalVisible()}
       >
         <FormItem key="name" {...this.formLayout} label="数据源名称">

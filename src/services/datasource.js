@@ -15,6 +15,15 @@ export async function addDatasource(params) {
   });
 }
 
+export async function testConnection(params) {
+  return request(`${PRE_URL}/test`, {
+    method: 'POST',
+    data: {
+      ...params,
+    },
+  });
+}
+
 /**
  * 获取所有支持的数据源类型
  */
