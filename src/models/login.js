@@ -20,7 +20,11 @@ export default {
       if (state === 0) {
         const { token, optPermissions } = data;
         localStorage.setItem('token', token);
-        localStorage.setItem('optPermissions', JSON.stringify(optPermissions));
+        if (optPermissions) {
+          localStorage.setItem('optPermissions', JSON.stringify(optPermissions));
+        } else {
+          localStorage.setItem('optPermissions', JSON.stringify({}));
+        }
 
         // 获取是否需要重定向
         const urlParams = new URL(window.location.href);

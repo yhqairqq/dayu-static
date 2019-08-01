@@ -95,7 +95,7 @@ class ReportDesign extends React.Component {
       dataIndex: 'option',
       render: (text, record) => (
         <Fragment>
-          <AuthorizedButton mask="DEL">
+          <AuthorizedButton mask={['DEL']}>
             <Popconfirm
               placement="top"
               title="确实删除该分组？"
