@@ -113,7 +113,7 @@ request.interceptors.response.use(async response => {
   const ret = await response.clone().json();
   const { state, message, code } = ret;
   if (state !== 0) {
-    if (code === '401') {
+    if (code === 401) {
       notification.destroy();
       notification.error({
         message: '未登录或登录已过期，请重新登录。',
