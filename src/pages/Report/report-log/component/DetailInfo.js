@@ -58,7 +58,7 @@ class DetailInfo extends React.Component {
       >
         <Tabs defaultActiveKey="1" style={{ marginBottom: '15px' }}>
           <TabPane tab="运行SQL" key="1">
-            <SqlEditor value={text} readOnly={false} />
+            <SqlEditor value={text} readOnly />
           </TabPane>
           <TabPane tab="错误日志" key="2">
             {errInfo}

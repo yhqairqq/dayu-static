@@ -1,6 +1,7 @@
 import React from 'react';
 import { connect } from 'dva';
 import { Form, Input, Modal, Select, Radio, Steps, Spin, Button, InputNumber } from 'antd';
+import SqlEditor from '@/components/SqlEditor';
 import styles from '../index.less';
 
 const FormItem = Form.Item;
@@ -226,7 +227,7 @@ class ReportSqlEditor extends React.Component {
       <FormItem key="text" label="SQL">
         {form.getFieldDecorator('text', {
           initialValue: formVals.text,
-        })(<TextArea rows={24} placeholder="请输入" />)}
+        })(<SqlEditor />)}
       </FormItem>,
     ];
   };
@@ -238,7 +239,7 @@ class ReportSqlEditor extends React.Component {
       <Modal
         destroyOnClose
         maskClosable={false}
-        width={640}
+        width={960}
         style={{ top: 20 }}
         bodyStyle={{ padding: '10px 40px' }}
         title="SQL编辑器"
