@@ -353,6 +353,7 @@ export default class StandardSqlFormatter {
         indexedPlaceholderTypes: ['?'],
         namedPlaceholderTypes: ['@', ':'],
         lineCommentTypes: ['--'],
+        specialWordChars: ['#'],
       });
     }
     return new Formatter(this.cfg, tokenizer).format(query);

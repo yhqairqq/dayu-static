@@ -34,6 +34,7 @@ export default class Tokenizer {
     this.OPEN_PAREN_REGEX = this.createParenRegex(cfg.openParens);
     this.CLOSE_PAREN_REGEX = this.createParenRegex(cfg.closeParens);
 
+    this.MY_STRING_REGEX = new RegExp('^([\u4e00-\u9fa5A-Za-z0-9])+', 'i');
     this.MY_OPEN_PAREN_REGEX = this.mycreateParenRegex(cfg.myOpenParens);
     this.MY_CLOSE_PAREN_REGEX = this.mycreateParenRegex(cfg.myCloseParens);
 
@@ -161,6 +162,7 @@ export default class Tokenizer {
       this.getNumberToken(input) ||
       this.getReservedWordToken(input, previousToken) ||
       this.getWordToken(input) ||
+      this.getMyStringToken(input) ||
       this.getOperatorToken(input)
     );
   }
@@ -193,6 +195,14 @@ export default class Tokenizer {
     });
   }
 
+  getMyStringToken(input) {
+    return this.getTokenOnFirstMatch({
+      input,
+      type: tokenTypes.MY_STRING,
+      regex: this.MY_STRING_REGEX,
+    });
+  }
+
   getStringToken(input) {
     return this.getTokenOnFirstMatch({
       input,
@@ -220,7 +230,7 @@ export default class Tokenizer {
   getMyOpenParenToken(input) {
     return this.getTokenOnFirstMatch({
       input,
-      type: tokenTypes.OPEN_PAREN,
+      type: tokenTypes.MY_OPEN_PAREN,
       regex: this.MY_OPEN_PAREN_REGEX,
     });
   }
@@ -228,7 +238,7 @@ export default class Tokenizer {
   getMyCloseParenToken(input) {
     return this.getTokenOnFirstMatch({
       input,
-      type: tokenTypes.CLOSE_PAREN,
+      type: tokenTypes.MY_CLOSE_PAREN,
       regex: this.MY_CLOSE_PAREN_REGEX,
     });
   }
@@ -344,6 +354,7 @@ export default class Tokenizer {
     const matches = input.match(regex);
 
     if (matches) {
+      if (type === tokenTypes.MY_STRING) return { type, value: matches[0] };
       return { type, value: matches[1] };
     }
     return null;

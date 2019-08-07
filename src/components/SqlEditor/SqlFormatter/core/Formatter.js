@@ -60,6 +60,10 @@ export default class Formatter {
         formattedQuery = this.formatOpeningParentheses(token, formattedQuery);
       } else if (token.type === tokenTypes.CLOSE_PAREN) {
         formattedQuery = this.formatClosingParentheses(token, formattedQuery);
+      } else if (token.type === tokenTypes.MY_OPEN_PAREN) {
+        formattedQuery = this.myFormatOpeningParentheses(token, formattedQuery);
+      } else if (token.type === tokenTypes.MY_CLOSE_PAREN) {
+        formattedQuery = this.myFormatClosingParentheses(token, formattedQuery);
       } else if (token.type === tokenTypes.PLACEHOLDER) {
         formattedQuery = this.formatPlaceholder(token, formattedQuery);
       } else if (token.value === ',') {
@@ -135,11 +139,40 @@ export default class Formatter {
     return localQuery;
   }
 
+  // Opening parentheses increase the block indent level and start a new line
+  myFormatOpeningParentheses(token, query) {
+    const donotNewline = ['<EXP1>', '<OP>', '<EXP2>'];
+    if (donotNewline.includes(token.value)) {
+      return `${query}${token.value} `;
+    }
+    // Take out the preceding space unless there was whitespace there in the original query
+    // or another opening parens or line comment
+    let localQuery = query;
+    localQuery = this.addNewline(localQuery);
+
+    localQuery += token.value;
+
+    this.inlineBlock.beginIfPossible(this.tokens, this.index);
+
+    this.indentation.increaseBlockLevel();
+    localQuery = this.addNewline(localQuery);
+    return localQuery;
+  }
+
   // Closing parentheses decrease the block indent level
   formatClosingParentheses(token, query) {
     if (this.inlineBlock.isActive()) {
       this.inlineBlock.end();
       return this.formatWithSpaceAfter(token, query);
+    }
+    this.indentation.decreaseBlockLevel();
+    return this.formatWithSpaces(token, this.addNewline(query));
+  }
+
+  myFormatClosingParentheses(token, query) {
+    const donotNewline = ['</EXP1>', '</OP>', '</EXP2>'];
+    if (donotNewline.includes(token.value)) {
+      return `${query}${token.value} `;
     }
     this.indentation.decreaseBlockLevel();
     return this.formatWithSpaces(token, this.addNewline(query));

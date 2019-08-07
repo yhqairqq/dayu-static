@@ -8,6 +8,7 @@ import {
   getDataTypes,
   getTables,
   getAllDsTypes,
+  getTablesAndColumns,
 } from '@/services/datasource';
 
 export default {
@@ -40,6 +41,14 @@ export default {
       const { data } = response;
       yield put({
         type: 'saveTables',
+        payload: data,
+      });
+    },
+    *fetchTablesAndColumns({ payload }, { call, put }) {
+      const response = yield call(getTablesAndColumns, payload);
+      const { data } = response;
+      yield put({
+        type: 'saveTablesAndColumns',
         payload: data,
       });
     },
@@ -111,6 +120,12 @@ export default {
       return {
         ...state,
         tables: action.payload,
+      };
+    },
+    saveTablesAndColumns(state, action) {
+      return {
+        ...state,
+        tablesAndColumns: action.payload,
       };
     },
     saveDataTypes(state, action) {
