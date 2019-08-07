@@ -28,6 +28,7 @@ class ReportSqlEditor extends React.Component {
     const {
       values: { id, detailSqlId },
     } = props;
+    this.sqlEditor = {};
     this.state = {
       formVals: {
         reportId: id,
@@ -77,7 +78,7 @@ class ReportSqlEditor extends React.Component {
     const { form, handleOpt } = this.props;
     const { formVals } = this.state;
     const { fields } = formVals;
-
+    formVals.text = this.sqlEditor.getTextareaCode();
     form.validateFields((err, fieldsValue) => {
       if (err) return;
       const newFormValues = { ...formVals, ...fieldsValue, fields };
@@ -111,14 +112,17 @@ class ReportSqlEditor extends React.Component {
 
   handleNext = () => {
     const { form } = this.props;
+    const { dispatch } = this.props;
     form.validateFields((err, fieldsValue) => {
       if (err) return;
       const { formVals } = this.state;
+      const newFormValues = { ...formVals, ...fieldsValue };
       this.setState({
-        formVals: {
-          ...formVals,
-          ...fieldsValue,
-        },
+        formVals: newFormValues,
+      });
+      dispatch({
+        type: 'datasource/fetchTablesAndColumns',
+        payload: { dsId: newFormValues.dsId },
       });
       this.forward();
     });
@@ -221,13 +225,29 @@ class ReportSqlEditor extends React.Component {
   };
 
   renderSqlStep = () => {
-    const { form } = this.props;
     const { formVals } = this.state;
+    const {
+      datasource: { tablesAndColumns },
+      dsLoading,
+    } = this.props;
+    let hintOption = {};
+    if (typeof tablesAndColumns === 'object') {
+      tablesAndColumns.map(r => {
+        hintOption = { ...hintOption, ...r };
+        return null;
+      });
+    }
+
+    if (dsLoading === true) return null;
     return [
       <FormItem key="text" label="SQL">
-        {form.getFieldDecorator('text', {
-          initialValue: formVals.text,
-        })(<SqlEditor />)}
+        <SqlEditor
+          ref={el => {
+            this.sqlEditor = el;
+          }}
+          value={formVals.text}
+          hintOptions={{ tables: hintOption }}
+        />
       </FormItem>,
     ];
   };
