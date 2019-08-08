@@ -1,0 +1,4 @@
+
+:global(.CodeMirror-hints) {
+  z-index: 2000;
+}

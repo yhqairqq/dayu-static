@@ -112,6 +112,19 @@ export async function getTables(dsId) {
 }
 
 /**
+ * 根据数据源Id获取下面的所有表以及字段信息
+ * @param {*} dsId  数据源Id
+ */
+export async function getTablesAndColumns(dsId) {
+  return request(`${PRE_URL}/getTablesAndColumns`, {
+    method: 'POST',
+    data: {
+      dsId: dsId.dsId,
+    },
+  });
+}
+
+/**
  * 获取支持的数据类型列表
  */
 export async function getDataTypes() {

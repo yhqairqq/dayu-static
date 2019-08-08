@@ -5,6 +5,7 @@ import 'codemirror/lib/codemirror.css';
 import 'codemirror/theme/ambiance.css';
 import 'codemirror/mode/sql/sql';
 import 'codemirror/addon/hint/show-hint.css';
+import './hint.css';
 import 'codemirror/addon/hint/show-hint';
 import 'codemirror/addon/hint/sql-hint';
 import 'codemirror/addon/comment/comment';
@@ -68,13 +69,13 @@ export default class SqlEditor extends React.Component {
         '220': 'backslash',
         '222': 'quote',
       },
-      textValue: '',
+      value: '',
     };
     this.editor = null;
   }
 
   componentDidMount() {
-    const { hintOptions, height, value, readOnly } = this.props;
+    const { hintOptions, height, value, readOnly = false } = this.props;
     this.editor = CodeMirror.fromTextArea(this.codeDom, {
       styleActiveLine: true,
       matchBrackets: true,
@@ -92,11 +93,14 @@ export default class SqlEditor extends React.Component {
     });
     this.editor.setSize('auto', height || '500px');
     this.editor.setValue(value || '');
+    this.setState({
+      value: value || '',
+    });
 
     this.editor.on('keyup', (cm, event) => {
       const { ExcludedIntelliSenseTriggerKeys } = this.state;
       this.setState({
-        textValue: this.getTextareaCode(),
+        value: this.getTextareaCode(),
       });
       if (
         !cm.state.completionActive &&
@@ -108,19 +112,20 @@ export default class SqlEditor extends React.Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    const { textValue } = this.state;
-    if (nextProps.value !== textValue) {
+    const { value } = this.state;
+    if (nextProps.value !== value) {
       this.editor.setValue(nextProps.value);
       this.setState({
-        textValue: nextProps.value,
+        value: nextProps.value,
       });
     }
   }
 
   getTextareaCode = () => this.editor.getValue();
 
-  copy = value => {
-    copyToClipboard(value);
+  copy = () => {
+    const nowValue = this.getTextareaCode();
+    copyToClipboard(nowValue);
     message.info('拷贝成功');
   };
 
@@ -129,18 +134,25 @@ export default class SqlEditor extends React.Component {
   }
 
   render() {
-    const { textValue } = this.state;
+    const { value } = this.state;
     return (
       <div>
         <div style={{ backgroundColor: '#f7f7f7', paddingLeft: '1em' }}>
           <Tooltip title="点我格式化">
-            <Icon type="file-done" onClick={() => this.format(textValue)} />
+            <Icon type="file-done" onClick={() => this.format(value)} />
           </Tooltip>
           <Tooltip title="点我复制">
-            <Icon type="copy" onClick={() => this.copy(textValue)} style={{ paddingLeft: '1em' }} />
+            <Icon type="copy" onClick={() => this.copy()} style={{ paddingLeft: '1em' }} />
           </Tooltip>
         </div>
-        <div style={{ borderStyle: 'solid', borderWidth: '1px', borderColor: '#e8e8e8' }}>
+        <div
+          style={{
+            borderStyle: 'solid',
+            borderWidth: '1px',
+            borderColor: '#e8e8e8',
+            lineHeight: '1em',
+          }}
+        >
           <textarea
             ref={p => {
               this.codeDom = p;

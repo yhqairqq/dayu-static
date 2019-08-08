@@ -9,6 +9,7 @@ import {
   getTables,
   getAllDsTypes,
   testConnection,
+  getTablesAndColumns,
 } from '@/services/datasource';
 
 export default {
@@ -42,6 +43,14 @@ export default {
       yield put({
         type: 'saveTables',
         payload: state === 1 ? [] : data,
+      });
+    },
+    *fetchTablesAndColumns({ payload }, { call, put }) {
+      const response = yield call(getTablesAndColumns, payload);
+      const { data } = response;
+      yield put({
+        type: 'saveTablesAndColumns',
+        payload: data,
       });
     },
     *fetchAllDsTypes({ payload, callback }, { call, put }) {
@@ -121,6 +130,12 @@ export default {
       return {
         ...state,
         tables: action.payload,
+      };
+    },
+    saveTablesAndColumns(state, action) {
+      return {
+        ...state,
+        tablesAndColumns: action.payload,
       };
     },
     saveDataTypes(state, action) {
