@@ -175,3 +175,14 @@ export async function previewImportData(params) {
     },
   });
 }
+
+/**
+ * 预览导入数据
+ * @param {*} params
+ */
+export async function archivedImportData(params) {
+  return request(`/peekdata/archivedImportData`, {
+    method: 'POST',
+    data: { ...params },
+  });
+}

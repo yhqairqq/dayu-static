@@ -38,10 +38,10 @@ export default {
     },
     *fetchTables({ payload }, { call, put }) {
       const response = yield call(getTables, payload);
-      const { data } = response;
+      const { data = [], state } = response;
       yield put({
         type: 'saveTables',
-        payload: data,
+        payload: state === 1 ? [] : data,
       });
     },
     *fetchAllDsTypes({ payload, callback }, { call, put }) {

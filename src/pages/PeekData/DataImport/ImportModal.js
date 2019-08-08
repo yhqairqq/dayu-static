@@ -147,7 +147,6 @@ class ImportModal extends React.Component {
       loading,
       handleModalVisible,
     } = this.props;
-
     const { tableName, datasourceType, datasourceId, overwrited, fileName } = this.state;
     const viewHideStyle = this.isView() ? { style: { display: 'none' } } : {}; // 控制组件在查看时隐藏
     const addHideStyle = !this.isView() ? { style: { display: 'none' } } : {}; // 控制组件在新增时隐藏

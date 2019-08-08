@@ -29,17 +29,26 @@ class PreviewModal extends React.Component {
   fetch = () => {
     const { dispatch, item } = this.props;
     const { orderByField } = this.state;
-    const { datasourceId, tableName } = item;
+    const { datasourceId, tableName, id } = item;
 
     dispatch({
       type: 'peek/previewImportData',
-      payload: { datasourceId, tableName, orderByField },
+      payload: { datasourceId, tableName, orderByField, id },
       callback: ({ rows, columns, rowSize }) => {
+        const newColumns = columns.map(column => ({
+          title: column,
+          dataIndex: column,
+          sorter: true,
+          width: '150px',
+        }));
+        if (newColumns.length > 0) {
+          delete newColumns[newColumns.length - 1].width;
+        }
         this.setState({
           data: rows,
           total: rowSize,
           tableName,
-          columns: columns.map(column => ({ title: column, dataIndex: column, sorter: true })),
+          columns: newColumns,
         });
       },
     });
@@ -84,7 +93,7 @@ class PreviewModal extends React.Component {
           dataSource={data}
           columns={columns}
           pagination={false}
-          scroll={{ x: 800, y: 400 }}
+          scroll={{ x: 600 }}
           onChange={this.handleChange}
         />
       </Modal>

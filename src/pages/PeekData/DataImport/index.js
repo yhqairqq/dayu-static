@@ -5,7 +5,20 @@
  */
 import React, { Fragment } from 'react';
 import { connect } from 'dva';
-import { Card, Form, Spin, Divider, Row, Col, Input, Button, Icon, Tag } from 'antd';
+import {
+  Card,
+  Form,
+  Spin,
+  Divider,
+  Row,
+  Col,
+  Input,
+  Button,
+  Icon,
+  Tag,
+  Modal,
+  message,
+} from 'antd';
 import moment from 'moment';
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
 import ImportModal from './ImportModal';
@@ -40,6 +53,7 @@ class DataImportList extends React.Component {
 
   constructor(props) {
     super(props);
+
     // 表格字段列表
     this.columns = [
       { title: '序号', key: 'seq', render: (text, record, index) => index + 1 },
@@ -48,7 +62,7 @@ class DataImportList extends React.Component {
         title: '上传时间',
         dataIndex: 'created',
         key: 'created',
-        render: text => moment.unix(text).format('YYYY-MM-DD hh:mm:ss'),
+        render: text => moment.unix(text).format('YYYY-MM-DD HH:mm:ss'),
       },
       { title: '文件', dataIndex: 'fileName' },
 
@@ -71,8 +85,17 @@ class DataImportList extends React.Component {
         render: (text, record) => (
           <Fragment>
             <a onClick={() => this.handleModalVisible(true, record)}>查看</a>
-            <Divider type="vertical" />
-            <a onClick={() => this.handlePreviewModalVisible(true, record)}>数据预览</a>
+            <Divider type="vertical" style={this.getStyles(record)} />
+            <a
+              onClick={() => this.handlePreviewModalVisible(true, record)}
+              style={this.getStyles(record)}
+            >
+              数据预览
+            </a>
+            <Divider type="vertical" style={this.getStyles(record)} />
+            <a onClick={() => this.deleteDataEvent(record)} style={this.getStyles(record)}>
+              删除数据
+            </a>
           </Fragment>
         ),
       },
@@ -82,6 +105,13 @@ class DataImportList extends React.Component {
   componentDidMount() {
     this.doQuery();
   }
+
+  getStyles = record => {
+    if (record.status !== 1) {
+      return { display: 'none' };
+    }
+    return {};
+  };
 
   onQueryParamsChange = (prop, mapper = e => e) => value => {
     const { queryParams } = this.state;
@@ -114,6 +144,17 @@ class DataImportList extends React.Component {
         this.setState({
           data,
         });
+      },
+    });
+  };
+
+  deleteDataEvent = record => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'peek/archivedImportData',
+      payload: record,
+      callback: () => {
+        message.success('删除成功');
       },
     });
   };
@@ -158,13 +199,13 @@ class DataImportList extends React.Component {
     );
   };
 
-  handleModalVisible = (visible = false, record = {}, reload = false) => {
+  handleModalVisible = (visible = false, record = {}) => {
     this.setState(
       {
         importModalVisible: visible,
         item: record,
       },
-      () => reload && this.doQuery()
+      () => this.doQuery()
     );
   };
 
@@ -187,6 +228,13 @@ class DataImportList extends React.Component {
         handleModalVisible={this.handlePreviewModalVisible}
       />
     );
+  };
+
+  showErrorInfoModal = record => {
+    Modal.error({
+      title: '错误信息',
+      content: record.errorInfo,
+    });
   };
 
   toggleForm = () => {
@@ -235,6 +283,9 @@ class DataImportList extends React.Component {
                 rowKey={record => record.id}
                 columns={this.columns}
                 onChange={this.handleStandardTableChange}
+                expandedRowRender={record => (
+                  <p style={{ margin: 0 }}>错误信息: {record.errorInfo || '无'}</p>
+                )}
               />
               {this.renderImportModal()}
               {this.renderPreviewModal()}

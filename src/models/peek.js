@@ -13,6 +13,7 @@ import {
   importData,
   queryImportRecordList,
   previewImportData,
+  archivedImportData,
 } from '@/services/peek';
 
 export default {
@@ -121,6 +122,12 @@ export default {
 
     *previewImportData({ payload, callback }, { call }) {
       const response = yield call(previewImportData, payload);
+      if (response && response.state === 0) {
+        if (callback) callback(response.data);
+      }
+    },
+    *archivedImportData({ payload, callback }, { call }) {
+      const response = yield call(archivedImportData, payload);
       if (response && response.state === 0) {
         if (callback) callback(response.data);
       }
