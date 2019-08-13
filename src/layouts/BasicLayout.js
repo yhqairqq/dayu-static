@@ -1,5 +1,5 @@
 import React, { Suspense } from 'react';
-import { Layout } from 'antd';
+import { Layout, Modal, Form, Input, message } from 'antd';
 import DocumentTitle from 'react-document-title';
 import { connect } from 'dva';
 import { ContainerQuery } from 'react-container-query';
@@ -43,7 +43,12 @@ const query = {
   },
 };
 
+@Form.create()
 class BasicLayout extends React.Component {
+  state = {
+    pwdVisible: false,
+  };
+
   componentDidMount() {
     const {
       dispatch,
@@ -87,6 +92,25 @@ class BasicLayout extends React.Component {
     });
   };
 
+  changePwd = e => {
+    const { form, dispatch } = this.props;
+    e.preventDefault();
+    form.validateFieldsAndScroll((err, values) => {
+      if (err) return;
+      form.resetFields();
+      dispatch({
+        type: 'user/changePwd',
+        payload: values,
+        callback: () => {
+          message.success('密码修改成功');
+          this.setState({
+            pwdVisible: false,
+          });
+        },
+      });
+    });
+  };
+
   renderSettingDrawer = () => {
     // Do not render SettingDrawer in production
     // unless it is deployed in preview.pro.ant.design as demo
@@ -106,7 +130,20 @@ class BasicLayout extends React.Component {
       menuData,
       breadcrumbNameMap,
       fixedHeader,
+      form,
     } = this.props;
+    const { pwdVisible } = this.state;
+
+    const formItemLayout = {
+      labelCol: {
+        xs: { span: 24 },
+        sm: { span: 6 },
+      },
+      wrapperCol: {
+        xs: { span: 24 },
+        sm: { span: 16 },
+      },
+    };
 
     const isTop = PropsLayout === 'topmenu';
     const contentStyle = !fixedHeader ? { paddingTop: 0 } : {};
@@ -130,6 +167,9 @@ class BasicLayout extends React.Component {
         >
           <Header
             menuData={menuData}
+            handlePwdChange={() => {
+              this.setState({ pwdVisible: true });
+            }}
             handleMenuCollapse={this.handleMenuCollapse}
             logo={logo}
             isMobile={isMobile}
@@ -138,6 +178,57 @@ class BasicLayout extends React.Component {
           <Content className={styles.content} style={contentStyle}>
             {children}
           </Content>
+          <Modal
+            title="密码修改"
+            visible={pwdVisible}
+            onCancel={() => {
+              this.setState({ pwdVisible: false });
+            }}
+            onOk={this.changePwd}
+          >
+            <Form {...formItemLayout}>
+              <Form.Item label="旧密码">
+                {form.getFieldDecorator('oldPwd', {
+                  rules: [
+                    {
+                      required: true,
+                      message: '旧密码不能为空',
+                    },
+                  ],
+                })(<Input.Password />)}
+              </Form.Item>
+              <Form.Item label="新密码">
+                {form.getFieldDecorator('newPwd', {
+                  rules: [
+                    {
+                      required: true,
+                      message: '新密码不能为空',
+                    },
+                    {
+                      message: '密码长度6~20位之间',
+                      min: 6,
+                      max: 20,
+                    },
+                  ],
+                })(<Input.Password />)}
+              </Form.Item>
+              <Form.Item label="确认密码">
+                {form.getFieldDecorator('confirmPwd', {
+                  rules: [
+                    {
+                      required: true,
+                      message: '确认密码不能为空',
+                    },
+                    {
+                      message: '密码长度6~20位之间',
+                      min: 6,
+                      max: 20,
+                    },
+                  ],
+                })(<Input.Password onBlur={this.handleConfirmBlur} />)}
+              </Form.Item>
+            </Form>
+          </Modal>
           <Footer />
         </Layout>
       </Layout>
