@@ -2,6 +2,7 @@ import {
   addReport,
   editReport,
   delReport,
+  copyReport,
   queryReport,
   reportTree,
   queryDataTypes,
@@ -95,6 +96,13 @@ export default {
     },
     *remove({ payload, callback }, { call }) {
       const resp = yield call(delReport, payload);
+      const { state } = resp;
+      if (resp && state === 0 && callback) {
+        callback();
+      }
+    },
+    *copy({ payload, callback }, { call }) {
+      const resp = yield call(copyReport, payload);
       const { state } = resp;
       if (resp && state === 0 && callback) {
         callback();

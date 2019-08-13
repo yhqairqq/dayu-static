@@ -108,6 +108,9 @@ class ReportDesign extends React.Component {
             <a onClick={() => this.handleModalVisible(true, record, true)}>编辑</a>
           </AuthorizedButton>
           <AuthorizedButton mask={['EDIT']}>
+            <a onClick={() => this.handleCopy(record)}>复制</a>
+          </AuthorizedButton>
+          <AuthorizedButton mask={['EDIT']}>
             <a onClick={() => this.handleQueryFieldModalVisible(true, record)}>查询参数</a>
           </AuthorizedButton>
           <AuthorizedButton mask={['EDIT']}>
@@ -170,6 +173,22 @@ class ReportDesign extends React.Component {
       },
       callback: () => {
         message.success('删除成功');
+        // 重载数据
+        this.reloadData();
+      },
+    });
+  };
+
+  // 复制报表操作
+  handleCopy = record => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'report/copy',
+      payload: {
+        reportId: record.id,
+      },
+      callback: () => {
+        message.success('复制成功');
         // 重载数据
         this.reloadData();
       },

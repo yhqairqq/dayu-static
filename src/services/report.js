@@ -27,6 +27,17 @@ export async function delReport(id) {
 }
 
 /**
+ * 复制报表
+ * @param {Long} id 报表Id
+ */
+export async function copyReport(id) {
+  return request(`${PRE_URL}/copy`, {
+    method: 'POST',
+    data: id,
+  });
+}
+
+/**
  * 修改信息
  * @param {*} params
  */
