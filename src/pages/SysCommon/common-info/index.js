@@ -240,10 +240,10 @@ class CommonInfo extends React.Component {
           <Col md={8} sm={24}>
             <FormItem key="classify" label="类型">
               {getFieldDecorator('classify')(
-                <Select placeholder="请选择类型">
+                <Select placeholder="请选择类型" allowClear>
                   {allTypes.map(item => (
-                    <Option value={item.left} key={item.left}>
-                      {item.right}
+                    <Option value={item.classify} key={item.classify}>
+                      {item.desc}
                     </Option>
                   ))}
                 </Select>
@@ -253,7 +253,15 @@ class CommonInfo extends React.Component {
           <Col md={8} sm={24}>
             <FormItem key="createdBy" label="创建人">
               {getFieldDecorator('createdBy')(
-                <Select placeholder="请选择数据源创建人">
+                <Select
+                  placeholder="请选择数据源创建人"
+                  allowClear
+                  filterOption={(input, option) =>
+                    option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                  }
+                  optionFilterProp="children"
+                  showSearch
+                >
                   {list.map(item => (
                     <Option value={item.id} key={item.id}>
                       {item.nickname}
@@ -324,12 +332,14 @@ class CommonInfo extends React.Component {
             />
           </div>
         </Card>
-        <CommonOptForm
-          {...parentMethods}
-          isEdit={isEditForm}
-          values={recordValue}
-          modalVisible={modalVisible}
-        />
+        {modalVisible && (
+          <CommonOptForm
+            {...parentMethods}
+            isEdit={isEditForm}
+            values={recordValue}
+            modalVisible={modalVisible}
+          />
+        )}
       </PageHeaderWrapper>
     );
   }

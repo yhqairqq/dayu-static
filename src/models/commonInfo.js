@@ -36,6 +36,16 @@ export default {
         payload: data,
       });
     },
+
+    *fetchNoPagination({ payload, callback }, { call }) {
+      const response = yield call(query, { params: payload, currentPage: 1, pageSize: 5000 });
+      const { state, data } = response;
+      if (state === 0 && callback) {
+        const { list } = data;
+        callback(list);
+      }
+    },
+
     *fetchByClassify({ payload, callback }, { call }) {
       const resp = yield call(getByClassify, payload);
       const { data, state } = resp;

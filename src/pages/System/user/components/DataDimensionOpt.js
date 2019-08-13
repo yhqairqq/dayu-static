@@ -1,7 +1,9 @@
 import React from 'react';
 import { connect } from 'dva';
-import { Form, Modal, Steps, Spin, Button, Select, Checkbox, Row, Col, Divider, Input } from 'antd';
+import { Form, Modal, Steps, Spin, Button, Select, Input } from 'antd';
+import _ from 'lodash';
 import styles from '../../../styles/Manage.less';
+import SelectDimensionStep from './SelectDimensionStep';
 
 const FormItem = Form.Item;
 const { Step } = Steps;
@@ -28,22 +30,18 @@ class DataDimensionOpt extends React.Component {
       values: { id },
     } = props;
     this.state = {
-      formVals: {
-        userId: id,
-        erpUserId: -1,
-        cities: [],
-        classifies: [],
-      },
+      userId: id,
+      erpUserId: '-1',
       currentStep: 0,
-      cities: [], // 城市列表
-      classifies: [], // 品类列表
-      citiesOfChecked: [], // 已选城市列表
-      cityIndeterminate: true,
-      checkAllCity: false,
-      classifyOfChecked: [], // 已选品类列表
-      classifyIndeterminate: true,
-      checkAllClassify: false,
       erpUsers: [],
+      warehouseList: [],
+      selectedWarehouseList: [],
+      storeList: [],
+      selectedStoreList: [],
+      classifyList: [],
+      selectedClassifyList: [],
+      cityList: [],
+      selectedCityList: [],
     };
     this.formLayout = {
       labelCol: { span: 7 },
@@ -52,70 +50,51 @@ class DataDimensionOpt extends React.Component {
   }
 
   componentDidMount() {
-    const { dispatch } = this.props;
-    const {
-      formVals: { userId },
-    } = this.state;
-    dispatch({
-      type: 'commonInfo/fetchByClassify',
-      payload: {
-        classify: 'city', // 城市列表
-      },
-      callback: data => {
-        this.setState({
-          cities: data,
-        });
-      },
-    });
-    dispatch({
-      type: 'user/fetchDimensionSave',
-      payload: {
-        userId,
-      },
-      callback: data => {
-        const { cities, classifies } = data;
-        this.setState({
-          formVals: data,
-          citiesOfChecked: cities,
-          cityIndeterminate: cities && cities.length > 0,
-          classifyOfChecked: classifies,
-          classifyIndeterminate: classifies && classifies.length > 0,
-        });
-      },
-    });
-    dispatch({
-      type: 'commonInfo/fetchByClassify',
-      payload: {
-        classify: 'classify', // 品类列表
-      },
-      callback: data => {
-        this.setState({
-          classifies: data,
-        });
-      },
+    this.fetchCommonInfo('city', 'cityList');
+    this.fetchCommonInfo('classify', 'classifyList');
+    const { userId } = this.state;
+    this.dispatchEvent('user/fetchDimensionSave', { userId }, data => {
+      const { cities, classifies, warehouses, stores, erpUserId } = data;
+      this.setState({
+        erpUserId,
+        selectedCityList: cities,
+        selectedClassifyList: classifies,
+        selectedWarehouseList: warehouses,
+        selectedStoreList: stores,
+      });
+      if (cities.length > 0) {
+        this.onCityChangeEvent(cities, warehouses, stores);
+      }
     });
   }
 
-  handleSave = () => {
-    const {
-      form,
-      handleOpt,
-      values: { id },
-    } = this.props;
-    const { citiesOfChecked, classifyOfChecked, formVals } = this.state;
-    const { erpUserId } = formVals;
-
-    form.validateFields((err, fieldsValue) => {
-      if (err) return;
-      const newFormValues = { ...formVals, ...fieldsValue };
+  fetchCommonInfo = (classify, field) => {
+    this.dispatchEvent('commonInfo/fetchByClassify', { classify }, data => {
       this.setState({
-        formVals: newFormValues,
+        [field]: data,
       });
+    });
+  };
+
+  handleSave = () => {
+    const { form, handleOpt } = this.props;
+    const {
+      selectedCityList,
+      selectedClassifyList,
+      selectedWarehouseList,
+      selectedStoreList,
+      userId,
+      erpUserId,
+    } = this.state;
+    form.validateFields(err => {
+      if (err) return;
       handleOpt({
-        userId: id,
+        userId,
         erpUserId,
-        cities: citiesOfChecked,
-        classifies: classifyOfChecked,
+        cities: selectedCityList,
+        classifies: selectedClassifyList,
+        warehouses: selectedWarehouseList,
+        stores: selectedStoreList,
       });
     });
   };
@@ -143,15 +122,8 @@ class DataDimensionOpt extends React.Component {
 
   handleNext = () => {
     const { form } = this.props;
-    form.validateFields((err, fieldsValue) => {
+    form.validateFields(err => {
       if (err) return;
-      const { formVals } = this.state;
-      this.setState({
-        formVals: {
-          ...formVals,
-          ...fieldsValue,
-        },
-      });
       this.forward();
     });
   };
@@ -173,7 +145,7 @@ class DataDimensionOpt extends React.Component {
         </Button>
         <Button
           key="forward"
-          className={(currentStep !== 2).toString()}
+          className={(currentStep !== 4).toString()}
           type="primary"
           onClick={() => this.handleNext(currentStep)}
         >
@@ -181,7 +153,7 @@ class DataDimensionOpt extends React.Component {
         </Button>
         <Button
           key="save"
-          className={(currentStep === 2).toString()}
+          className={(currentStep === 4).toString()}
           type="primary"
           onClick={() => this.handleSave()}
         >
@@ -189,6 +161,10 @@ class DataDimensionOpt extends React.Component {
         </Button>
       </div>
     );
+  };
+
+  onErpUserChangeEvent = value => {
+    this.onStateValueChange('erpUserId')(value);
   };
 
   // 查询ERP用户
@@ -209,8 +185,7 @@ class DataDimensionOpt extends React.Component {
   };
 
   renderUserRelStep = () => {
-    const { formVals, erpUsers } = this.state;
-    const { form } = this.props;
+    const { erpUserId, erpUsers } = this.state;
     return [
       <FormItem key="names" {...this.formLayout} label="ERP用户查询">
         <Search
@@ -220,145 +195,113 @@ class DataDimensionOpt extends React.Component {
         />
       </FormItem>,
       <FormItem key="erpUserId" {...this.formLayout} label="用户关联">
-        {form.getFieldDecorator('erpUserId', {
-          initialValue: formVals.erpUserId,
-        })(
-          <Select mode="multiple" style={{ width: '100%' }} placeholder="请关联ERP用户">
-            <Option value="0">全部</Option>
-            <Option value="-1">未选择</Option>
-            {erpUsers.map(u => (
-              <Option value={u.id}>
-                {u.name}({u.loginname})
-              </Option>
-            ))}
-          </Select>
-        )}
+        <Select
+          mode="multiple"
+          value={erpUserId}
+          style={{ width: '100%' }}
+          placeholder="请关联ERP用户"
+          onChange={this.onErpUserChangeEvent}
+        >
+          <Option value="0">全部</Option>
+          <Option value="-1">未选择</Option>
+          {erpUsers.map(u => (
+            <Option value={u.id}>
+              {u.name}({u.loginname})
+            </Option>
+          ))}
+        </Select>
       </FormItem>,
     ];
   };
 
-  onChangeOfCity = checkList => {
-    const { cities } = this.state;
-    this.setState({
-      citiesOfChecked: checkList,
-      cityIndeterminate: !!checkList.length && checkList.length < cities.length,
-      checkAllCity: checkList.length === cities.length,
-    });
+  onCityChangeEvent = (checkList, selectedWarehouseList = [], selectedStoreList = []) => {
+    const callback = values => {
+      this.setState({
+        selectedCityList: checkList,
+        warehouseList: [],
+        selectedWarehouseList,
+        storeList: [],
+        selectedStoreList,
+        ...values,
+      });
+    };
+    if (checkList.length === 0) {
+      callback();
+    } else {
+      const { cityList } = this.state;
+      const allCityObj = cityList.find(item => item.code === '-1');
+      const hasAllCityId = checkList.some(id => id === allCityObj.id);
+
+      this.dispatchEvent(
+        'commonInfo/fetchNoPagination',
+        {
+          parentClassifyList: hasAllCityId ? null : checkList,
+        },
+        data => {
+          const dataMap = _.groupBy(data, 'classify');
+          callback({
+            warehouseList: dataMap.warehouse || [],
+            storeList: dataMap.store || [],
+          });
+        }
+      );
+    }
   };
 
-  onCheckAllCityChange = e => {
-    const { cities } = this.state;
-    const options = [];
-    cities.forEach(c => {
-      const { id } = c;
-      options.push(id);
-    });
+  dispatchEvent = (type, params, callback = () => {}) => {
+    const { dispatch } = this.props;
+    dispatch({ type, payload: params, callback });
+  };
 
+  onStateValueChange = field => value => {
     this.setState({
-      citiesOfChecked: e.target.checked ? options : [],
-      cityIndeterminate: false,
-      checkAllCity: e.target.checked,
+      [field]: value,
     });
   };
 
   renderCityStep = () => {
-    const { cities, cityIndeterminate, checkAllCity, citiesOfChecked } = this.state;
-    const options = [];
-    cities.forEach(c => {
-      const { id, name } = c;
-      options.push({
-        label: name,
-        value: id,
-      });
-    });
-    return [
-      <Divider key="city_div_0" type="horizontal" />,
-      <Checkbox
-        key="city_all_checkbox"
-        indeterminate={cityIndeterminate}
-        onChange={this.onCheckAllCityChange}
-        checked={checkAllCity}
-      >
-        全选
-      </Checkbox>,
-      <Divider key="city_div_1" type="horizontal" />,
-      <Checkbox.Group
-        style={{ width: '100%', marginBottom: '10px' }}
-        value={citiesOfChecked}
-        onChange={this.onChangeOfCity}
-      >
-        <Row>
-          {options.map(item => (
-            <Col key={item.value} span={6}>
-              <Checkbox key={item.value} value={item.value}>
-                {item.label}
-              </Checkbox>
-            </Col>
-          ))}
-        </Row>
-      </Checkbox.Group>,
-    ];
-  };
-
-  onChangeOfClassify = checkList => {
-    const { classifies } = this.state;
-    this.setState({
-      classifyOfChecked: checkList,
-      classifyIndeterminate: !!checkList.length && checkList.length < classifies.length,
-      checkAllClassify: checkList.length === classifies.length,
-    });
-  };
-
-  onCheckAllClassifyChange = e => {
-    const { classifies } = this.state;
-    const options = [];
-    classifies.forEach(c => {
-      const { id } = c;
-      options.push(id);
-    });
-
-    this.setState({
-      classifyOfChecked: e.target.checked ? options : [],
-      classifyIndeterminate: false,
-      checkAllClassify: e.target.checked,
-    });
+    const { cityList, selectedCityList } = this.state;
+    const params = {
+      dataList: cityList,
+      selectedDataList: selectedCityList,
+      onParentStateValueChange: this.onCityChangeEvent,
+      emptyMessage: '没有城市维度数据',
+    };
+    return <SelectDimensionStep {...params} />;
   };
 
   renderClassifyStep = () => {
-    const { classifies, classifyIndeterminate, checkAllClassify, classifyOfChecked } = this.state;
-    const options = [];
-    classifies.forEach(c => {
-      const { id, name } = c;
-      options.push({
-        label: name,
-        value: id,
-      });
-    });
-    return [
-      <Divider key="classify_div_0" type="horizontal" />,
-      <Checkbox
-        key="classify_all_checkbox"
-        indeterminate={classifyIndeterminate}
-        onChange={this.onCheckAllClassifyChange}
-        checked={checkAllClassify}
-      >
-        全选
-      </Checkbox>,
-      <Divider key="classify_div_1" type="horizontal" />,
-      <Checkbox.Group
-        style={{ width: '100%', marginBottom: '10px' }}
-        value={classifyOfChecked}
-        onChange={this.onChangeOfClassify}
-      >
-        <Row>
-          {options.map(item => (
-            <Col span={6}>
-              <Checkbox value={item.value}>{item.label}</Checkbox>
-            </Col>
-          ))}
-        </Row>
-      </Checkbox.Group>,
-    ];
+    const { classifyList, selectedClassifyList } = this.state;
+    const params = {
+      dataList: classifyList,
+      selectedDataList: selectedClassifyList,
+      onParentStateValueChange: this.onStateValueChange('selectedClassifyList'),
+      emptyMessage: '没有品类维度数据',
+    };
+    return <SelectDimensionStep {...params} />;
+  };
+
+  renderWarehouseStep = () => {
+    const { warehouseList, selectedWarehouseList } = this.state;
+
+    const params = {
+      dataList: warehouseList,
+      selectedDataList: selectedWarehouseList,
+      onParentStateValueChange: this.onStateValueChange('selectedWarehouseList'),
+      emptyMessage: '选择的城市下没有仓库数据',
+    };
+    return <SelectDimensionStep {...params} />;
+  };
+
+  renderStoreStep = () => {
+    const { storeList, selectedStoreList } = this.state;
+    const params = {
+      dataList: storeList,
+      selectedDataList: selectedStoreList,
+      onParentStateValueChange: this.onStateValueChange('selectedStoreList'),
+      emptyMessage: '选择的城市下没有门店数据',
+    };
+    return <SelectDimensionStep {...params} />;
   };
 
   render() {
@@ -368,7 +311,7 @@ class DataDimensionOpt extends React.Component {
       <Modal
         destroyOnClose
         maskClosable={false}
-        width={640}
+        width={800}
         style={{ top: 20 }}
         bodyStyle={{ padding: '10px 40px' }}
         title="数据维度编辑"
@@ -380,12 +323,16 @@ class DataDimensionOpt extends React.Component {
         <Spin spinning={commonLoading || userLoading}>
           <Steps style={{ marginBottom: 15 }} size="small" current={currentStep}>
             <Step title="关联ERP用户" />
-            <Step title="城市维度选择" />
-            <Step title="品类维度选择" />
+            <Step title="城市选择" />
+            <Step title="仓库选择" />
+            <Step title="门店选择" />
+            <Step title="品类选择" />
           </Steps>
           {currentStep === 0 && this.renderUserRelStep()}
           {currentStep === 1 && this.renderCityStep()}
-          {currentStep === 2 && this.renderClassifyStep()}
+          {currentStep === 2 && this.renderWarehouseStep()}
+          {currentStep === 3 && this.renderStoreStep()}
+          {currentStep === 4 && this.renderClassifyStep()}
         </Spin>
       </Modal>
     );

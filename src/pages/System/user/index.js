@@ -295,7 +295,7 @@ class UserManage extends React.Component {
           <Col md={8} sm={24}>
             <FormItem key="roleId" label="拥有角色">
               {getFieldDecorator('roleId')(
-                <Select key="roleId" placeholder="请选择所属应用">
+                <Select key="roleId" placeholder="请选择所属应用" allowClear>
                   {allRoles.map(item => (
                     <Option value={item.id} key={item.id}>
                       {item.name}
