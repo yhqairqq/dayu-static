@@ -6,6 +6,7 @@ import {
   delUser,
   editUser,
   resetPwd,
+  changePwd,
   saveDataDimension,
   getDataDimension,
   getErpUserInfo,
@@ -48,6 +49,13 @@ export default {
     // 重置密码
     *resetPwd({ payload, callback }, { call }) {
       const response = yield call(resetPwd, payload);
+      if (response && response.state === 0) {
+        if (callback) callback();
+      }
+    },
+    // 用户自主修改密码
+    *changePwd({ payload, callback }, { call }) {
+      const response = yield call(changePwd, payload);
       if (response && response.state === 0) {
         if (callback) callback();
       }

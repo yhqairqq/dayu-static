@@ -62,6 +62,19 @@ export async function addUser(params) {
 }
 
 /**
+ * 修改密码
+ * @param {*} params
+ */
+export async function changePwd(params) {
+  return request(`${PRE_URL}/changePwd`, {
+    method: 'POST',
+    data: {
+      ...params,
+    },
+  });
+}
+
+/**
  * 删除用户
  * @param {Long} id 用户Id
  */
