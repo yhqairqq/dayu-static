@@ -47,6 +47,7 @@ const query = {
 class BasicLayout extends React.Component {
   state = {
     pwdVisible: false,
+    confirmDirty: false,
   };
 
   componentDidMount() {
@@ -97,18 +98,42 @@ class BasicLayout extends React.Component {
     e.preventDefault();
     form.validateFieldsAndScroll((err, values) => {
       if (err) return;
-      form.resetFields();
       dispatch({
         type: 'user/changePwd',
         payload: values,
         callback: () => {
           message.success('密码修改成功');
+          form.resetFields();
           this.setState({
             pwdVisible: false,
           });
         },
       });
     });
+  };
+
+  compareToFirstPassword = (rule, value, callback) => {
+    const { form } = this.props;
+    if (value && value !== form.getFieldValue('newPwd')) {
+      callback('输入的两次密码不一致');
+    } else {
+      callback();
+    }
+  };
+
+  handleConfirmBlur = e => {
+    const { confirmDirty } = this.state;
+    const { value } = e.target;
+    this.setState({ confirmDirty: confirmDirty || !!value });
+  };
+
+  validateToNextPassword = (rule, value, callback) => {
+    const { confirmDirty } = this.state;
+    const { form } = this.props;
+    if (value && confirmDirty) {
+      form.validateFields(['confirmPwd'], { force: true });
+    }
+    callback();
   };
 
   renderSettingDrawer = () => {
@@ -179,6 +204,8 @@ class BasicLayout extends React.Component {
             {children}
           </Content>
           <Modal
+            destroyOnClose
+            maskClosable={false}
             title="密码修改"
             visible={pwdVisible}
             onCancel={() => {
@@ -209,6 +236,9 @@ class BasicLayout extends React.Component {
                       min: 6,
                       max: 20,
                     },
+                    {
+                      validator: this.validateToNextPassword,
+                    },
                   ],
                 })(<Input.Password />)}
               </Form.Item>
@@ -223,6 +253,9 @@ class BasicLayout extends React.Component {
                       message: '密码长度6~20位之间',
                       min: 6,
                       max: 20,
+                    },
+                    {
+                      validator: this.compareToFirstPassword,
                     },
                   ],
                 })(<Input.Password onBlur={this.handleConfirmBlur} />)}
