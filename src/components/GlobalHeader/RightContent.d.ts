@@ -9,6 +9,7 @@ export interface GlobalHeaderRightProps {
   currentUser?: {
     avatar?: string;
     nickname?: string;
+    username?: string;
     position?: string;
     department?: string;
     signature?: string;

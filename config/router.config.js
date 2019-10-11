@@ -24,23 +24,107 @@ export default [
     routes: [
       {
         path: '/',
-        redirect: '/dashboard/analysis',
+        redirect: '/overview/monitor',
       },
       // dashboard
       {
-        path: '/dashboard',
+        path: '/overview',
         name: '仪表盘',
         icon: 'dashboard',
         routes: [
           {
-            path: '/dashboard/analysis',
+            path: '/overview/monitor',
             name: '分析页',
-            component: './Dashboard/Analysis',
+            component: './OverView/monitor',
+          },
+        ],
+      },
+      //同步信息
+      {
+        path: '/channel',
+        name: '同步管理',
+        icon: 'profile',
+        routes: [
+          {
+            path: '/channel',
+            name: '同步channel',
+            component: './Channel',
+          },
+        ],
+      },
+      //机器管理
+      {
+        path: '/cluster',
+        name: '集群管理',
+        icon: 'profile',
+        routes: [
+          {
+            path: '/cluster/node',
+            name: '节点管理',
+            component: './Cluster/node',
           },
           {
-            path: '/dashboard/monitor',
-            name: '监控页',
-            component: './Dashboard/Monitor',
+            path: '/cluster/zookeeper',
+            name: '同步channel',
+            component: './Cluster/zookeeper',
+          },
+        ],
+      },
+      //配置管理
+      {
+        path: '/config',
+        name: '配置管理',
+        icon: 'profile',
+        routes: [
+          {
+            path: '/config/mediasource',
+            name: '数据源管理',
+            component: './Configure/mediasource',
+          },
+          {
+            path: '/config/media',
+            name: '数据管理',
+            component: './Configure/media',
+          },
+          {
+            path: '/config/canal',
+            name: 'canal管理',
+            component: './Configure/canal',
+          },
+        ],
+      },
+      {
+        path: '/full',
+        name: '全量同步',
+        icon: 'profile',
+        routes: [
+          {
+            path: '/full',
+            name: '全量同步',
+            component: './FullSync',
+          },
+        ],
+      },
+      //监控管理
+      {
+        path: '/monitor',
+        name: '监控管理',
+        icon: 'profile',
+        routes: [
+          {
+            path: '/monitor/logrecord',
+            name: '日志管理',
+            component: './Monitor/logrecord',
+          },
+          {
+            path: '/monitor/alarm',
+            name: '监控列表',
+            component: './Monitor/alarm',
+          },
+          {
+            path: '/monitor/analysis',
+            name: '同步TOP',
+            component: './Monitor/analysis',
           },
         ],
       },

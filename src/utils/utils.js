@@ -192,3 +192,22 @@ export const importCDN = (url, name) =>
     };
     document.head.appendChild(dom);
   });
+
+export function formatGroupDbAddress(groupDbAddresses) {
+  if (groupDbAddresses == null) return '';
+  let result = '';
+  for (let i = 0; i < groupDbAddresses.length; i++) {
+    let groupDbAddress = groupDbAddresses[i];
+    for (let j = 0; j < groupDbAddress.length; j++) {
+      let url = '';
+      let dataSource = groupDbAddress[j];
+      result +=
+        dataSource.dbAddress.address +
+        ':' +
+        dataSource.dbAddress.port +
+        (j == groupDbAddress.length - 1 ? '' : ',');
+    }
+    result += ';';
+  }
+  return result;
+}

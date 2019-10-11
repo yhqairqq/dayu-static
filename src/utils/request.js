@@ -109,7 +109,6 @@ request.interceptors.response.use(async response => {
     });
     return null;
   }
-
   const ret = await response.clone().json();
   const { state, message, code } = ret;
   if (state !== 0) {

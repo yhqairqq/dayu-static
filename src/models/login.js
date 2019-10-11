@@ -20,11 +20,11 @@ export default {
       if (state === 0) {
         const { token, optPermissions } = data;
         localStorage.setItem('token', token);
-        if (optPermissions) {
-          localStorage.setItem('optPermissions', JSON.stringify(optPermissions));
-        } else {
-          localStorage.setItem('optPermissions', JSON.stringify({}));
-        }
+        // if (optPermissions) {
+        //   localStorage.setItem('optPermissions', JSON.stringify(optPermissions));
+        // } else {
+        //   localStorage.setItem('optPermissions', JSON.stringify({}));
+        // }
 
         // 获取是否需要重定向
         const urlParams = new URL(window.location.href);
@@ -35,7 +35,7 @@ export default {
           if (redirectUrlParams.origin === urlParams.origin) {
             redirect = redirect.substr(urlParams.origin.length);
             if (redirect.match(/^\/.*#/)) {
-              redirect = redirect.substr(redirect.indexOf('#') + 1);
+              redirect = redirect.substr(redirect.lastIndexOf(encodeURI('%23')) + 1);
             }
           } else {
             redirect = null;

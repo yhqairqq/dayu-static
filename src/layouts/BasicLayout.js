@@ -116,9 +116,7 @@ class BasicLayout extends React.Component {
     const { form } = this.props;
     if (value && value !== form.getFieldValue('newPwd')) {
       callback('输入的两次密码不一致');
-    } else {
-      callback();
-    }
+    } else callback();
   };
 
   handleConfirmBlur = e => {

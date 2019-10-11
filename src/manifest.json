@@ -1,6 +1,6 @@
 {
-  "name": "拉冬系统",
-  "short_name": "拉冬系统",
+  "name": "大禹",
+  "short_name": "大禹",
   "display": "standalone",
   "start_url": "./?utm_source=homescreen",
   "theme_color": "#002140",

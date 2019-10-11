@@ -52,8 +52,9 @@ export default {
   plugins,
   define: {
     APP_TYPE: APP_TYPE || '',
-    // 'process.env.apiUrl': 'http://localhost:2311',
-    'process.env.apiUrl': 'https://ladon.api.dailuobo.com',
+    // 'process.env.apiUrl': 'http://172.16.56.7:8081',
+    'process.env.apiUrl': 'http://10.111.31.239:8081',
+    // 'process.env.apiUrl': 'https://ladon.api.dailuobo.com',
     // 'process.env.apiUrl': 'http://ladon.api.caicaivip.com',
   },
   treeShaking: true,
@@ -61,6 +62,7 @@ export default {
   targets: {
     ie: 11,
   },
+  history: 'hash', // 默认是 browser
   // 路由配置
   routes: pageRoutes,
   // Theme for antd

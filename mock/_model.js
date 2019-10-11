@@ -10,7 +10,7 @@ for (let i = 0; i < 46; i += 1) {
     desc: `这是一个神奇的模型 ${i}`,
     status: Math.floor(Math.random() * 10) % 2,
     updatedAt: new Date(`2017-07-${Math.floor(i / 2) + 1}`),
-    createdAt: new Date(`2017-07-${Math.floor(i / 2) + 1}`)
+    createdAt: new Date(`2017-07-${Math.floor(i / 2) + 1}`),
   });
 }
 
@@ -89,7 +89,7 @@ function postModel(req, res, u, b) {
         desc: `这是一个神奇的模型 ${i}`,
         status: Math.floor(Math.random() * 10) % 2,
         updatedAt: new Date(`2017-07-${Math.floor(i / 2) + 1}`),
-        createdAt: new Date(`2017-07-${Math.floor(i / 2) + 1}`)
+        createdAt: new Date(`2017-07-${Math.floor(i / 2) + 1}`),
       });
       break;
     case 'update':
