@@ -1,51 +1,10 @@
-import React, { Fragment } from 'react';
+import React from 'react';
 import { connect } from 'dva';
 import numeral from 'numeral';
-import {
-  Card,
-  Icon,
-  Button,
-  Popconfirm,
-  Form,
-  Divider,
-  Col,
-  Tag,
-  Row,
-  Input,
-  TreeSelect,
-  Select,
-  message,
-  Badge,
-  Table,
-  Drawer,
-  Descriptions,
-  Dropdown,
-  Menu,
-  List,
-  Skeleton,
-  Avatar,
-} from 'antd';
+import { Button, Form, Col, Row, Select, Descriptions, List } from 'antd';
 import moment from 'moment';
-import InfiniteScroll from 'react-infinite-scroller';
 
-import StandardTable from '@/components/StandardTable';
-import PageHeaderWrapper from '@/components/PageHeaderWrapper';
-
-import {
-  G2,
-  Chart,
-  Geom,
-  Axis,
-  Tooltip,
-  Coord,
-  Label,
-  Legend,
-  View,
-  Guide,
-  Shape,
-  Facet,
-  Util,
-} from 'bizcharts';
+import { Chart, Geom, Axis, Tooltip, Coord, Label, Legend, Guide, Facet, Util } from 'bizcharts';
 import DataSet from '@antv/data-set';
 
 const FormItem = Form.Item;

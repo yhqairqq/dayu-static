@@ -1,6 +1,6 @@
 import request from '@/utils/request';
-const PRE_URL = '/zookeeper';
 
+const PRE_URL = '/zookeeper';
 /**
  * 获取所有zookeeper配置
  */

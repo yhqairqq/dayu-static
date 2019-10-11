@@ -196,18 +196,22 @@ export const importCDN = (url, name) =>
 export function formatGroupDbAddress(groupDbAddresses) {
   if (groupDbAddresses == null) return '';
   let result = '';
-  for (let i = 0; i < groupDbAddresses.length; i++) {
-    let groupDbAddress = groupDbAddresses[i];
-    for (let j = 0; j < groupDbAddress.length; j++) {
-      let url = '';
-      let dataSource = groupDbAddress[j];
-      result +=
-        dataSource.dbAddress.address +
-        ':' +
-        dataSource.dbAddress.port +
-        (j == groupDbAddress.length - 1 ? '' : ',');
+  for (let i = 0; i < groupDbAddresses.length; i += 1) {
+    const groupDbAddress = groupDbAddresses[i];
+    for (let j = 0; j < groupDbAddress.length; j += 1) {
+      const dataSource = groupDbAddress[j];
+      result = `${result}${dataSource.dbAddress.address}:${dataSource.dbAddress.port}${
+        j === groupDbAddress.length - 1 ? '' : ','
+      }`;
+
+      // result+
+      //   dataSource.dbAddress.address +
+      //   ':' +
+      //   dataSource.dbAddress.port +
+      //   (j === groupDbAddress.length - 1 ? '' : ',');
     }
-    result += ';';
+    // result += ';';
+    result = `${result};`;
   }
   return result;
 }

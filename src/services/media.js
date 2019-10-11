@@ -1,4 +1,5 @@
 import request from '@/utils/request';
+
 const PRE_URL = '/media';
 
 /**
@@ -24,7 +25,6 @@ export async function updateMediaPair(params) {
 }
 
 export async function addMediaPair(params) {
-  console.log(params);
   return request(`${PRE_URL}/add`, {
     method: 'POST',
     data: {

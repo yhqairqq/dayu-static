@@ -1,5 +1,5 @@
 import request from '@/utils/request';
-import { async } from 'q';
+
 const PRE_URL = '/node';
 
 export async function queryNode(params) {

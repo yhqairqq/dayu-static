@@ -1,4 +1,5 @@
 import request from '@/utils/request';
+
 const PRE_URL = '/analysis';
 
 export async function queryAnalysis(params) {
@@ -36,13 +37,13 @@ export async function fetchBehaviorHistoryCurve(params) {
   });
 }
 
-export async function fetchAllBehaviorHistory(params) {
+export async function fetchAllBehaviorHistory() {
   return request(`${PRE_URL}/fetchAllBehaviorHistory`, {
     method: 'POST',
   });
 }
 
-export async function fetchAllNodeInfo(params) {
+export async function fetchAllNodeInfo() {
   return request(`${PRE_URL}/fetchAllNodeInfo`, {
     method: 'POST',
   });

@@ -1,4 +1,4 @@
-import { binlogList } from '@/services/validcheck';
+import binlogList from '@/services/validcheck';
 export default {
   namespace: 'valid',
   state: {

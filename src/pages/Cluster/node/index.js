@@ -1,23 +1,6 @@
-import React, { Fragment } from 'react';
+import React from 'react';
 import { connect } from 'dva';
-import {
-  Card,
-  Icon,
-  Button,
-  Popconfirm,
-  Form,
-  Divider,
-  Col,
-  Tag,
-  Row,
-  Input,
-  TreeSelect,
-  Select,
-  message,
-  Badge,
-  Table,
-  Drawer,
-} from 'antd';
+import { Card, Button, Popconfirm, Form, Divider, Select, message, Badge } from 'antd';
 
 import StandardTable from '@/components/StandardTable';
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';

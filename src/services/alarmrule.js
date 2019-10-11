@@ -1,4 +1,5 @@
 import request from '@/utils/request';
+
 const PRE_URL = '/alarmRule';
 
 export async function queryAlarm(params) {

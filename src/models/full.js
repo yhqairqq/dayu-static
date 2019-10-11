@@ -1,4 +1,4 @@
-import { sync } from '@/services/full';
+import sync from '@/services/full';
 export default {
   namespace: 'full',
   state: {
