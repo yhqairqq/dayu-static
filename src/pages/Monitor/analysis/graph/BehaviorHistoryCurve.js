@@ -101,7 +101,7 @@ class BehaviorHistoryCurve extends React.Component {
       <Modal
         destroyOnClose
         maskClosable={false}
-        width={1000}
+        width={window.innerWidth / 2}
         style={{ top: 20 }}
         bodyStyle={{ padding: '10px 10px' }}
         title={'行为分析'}

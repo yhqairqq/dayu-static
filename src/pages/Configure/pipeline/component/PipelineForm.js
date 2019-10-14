@@ -184,7 +184,7 @@ class PipelineForm extends React.Component {
       <Modal
         destroyOnClose
         maskClosable={false}
-        width={640}
+        width={window.innerWidth / 2}
         style={{ top: 20 }}
         bodyStyle={{ padding: '10px 10px' }}
         title={isEdit ? '修改pipline信息' : '新增pipline信息'}

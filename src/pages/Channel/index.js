@@ -404,6 +404,7 @@ class Channel extends React.Component {
       handleHistoryModalVisible: this.handleHistoryModalVisible,
       swtichWithStart: this.swtichWithStart,
     };
+    console.log(window.innerHeight,window.innerWidth);
     // console.log(data)
     const pStyle = {
       fontSize: 16,
@@ -472,6 +473,7 @@ class Channel extends React.Component {
             </div>
           </div>
           <StandardTable
+            size = {window.innerWidth > 1440?'default':'small'}
             // loading={loading}
             data={data}
             columns={this.columns}

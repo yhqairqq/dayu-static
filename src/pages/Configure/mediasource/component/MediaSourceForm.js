@@ -135,7 +135,7 @@ class MediaSourceForm extends React.Component {
       <Modal
         destroyOnClose
         maskClosable={false}
-        width={640}
+        width={window.innerWidth / 2}
         style={{ top: 20 }}
         bodyStyle={{ padding: '10px 40px' }}
         title={isEdit ? '修改数据源信息' : '新增数据源信息'}

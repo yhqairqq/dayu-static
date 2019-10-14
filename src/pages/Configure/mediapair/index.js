@@ -310,11 +310,13 @@ class DataMediaPair extends React.Component {
         </Button>
         <Table
           // loading={loading}
+          size = {window.innerWidth > 1440?'default':'small'}
           dataSource={mediapairs}
           columns={this.pairColumn}
           rowKey={record => record.id}
           pagination={false}
           expandRowByClick={true}
+          scroll={{ x: 800, y: 600 }}
         />
         {modalVisible && (
           <MediaPairForm

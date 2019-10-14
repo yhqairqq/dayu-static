@@ -456,7 +456,7 @@ class MediaPairForm extends React.Component {
       <Modal
         destroyOnClose
         maskClosable={false}
-        width={1200}
+        width={window.innerWidth/2}
         style={{ top: 20 }}
         bodyStyle={{ padding: '10px 10px' }}
         title={isEdit ? '修改数据映射信息' : '新增数据映射信息'}

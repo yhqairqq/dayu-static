@@ -94,7 +94,7 @@ class ZookeeperForm extends React.Component {
       <Modal
         destroyOnClose
         maskClosable={false}
-        width={740}
+        width={window.innerWidth / 2}
         style={{ top: 20 }}
         bodyStyle={{ padding: '10px 10px' }}
         title={isEdit ? '修改Zookeeper集群信息' : '新增Zookeeper集群信息'}

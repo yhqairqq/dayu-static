@@ -340,11 +340,13 @@ class Pipeline extends React.PureComponent {
         </Button>
         <Table
           // loading={loading}
+          size = {window.innerWidth > 1440?'default':'small'}
           dataSource={pipelines}
           columns={this.piplineColumns}
           rowKey={record => record.id}
           pagination={false}
           expandedRowRender={record => <MediaPair {...parentMethods} recordValue={record} />}
+          scroll={{ x: 1000, }}
         />
         {modalVisible && (
           <PipelineForm
