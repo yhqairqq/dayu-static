@@ -473,7 +473,7 @@ class Channel extends React.Component {
             </div>
           </div>
           <StandardTable
-            size = {window.innerWidth > 1440?'default':'small'}
+            size = {'small'}
             // loading={loading}
             data={data}
             columns={this.columns}
