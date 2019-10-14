@@ -140,7 +140,7 @@ class BehaviorHistoryCurve extends React.Component {
         </div>
 
         <Chart
-          height={200}
+          // height={200}
           data={analysisResult && analysisResult.plotCells}
           scale={{
             num: {
@@ -179,7 +179,7 @@ class BehaviorHistoryCurve extends React.Component {
           <Geom
             type="point"
             position="time*num"
-            size={4}
+            size={1}
             shape={'circle'}
             color={'type'}
             style={{

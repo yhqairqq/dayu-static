@@ -35,7 +35,8 @@ export default {
           if (redirectUrlParams.origin === urlParams.origin) {
             redirect = redirect.substr(urlParams.origin.length);
             if (redirect.match(/^\/.*#/)) {
-              redirect = redirect.substr(redirect.lastIndexOf(encodeURI('%23')) + 1);
+              redirect = '/overview/monitor'
+              // redirect.substr(redirect.lastIndexOf('http'));
             }
           } else {
             redirect = null;

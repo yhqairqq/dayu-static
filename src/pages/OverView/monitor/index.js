@@ -35,7 +35,7 @@ class OverMonitor extends React.Component {
     this.getData();
     this.timer = setInterval(() => {
       this.getData();
-    }, 5000);
+    }, 30000);
   }
 
   getData = () => {
@@ -43,7 +43,6 @@ class OverMonitor extends React.Component {
     dispatch({
       type: 'analysis/fetchAllBehaviorHistory',
       callback: data => {
-        console.log(data);
         let behaviorList = data.map(item => {
           let cells =
             item.plotCells &&
@@ -68,7 +67,6 @@ class OverMonitor extends React.Component {
     dispatch({
       type: 'analysis/fetchAllNodeInfo',
       callback: data => {
-        console.log(data);
         this.setState({
           nodeInfos: data,
         });
@@ -112,8 +110,8 @@ class OverMonitor extends React.Component {
       return '';
     } else {
       let obj = JSON.parse(heapMemoryUsage);
-      let total = obj.committed / 1000 / 1000;
-      return total + 'MB';
+      let total = obj.committed / 1000 / 1000/1000;
+      return numeral(total).format('0,0.00') + 'G';
     }
   };
 
@@ -179,12 +177,13 @@ class OverMonitor extends React.Component {
               renderItem={item => (
                 <div>
                   <Chart
-                    height={200}
+                    // height={200}
                     data={item && item.plotCells}
                     scale={{
                       size: {
                         min: 0,
-                        alias: '记录大小',
+                        alias: '平均吞吐量',
+                        // formatter: val => `${numeral(val/1000).format('00.00')}KB`,
                       },
                       time: {
                         range: [0, 1],
@@ -204,7 +203,7 @@ class OverMonitor extends React.Component {
                     <Axis
                       name="size"
                       label={{
-                        formatter: val => `${val / 1000} KB`,
+                        formatter: val => `${val / 1000/1000} MB`,
                       }}
                     />
                     <Tooltip
@@ -222,7 +221,7 @@ class OverMonitor extends React.Component {
                     <Geom
                       type="point"
                       position="time*size"
-                      size={4}
+                      size={1}
                       shape={'circle'}
                       style={{
                         stroke: '#fff',
@@ -255,12 +254,12 @@ class OverMonitor extends React.Component {
               // loading={initLoading}
               dataSource={nodeInfos}
               renderItem={item => (
-                <Row gutter={20}>
-                  <Col span={12}>
+                <div>
+                    <div>
                     <div
                       style={{
-                        height: '450px',
-                        width: '550px',
+                        // height: '450px',
+                        // width: '550px',
                       }}
                     >
                       <div
@@ -277,10 +276,10 @@ class OverMonitor extends React.Component {
                         </span>
                         {this.getTotalMemmory(item.otherResult.heapMemoryUsage)}
                       </div>
-                      {item.otherResult.heapMemoryUsage && (
+                      {item.otherResult.heapMemoryUsage!=0 && (
                         <Chart
                           height={400}
-                          width={400}
+                          width={600}
                           data={this.getDataView(
                             this.renderNodeData(item.otherResult.heapMemoryUsage)
                           )}
@@ -306,11 +305,11 @@ class OverMonitor extends React.Component {
                           <Geom
                             type="intervalStack"
                             position="percent"
-                            color="item"
+                            color={['item', [ '#339900','#990000']]}
                             tooltip={[
                               'item*percent',
                               (item, percent) => {
-                                percent = percent * 100 + '%';
+                                percent = numeral(percent*100).format('00.0') + '%';
                                 return {
                                   name: item,
                                   value: percent,
@@ -346,8 +345,8 @@ class OverMonitor extends React.Component {
                         {item.otherResult.node.name}
                       </div>
                     </div>
-                  </Col>
-                  <Col span={12}>
+                    </div>
+                    <div>
                     <Descriptions title={item.otherResult.node.name} column={1}>
                       <Descriptions.Item label="机器序号">
                         {item.otherResult.node.id}
@@ -370,14 +369,14 @@ class OverMonitor extends React.Component {
                       </Descriptions.Item>
                       <Descriptions.Item label="线程使用状况">{`${item.otherResult.threadActiveSize}/${item.otherResult.threadPoolSize}`}</Descriptions.Item>
                       <Descriptions.Item label="实际运行的Pipeline数统计">
-                        {item.otherResult.runningPipelines.reduce((pre, val) => pre + ',' + val)}
+                        {item.otherResult.runningPipelines!=0&&item.otherResult.runningPipelines.reduce((pre, val) => pre + ',' + val)}
                       </Descriptions.Item>
                       <Descriptions.Item label="操作系统信息">
                         {item.otherResult.systemInfo}
                       </Descriptions.Item>
                     </Descriptions>
-                  </Col>
-                </Row>
+                    </div>
+                </div>
               )}
             />
           </Col>

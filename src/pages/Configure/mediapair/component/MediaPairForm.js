@@ -19,6 +19,7 @@ import {
   Table,
 } from 'antd';
 import datasource from '@/models/datasource';
+import MediaList from '../../media/component/MediaList'
 
 const FormItem = Form.Item;
 const { TextArea } = Input;
@@ -65,6 +66,9 @@ class MediaPairForm extends React.Component {
       radioType: 'MYSQL',
       sourceDataMedia: '',
       targetDataMedia: '',
+      mediaModalVisible:false,
+      formModalWidth:'1200',
+      formType:1,
     };
     this.formLayout = {
       labelCol: { span: 7 },
@@ -76,6 +80,7 @@ class MediaPairForm extends React.Component {
     const { values, isEdit, mediaPair } = this.props;
 
     const { datasourceMap } = this.state;
+    console.log(mediaPair)
 
     if (isEdit && mediaPair) {
       //获取原表namespace
@@ -86,6 +91,8 @@ class MediaPairForm extends React.Component {
           .filter(item => item != '')
           .map(item => namespace + '.' + item + '\n')
           .reduce((prev, val) => prev + val),
+        selectedSourceMedia:mediaPair.source,
+        selectedTargetMedia:mediaPair.target,
       });
 
       if (mediaPair.target.source.type == 'MYSQL') {
@@ -131,31 +138,59 @@ class MediaPairForm extends React.Component {
   };
   okHandle = () => {
     const { values, isEdit = false, form, handleAdd, handleUpdate, mediaPair } = this.props;
-    const { isHand, type, targetId, sourceId } = this.state;
-    form.validateFields((err, fieldsValue) => {
-      if (err) return;
-      form.resetFields();
-      if (isEdit) {
-        handleUpdate({
-          id: mediaPair.id,
-          filterType: fieldsValue.filterType,
-          filterText: fieldsValue.filterText,
-
-          // sourceDataMedia:fieldsValue.sourceDataMedia.split('\n'),
-          // targetDataMedia:fieldsValue.targetDataMedia.split('\n'),
-        });
-      } else {
-        handleAdd({
-          ...fieldsValue,
-          pipelineId: values.id,
-          sourceDataMedia: fieldsValue.sourceDataMedia.split('\n'),
-          targetDataMedia:
-            (fieldsValue.targetDataMedia && fieldsValue.targetDataMedia.split('\n')) || '',
-          sourceId,
-          targetId,
-        });
-      }
-    });
+    const { isHand, type, targetId, sourceId,selectedSourceMedia,selectedTargetMedia,formType } = this.state;
+    console.log(formType)
+    if(formType == 1){
+      form.validateFields((err, fieldsValue) => {
+        if (err) return;
+        form.resetFields();
+        if (isEdit) {
+          handleUpdate({
+            id: mediaPair.id,
+            filterType: fieldsValue.filterType,
+            filterText: fieldsValue.filterText,
+  
+            // sourceDataMedia:fieldsValue.sourceDataMedia.split('\n'),
+            // targetDataMedia:fieldsValue.targetDataMedia.split('\n'),
+          });
+        } else {
+          handleAdd({
+            ...fieldsValue,
+            pipelineId: values.id,
+            sourceDataMedia: fieldsValue.sourceDataMedia.split('\n'),
+            targetDataMedia:
+              (fieldsValue.targetDataMedia && fieldsValue.targetDataMedia.split('\n')) || '',
+            sourceId,
+            targetId,
+          });
+        }
+      });
+    }else if(formType == 2){
+    
+      form.validateFields((err, fieldsValue) => {
+        if (err) return;
+        form.resetFields();
+        if (isEdit) {
+          handleUpdate({
+            id: mediaPair.id,
+            ...fieldsValue,
+            pipelineId: values.id,
+            sourceMediaId:selectedSourceMedia.id,
+            targetMediaId:selectedTargetMedia.id,
+  
+            // sourceDataMedia:fieldsValue.sourceDataMedia.split('\n'),
+            // targetDataMedia:fieldsValue.targetDataMedia.split('\n'),
+          });
+        } else {
+          handleAdd({
+            ...fieldsValue,
+            pipelineId: values.id,
+            sourceMediaId:selectedSourceMedia.id,
+            targetMediaId:selectedTargetMedia.id,
+          });
+        }
+      });
+    }
   };
   onSelect = (selectedKeys, info) => {
     selectedKeys.map(key => this.renderTreeNodes(key));
@@ -288,7 +323,20 @@ class MediaPairForm extends React.Component {
       },
     });
   };
-  callback = key => {};
+  callback = key => {
+    if(key === 2){
+        this.setState({
+          formType:key,
+          formModalWidth:500,
+        })      
+    }else{
+      this.setState({
+        formType:key,
+        formModalWidth:1200,
+      })      
+    }
+    
+  };
   metaShow = type => {
     const { dispatch, values } = this.props;
     const { schemaMap, tablesMap, topicMap } = this.state;
@@ -340,6 +388,30 @@ class MediaPairForm extends React.Component {
       });
     }
   };
+  selectMedia = (item)=>{
+    const {inputType} = this.state;
+    if(inputType){
+      if(inputType === 'source'){
+          this.setState({
+            selectedSourceMedia:item,
+            mediaModalVisible:false,
+          })
+      }else{
+        this.setState({
+          selectedTargetMedia:item,
+          mediaModalVisible:false,
+        })
+      }
+    }
+    console.log(item)
+  }
+
+  handleMediaModalVisible = (flag,inputType)=>{
+    this.setState({
+      mediaModalVisible:flag,
+      inputType
+    })
+  }
   render() {
     const {
       isHand,
@@ -360,6 +432,11 @@ class MediaPairForm extends React.Component {
       targetId,
       datasourceMap,
       topic,
+      mediaModalVisible,
+      formModalWidth,
+      selectedSourceMedia,
+      selectedTargetMedia,
+      formType,
     } = this.state;
     const {
       isEdit,
@@ -370,6 +447,10 @@ class MediaPairForm extends React.Component {
       mediaPair,
       zookeeper: { zookeepers },
     } = this.props;
+
+    const parentMethods = {
+      selectMedia:this.selectMedia
+    };
 
     return (
       <Modal
@@ -385,7 +466,8 @@ class MediaPairForm extends React.Component {
       >
         <Tabs defaultActiveKey="1" onChange={this.callback}>
           <TabPane tab="快速配置" key="1">
-            <Row gutter={8}>
+            {
+              formType == 1&&<Row gutter={8}>
               <Col span={12}>
                 <FormItem key="sourceDataMedia" {...this.formLayout} label="源数据表">
                   {form.getFieldDecorator('sourceDataMedia', {
@@ -572,11 +654,89 @@ class MediaPairForm extends React.Component {
                 </Col>
               )}
             </Row>
+            }
           </TabPane>
-          <TabPane tab="自拟定" key="2">
-            Content of Tab Pane 2
+          <TabPane tab="模板配置" key="2">
+            {
+              formType == 2&&           
+              <div >
+              <div>
+                 <FormItem key="sourceMediaId" {...this.formLayout} label="源数据表列表">
+                   {form.getFieldDecorator('sourceMediaId', {
+                     rules: [{ required: true, message: '请输入数据源名称' }],
+                     initialValue: selectedSourceMedia&&selectedSourceMedia.name
+                     .split(";").reduce((prev,val)=>(`${prev}\n${val}`)),
+                   })(<Input.TextArea  autosize={{ minRows: 10 }} onFocus={()=>this.handleMediaModalVisible(true,'source')} placeholder="请输入" />)}
+                 </FormItem>
+                 <FormItem key="targetMediaId" {...this.formLayout} label="目标源表列表">
+                   {form.getFieldDecorator('targetMediaId', {
+                     rules: [{ required: true, message: '请输入数据源名称' }],
+                     initialValue: selectedTargetMedia&&selectedTargetMedia.name
+                     .split(";").reduce((prev,val)=>(`${prev}\n${val}`)),
+                   })(<Input.TextArea  autosize={{ minRows: 10 }} onFocus={()=>this.handleMediaModalVisible(true,'target')} placeholder="请输入" />)}
+                 </FormItem>
+                 {selectedTargetMedia&&selectedTargetMedia.source.type  == 'ROCKETMQ' && (
+                  <FormItem key="brokers" {...this.formLayout} label="brokers">
+                    {form.getFieldDecorator('brokers', {
+                      rules: [{ required: false, message: '' }],
+                      initialValue:selectedTargetMedia&&selectedTargetMedia.source.url || ''
+                    })(<Input disabled placeholder="MQ" />)}
+                  </FormItem>
+                )}
+                {selectedTargetMedia&&selectedTargetMedia.source.type  == 'ROCKETMQ' && (
+                  <FormItem key="topic" {...this.formLayout} label="topic">
+                    {form.getFieldDecorator('topic', {
+                      rules: [{ required: false, message: 'topic' }],
+                      initialValue: selectedTargetMedia&&selectedTargetMedia.topic ||'',
+                    })(<Input disabled={isEdit ? true : false} placeholder="topic" />)}
+                  </FormItem>
+                )}
+                 <FormItem key="pushWeight" {...this.formLayout} label="权重">
+                 {form.getFieldDecorator('pushWeight', {
+                   rules: [{ required: true, message: '权重' }],
+                   initialValue: 5,
+                 })(<Input disabled />)}
+               </FormItem>
+               <FormItem key="filterType" {...this.formLayout} label="EventProcessor类型">
+                 {form.getFieldDecorator('filterType', {
+                   initialValue: 'SOURCE',
+                 })(
+                   <Radio.Group disabled>
+                     <Radio.Button value="CLAZZ">CLAZZ</Radio.Button>
+                     <Radio.Button value="SOURCE">SOURCE</Radio.Button>
+                   </Radio.Group>
+                 )}
+               </FormItem>
+
+               <FormItem key="filterText" {...this.formLayout} label="EventProcessor脚本">
+                 {form.getFieldDecorator('filterText', {
+                   rules: [{ required: false, message: 'processor' }],
+                   initialValue: (mediaPair.filterData && mediaPair.filterData.sourceText) || '',
+                 })(<Input.TextArea autosize={{ minRows: 50}}
+                   placeholder="" />)}
+               </FormItem>
+               </div>
+         </div>
+            }
           </TabPane>
         </Tabs>
+        {mediaModalVisible&&<Modal
+            destroyOnClose
+            maskClosable={false}
+            width={formModalWidth}
+            style={{ top: 20 }}
+            bodyStyle={{ padding: '10px 10px' }}
+            title={isEdit ? '修改数据映射信息' : '新增数据映射信息'}
+            visible={mediaModalVisible}
+            onCancel={() => this.handleMediaModalVisible(false)}
+           
+          >  
+          <MediaList 
+            {...parentMethods}
+          ></MediaList>  
+        </Modal>  }
+        
+
       </Modal>
     );
   }

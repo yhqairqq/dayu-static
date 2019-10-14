@@ -135,7 +135,7 @@ class DelayStatAnalysis extends React.Component {
         </div>
         {/* analysisResult&&analysisResult. */}
         <Chart
-          height={200}
+          // height={200}
           data={analysisResult && analysisResult.plotCells}
           scale={{
             avgDelayTime: {
@@ -171,7 +171,7 @@ class DelayStatAnalysis extends React.Component {
           <Geom
             type="point"
             position="time*avgDelayTime"
-            size={4}
+            size={1}
             shape={'circle'}
             style={{
               stroke: '#fff',

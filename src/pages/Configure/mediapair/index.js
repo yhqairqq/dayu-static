@@ -160,7 +160,6 @@ class DataMediaPair extends React.Component {
       });
 
       this.timer = setInterval(() => {
-        console.log('mediapair 刷新', recordValue.id);
         dispatch({
           type: 'mediapair/fetch',
           payload: {

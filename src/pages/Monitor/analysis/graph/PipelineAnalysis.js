@@ -151,7 +151,7 @@ class PipelineAnalysis extends React.Component {
         </div>
 
         <Chart
-          height={200}
+          // height={200}
           data={analysisResult && analysisResult.plotCells}
           scale={{
             num: {
@@ -188,7 +188,7 @@ class PipelineAnalysis extends React.Component {
           <Geom
             type="point"
             position="time*num"
-            size={4}
+            size={1}
             shape={'circle'}
             style={{
               stroke: '#fff',
@@ -199,7 +199,7 @@ class PipelineAnalysis extends React.Component {
         <div>
           <div></div>
           <Chart
-            height={200}
+            // height={200}
             data={analysisResult && analysisResult.plotCells}
             scale={{
               size: {
@@ -236,7 +236,7 @@ class PipelineAnalysis extends React.Component {
             <Geom
               type="point"
               position="time*size"
-              size={4}
+              size={1}
               shape={'circle'}
               style={{
                 stroke: '#fff',

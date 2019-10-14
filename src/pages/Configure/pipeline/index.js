@@ -175,7 +175,6 @@ class Pipeline extends React.PureComponent {
       },
     });
     this.timer = setInterval(() => {
-      console.log('pipeline 刷新', recordValue.id);
       dispatch({
         type: 'pipeline/fetch',
         payload: {
