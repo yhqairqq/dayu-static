@@ -381,11 +381,25 @@ class Channel extends React.Component {
       selectedRecord: record,
     });
   };
+  searchChannel = () =>{
+    const {dispatch,form} = this.props;
+
+    form.validateFields((err, fieldsValue) => {
+      if (err) return;
+      dispatch({
+          type: 'channel/fetch',
+          payload:{
+              ...fieldsValue
+          }
+      });
+    });
+  }
 
   render() {
     const {
       loading,
       channel: { data },
+      form,
     } = this.props;
     const {
       modalVisible,
@@ -404,7 +418,6 @@ class Channel extends React.Component {
       handleHistoryModalVisible: this.handleHistoryModalVisible,
       swtichWithStart: this.swtichWithStart,
     };
-    console.log(window.innerHeight,window.innerWidth);
     // console.log(data)
     const pStyle = {
       fontSize: 16,
@@ -459,21 +472,62 @@ class Channel extends React.Component {
       <PageHeaderWrapper title="Channel管理" content="管理同步链路">
         <Card bordered={false}>
           <div className={styles.message}>
-            <Button
-              icon="plus"
-              type="primary"
-              onClick={() => this.handleModalVisible(true, {}, false)}
-            >
-              新建链路
-            </Button>
+            
             <div className={styles.ManageOperator}>
               <span className={styles.querySubmitButtons}>
-                <Button type="primary">查询</Button>
+              
               </span>
+              <div style={{
+                marginTop:'20px',
+                marginBottom:'20px'
+              }}>
+              <Form layout="inline">
+                    <FormItem style={{marginLeft:'20px'}} key="name" {...this.formLayout} label="channel名称">
+                    {form.getFieldDecorator('name', {
+                        rules: [{ required: false, message: 'channel名称' }],
+                        initialValue: '',
+                    })(<Input placeholder="channel名称" />)} 
+                    </FormItem>
+                    
+                    <FormItem key="status" {...this.formLayout} label="状态">
+                        {form.getFieldDecorator('status', {
+                            rules: [{ required: false, message: '状态' }],
+                            initialValue: '',
+                        })(
+                            <Select style={{ width: 100 }} mode="single" placeholder="状态">
+                                 <Option key={'START'} value={'START'}>
+                                    运行
+                                </Option>
+                                <Option key={'PAUSE'} value={'PAUSE'}>
+                                    挂起
+                                </Option>
+                                <Option key={'STOP'} value={'STOP'}>
+                                    停止
+                                </Option>
+                            </Select>
+                        )}
+                        </FormItem>
+                    <Button style={{
+                      marginTop:'5px',
+                      marginRight:'20px',
+                    }} type="primary" icon="search" onClick = {()=>this.searchChannel()}>查询</Button>
+                    <Button
+                      style={{
+                        marginTop:'5px'
+                      }}
+                      icon="plus"
+                      type="primary"
+                      onClick={() => this.handleModalVisible(true, {}, false)}
+                    >
+                      新建链路
+                    </Button>
+              </Form>
+              
+              </div>
             </div>
           </div>
           <StandardTable
-            size = {'small'}
+            size = {window.innerWidth > 1440?'default':'small'}
             // loading={loading}
             data={data}
             columns={this.columns}

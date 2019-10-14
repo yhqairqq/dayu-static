@@ -126,7 +126,7 @@ class MediaList extends React.Component {
     form.validateFields((err, fieldsValue) => {
         if (err) return;
         // fosrm.resetFields();
-        console.log(fieldsValue)
+        // console.log(fieldsValue)
         dispatch({
             type: 'media/fetch',
             payload:{

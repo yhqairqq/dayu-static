@@ -199,11 +199,25 @@ class MediaSource extends React.Component {
       },
     });
   };
+  search = ()=>{
+    const {dispatch,form} = this.props;
+
+    form.validateFields((err, fieldsValue) => {
+      if (err) return;
+      dispatch({
+          type: 'mediasource/fetch',
+          payload:{
+              ...fieldsValue
+          }
+      });
+    });
+  }
 
   render() {
     const {
       loading,
       mediasource: { data },
+      form,
     } = this.props;
 
     const { modalVisible, expandForm, recordValue, isEditForm, drawerVisible } = this.state;
@@ -226,16 +240,54 @@ class MediaSource extends React.Component {
         <Card bordered={false}>
           <div className={styles.message}>
             <div className={styles.ManageOperator}>
-              <Button
-                icon="plus"
-                type="primary"
-                onClick={() => this.handleModalVisible(true, {}, false)}
-              >
-                新建数据源
-              </Button>
-              <span className={styles.querySubmitButtons}>
-                <Button type="primary">查询</Button>
-              </span>
+            <div style={{
+                marginTop:'20px',
+                marginBottom:'20px'
+              }}>
+              <Form layout="inline">
+                    <FormItem style={{marginLeft:'20px'}} key="name" {...this.formLayout} label="数据源名称">
+                    {form.getFieldDecorator('name', {
+                        rules: [{ required: false, message: '数据源名称' }],
+                        initialValue: '',
+                    })(<Input placeholder="数据源名称" />)} 
+                    </FormItem>
+                    
+                    <FormItem key="type" {...this.formLayout} label="数据源类型">
+                        {form.getFieldDecorator('type', {
+                            rules: [{ required: false, message: '状态' }],
+                            initialValue: '',
+                        })(
+                            <Select style={{ width: 200 }} mode="single" placeholder="状态">
+                                 <Option key={'MYSQL'} value={'MYSQL'}>
+                                 MYSQL
+                                </Option>
+                                <Option key={'ROCKETMQ'} value={'ROCKETMQ'}>
+                                ROCKETMQ
+                                </Option>
+                                <Option key={'KAFKA'} value={'KAFKA'}>
+                                KAFKA
+                                </Option>
+                            </Select>
+                        )}
+                        </FormItem>
+                    <Button style={{
+                      marginTop:'5px',
+                      marginRight:'20px',
+                    }} type="primary" icon="search" onClick = {()=>this.search()}>查询</Button>
+                    <Button
+                      style={{
+                        marginTop:'5px'
+                      }}
+                      icon="plus"
+                      type="primary"
+                      onClick={() => this.handleModalVisible(true, {}, false)}
+                    >
+                       新建数据源
+                    </Button>
+              </Form>
+              
+              </div>
+             
             </div>
           </div>
           <StandardTable

@@ -70,6 +70,14 @@ class Media extends React.Component {
     dispatch({
       type: 'media/fetch',
     });
+    dispatch({
+      type: 'mediasource/fetchAll',
+      callback:(data)=>{
+          this.setState({
+              mediasources:data
+          })
+      }
+    });
   }
 
   handleStandardTableChange = (pagination, filtersArg, sorter) => {
@@ -97,13 +105,30 @@ class Media extends React.Component {
       },
     });
   };
+  search = ()=>{
+    const {  form,dispatch } = this.props;
+    form.validateFields((err, fieldsValue) => {
+        if (err) return;
+        dispatch({
+            type: 'media/fetch',
+            payload:{
+                ...fieldsValue
+            }
+        });
+      });
+
+  }
 
   render() {
     const {
       loading,
       media: { medias },
+      form,
     } = this.props;
-    const {} = this.state;
+    const {
+      mediasources
+
+    } = this.state;
     console.log(medias);
     return (
       <PageHeaderWrapper title="配置管理" content="映射表模板">
@@ -111,8 +136,81 @@ class Media extends React.Component {
           <div className={styles.message}>
             <div className={styles.ManageOperator}>
               <span className={styles.querySubmitButtons}>
-                <Button type="primary">查询</Button>
               </span>
+              <div style={{
+              marginTop:'20px',
+              marginBottom:'30px',
+          }}>
+            <Form layout="inline">
+                        <FormItem key="sourceId" {...this.formLayout} label="数据源名称">
+                        {form.getFieldDecorator('sourceId', {
+                            rules: [{ required: false, message: '数据源' }],
+                            initialValue: '',
+                        })(
+                            <Select style={{ width: 300 }} mode="single" placeholder="数据源类型">
+                                {
+                                    mediasources&&mediasources.map(item=>(
+                                        <Option key={item.id} value={item.id}>
+                                             {item.id}-{item.name}-{item.url}
+                                        </Option>
+                                    ))
+                                }
+
+                            </Select>
+                        )} 
+                        </FormItem>
+                        <FormItem style={{marginLeft:'20px'}} key="namespace" {...this.formLayout} label="数据库名">
+                        {form.getFieldDecorator('namespace', {
+                            rules: [{ required: false, message: '数据库名' }],
+                            initialValue: '',
+                        })(<Input placeholder="数据库名" />)} 
+                        </FormItem>
+                        
+                        <FormItem key="name" {...this.formLayout} label="表名">
+                        {form.getFieldDecorator('name', {
+                            rules: [{ required: false, message: '请输入表名' }],
+                            initialValue: '',
+                        })(<Input placeholder="请输入表名" />)} 
+                        </FormItem>
+                        <FormItem key="topic" {...this.formLayout} label="Topic">
+                        {form.getFieldDecorator('topic', {
+                            rules: [{ required: false, message: 'Topic' }],
+                            initialValue: '',
+                        })(<Input placeholder="Topic" />)} 
+                        </FormItem>
+
+                        <FormItem key="type" {...this.formLayout} label="数据源类型">
+                        {form.getFieldDecorator('type', {
+                            rules: [{ required: false, message: '数据源类型' }],
+                            initialValue: 'MYSQL',
+                        })(
+                            <Select style={{ width: 300 }} mode="single" placeholder="数据源类型">
+                                 <Option key={'MYSQL'} value={'MYSQL'}>
+                                    MYSQL
+                                </Option>
+                                <Option key={'ROCKETMQ'} value={'ROCKETMQ'}>
+                                    ROCKETMQ
+                                </Option>
+                            </Select>
+                        )}
+                        </FormItem>
+                        <Button style={{
+                            marginTop:'5px',
+                            marginLeft:'20px'
+                        }} type='primary' icon='search' onClick={()=>this.search()}>查询</Button>
+                          <Button
+                            style={{
+                              marginTop:'5px'
+                            }}
+                            icon="plus"
+                            type="primary"
+                            onClick={() => this.handleModalVisible(true, {}, false)}
+                          >
+                            新建数据源
+                      </Button>
+                </Form>
+            
+          </div>
             </div>
           </div>
           <StandardTable
