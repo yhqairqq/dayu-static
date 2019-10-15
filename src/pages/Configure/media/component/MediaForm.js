@@ -40,9 +40,10 @@ class MediaForm extends React.Component {
   
   constructor(props) {
     super(props);
-    const {  } = props;
+    const { values } = props;
 
     this.state = {
+        mediaId: values.id,
     };
     this.formLayout = {
       labelCol: { span: 7 },
@@ -57,17 +58,48 @@ class MediaForm extends React.Component {
     const {  } = this.state;
   }
   
+  okHandle = () => {
+    const { values, isEdit = false, form, handleAdd, handleUpdate } = this.props;
+    const { isHand, mediaId, type } = this.state;
+    form.validateFields((err, fieldsValue) => {
+      if (err) return;
+      form.resetFields();
+      if (isEdit) {
+        handleUpdate({
+          id: mediaId,
+          ...fieldsValue,
+        });
+      } else {
+        handleAdd({
+          ...fieldsValue,
+        });
+      }
+    });
+  };
   render() {
     const {
     } = this.state;
     const {
         form,
+        handleModalVisible,
+        values,
     } = this.props;
 
     return (
-      <div>
-         
-      </div>
+        <Modal
+        destroyOnClose
+        maskClosable={false}
+        width={window.innerWidth / 3}
+        style={{ top: 20 }}
+        bodyStyle={{ padding: '10px 40px' }}
+        title={isEdit ? '修改数据表' : '新增数据表'}
+        visible={modalVisible}
+        onCancel={() => handleModalVisible(false, false, values)}
+        onOk={this.okHandle} >
+
+
+
+        </Modal>
     );
   }
 }

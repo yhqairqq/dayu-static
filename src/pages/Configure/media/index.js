@@ -105,6 +105,55 @@ class Media extends React.Component {
       },
     });
   };
+  handleAdd = fields => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'media/add',
+      payload: fields,
+      callback: () => {
+        message.success('添加成功');
+        this.handleModalVisible();
+        // 重载数据
+        this.reloadData();
+      },
+    });
+  };
+  handleUpdate = fields => {
+    const { dispatch } = this.props;
+
+    dispatch({
+      type: 'media/update',
+      payload: fields,
+      callback: () => {
+        message.success('修改成功');
+        this.handleModalVisible();
+        // 重载数据
+        this.reloadData();
+      },
+    });
+  };
+  // 删除操作处理
+  handleDelete = record => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'media/remove',
+      payload: {
+        id: record.id,
+      },
+      callback: () => {
+        message.success('删除成功');
+        // 重载数据
+        this.reloadData();
+      },
+    });
+  };
+  handleModalVisible = (flag, record, isEdit) => {
+    this.setState({
+      modalVisible: !!flag,
+      isEditForm: !!isEdit,
+      recordValue: record || {},
+    });
+  };
   search = ()=>{
     const {  form,dispatch } = this.props;
     form.validateFields((err, fieldsValue) => {
@@ -118,6 +167,7 @@ class Media extends React.Component {
       });
 
   }
+  
 
   render() {
     const {
@@ -127,9 +177,13 @@ class Media extends React.Component {
     } = this.props;
     const {
       mediasources
-
     } = this.state;
-    console.log(medias);
+  
+    const parentMethods = {
+      handleAdd: this.handleAdd,
+      handleModalVisible: this.handleModalVisible,
+      handleUpdate: this.handleUpdate,
+    };
     return (
       <PageHeaderWrapper title="配置管理" content="映射表模板">
         <Card bordered={false}>
