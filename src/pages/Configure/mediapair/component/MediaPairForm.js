@@ -20,6 +20,7 @@ import {
 } from 'antd';
 import datasource from '@/models/datasource';
 import MediaList from '../../media/component/MediaList'
+import InfiniteScroll from 'react-infinite-scroller';
 
 const FormItem = Form.Item;
 const { TextArea } = Input;
@@ -412,6 +413,12 @@ class MediaPairForm extends React.Component {
       inputType
     })
   }
+  searchKeyChnage = e =>{
+    const { value } = e.target;
+    this.setState({
+      searchKey:value || ''
+    })
+  }
   render() {
     const {
       isHand,
@@ -437,6 +444,7 @@ class MediaPairForm extends React.Component {
       selectedSourceMedia,
       selectedTargetMedia,
       formType,
+      searchKey,
     } = this.state;
     const {
       isEdit,
@@ -456,7 +464,7 @@ class MediaPairForm extends React.Component {
       <Modal
         destroyOnClose
         maskClosable={false}
-        width={window.innerWidth/2}
+        width={window.innerWidth>1080?window.innerWidth/2:window.innerWidth/4*3}
         style={{ top: 20 }}
         bodyStyle={{ padding: '10px 10px' }}
         title={isEdit ? '修改数据映射信息' : '新增数据映射信息'}
@@ -467,8 +475,8 @@ class MediaPairForm extends React.Component {
         <Tabs defaultActiveKey="1" onChange={this.callback}>
           <TabPane tab="快速配置" key="1">
             {
-              formType == 1&&<Row gutter={8}>
-              <Col span={12}>
+              formType == 1&&<div style={{display:'flex',justifyContent:'space-between'}}>
+              <div style={{width:'60%'}}>
                 <FormItem key="sourceDataMedia" {...this.formLayout} label="源数据表">
                   {form.getFieldDecorator('sourceDataMedia', {
                     rules: [{ required: true, message: '源数据表' }],
@@ -549,9 +557,9 @@ class MediaPairForm extends React.Component {
                     initialValue: (mediaPair.filterData && mediaPair.filterData.sourceText) || '',
                   })(<Input.TextArea placeholder="" />)}
                 </FormItem>
-              </Col>
+              </div>
               {metaModalVisible && (
-                <Col span={6}>
+                <div style={{width:"40%"}}>
                   <div
                     style={{
                       fontSize: '20px',
@@ -571,10 +579,18 @@ class MediaPairForm extends React.Component {
                       </div>
                     )}
                   </div>
-                  {sourceType == 'source' ? (
+                  <Input.Search style={{ marginBottom: 8 }} placeholder="Search" onChange = {this.searchKeyChnage}/>
+                 <div style={{
+                       height: '500px',
+                       overflow: 'scroll',
+                       overflowX: 'hidden',
+                       overflowY: 'auto',
+                 }}>
+                 {sourceType == 'source' ? (
                     <Tree
                       checkable
                       onLoadData={this.onLoadData}
+                      autoExpandParent
                       showIcon={true}
                       onSelect={this.onSelect}
                       onCheck={this.onCheck}
@@ -590,18 +606,26 @@ class MediaPairForm extends React.Component {
                                   key={`${datasource.id}-${schema}`}
                                   selectable={true}
                                 >
-                                  {tablesMap &&
-                                    tablesMap.get(datasource.id + schema) &&
-                                    tablesMap
-                                      .get(datasource.id + schema)
-                                      .map(table => (
-                                        <TreeNode
-                                          title={table}
-                                          key={`${datasource.id}-${schema}-${table}`}
-                                          isLeaf={true}
-                                          selectable={false}
-                                        ></TreeNode>
+                                 
+                                   {tablesMap&&
+                                      tablesMap.get(datasource.id + schema) &&
+                                      tablesMap
+                                        .get(datasource.id + schema).filter(item=>{
+                                          if(searchKey == null || searchKey==''){
+                                               return true
+                                          }else{
+                                            return (item.indexOf(searchKey) == 0)
+                                          }
+                                        })
+                                        .map(table => (
+                                          <TreeNode
+                                            title={table}
+                                            key={`${datasource.id}-${schema}-${table}`}
+                                            isLeaf={true}
+                                            selectable={false}
+                                          ></TreeNode>
                                       ))}
+                                     
                                 </TreeNode>
                               ))}
                           </TreeNode>
@@ -651,9 +675,10 @@ class MediaPairForm extends React.Component {
                         ))}
                     </Tree>
                   )}
-                </Col>
+                 </div>
+                </div>
               )}
-            </Row>
+            </div>
             }
           </TabPane>
           <TabPane tab="模板配置" key="2">

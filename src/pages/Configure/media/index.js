@@ -113,7 +113,7 @@ class Media extends React.Component {
       params.sorter = `${sorter.field}_${sorter.order}`;
     }
     dispatch({
-      type: 'mediasource/fetch',
+      type: 'media/fetch',
       payload: {
         params,
         currentPage: pagination.current,
