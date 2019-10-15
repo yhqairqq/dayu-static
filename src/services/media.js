@@ -15,7 +15,7 @@ export async function queryMedia(params) {
   });
 }
 
-export async function updateMediaPair(params) {
+export async function updateMedia(params) {
   return request(`${PRE_URL}/update`, {
     method: 'POST',
     data: {
@@ -24,7 +24,8 @@ export async function updateMediaPair(params) {
   });
 }
 
-export async function addMediaPair(params) {
+export async function addMedia(params) {
+  console.log(params)
   return request(`${PRE_URL}/add`, {
     method: 'POST',
     data: {

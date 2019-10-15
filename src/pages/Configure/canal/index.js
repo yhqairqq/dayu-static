@@ -18,6 +18,7 @@ import {
   Table,
   Drawer,
   Descriptions,
+  Popover,
 } from 'antd';
 
 import StandardTable from '@/components/StandardTable';
@@ -53,7 +54,12 @@ class Canal extends React.Component {
       render: text =>
         text == 'MYSQL' ? <Tag color="green">{text}</Tag> : <Tag color="blue">{text}</Tag>,
     },
-    { title: '连接配置', dataIndex: 'url' },
+    { title: '连接配置', render:(text,record)=>(
+      <Popover content={record.url} title="过滤脚本" trigger="hover">
+     { record&&`${record.url.substring(0,50)}...`}
+    </Popover>
+     
+    ) },
     {
       title: '操作',
       key: 'action',
@@ -82,6 +88,14 @@ class Canal extends React.Component {
     const { dispatch } = this.props;
     dispatch({
       type: 'canal/fetch',
+    });
+    dispatch({
+      type: 'mediasource/fetchAll',
+      callback:(data)=>{
+          this.setState({
+              mediasources:data
+          })
+      }
     });
   }
   showDrawer = record => {
@@ -178,13 +192,29 @@ class Canal extends React.Component {
       payload: {},
     });
   };
+  search = () =>{
+    const {  form,dispatch } = this.props;
+    form.validateFields((err, fieldsValue) => {
+        if (err) return;
+        dispatch({
+            type: 'canal/fetch', 
+            payload:{
+                ...fieldsValue
+            }
+        });
+      });
+
+  }
 
   render() {
     const {
       loading,
       canal: { data },
+      form,
     } = this.props;
-    const { modalVisible, isEditForm, expandForm, recordValue, drawerVisible } = this.state;
+    const { modalVisible, isEditForm, expandForm, recordValue, drawerVisible,
+      mediasources
+     } = this.state;
     const parentMethods = {
       handleAdd: this.handleAdd,
       handleModalVisible: this.handleModalVisible,
@@ -194,17 +224,60 @@ class Canal extends React.Component {
       <PageHeaderWrapper title="配置管理" content="canal配置">
         <Card bordered={false}>
           <div className={styles.message}>
-            <Button
-              icon="plus"
-              type="primary"
-              onClick={() => this.handleModalVisible(true, {}, false)}
-            >
-              新建canal
-            </Button>
+           
             <div className={styles.ManageOperator}>
               <span className={styles.querySubmitButtons}>
-                <Button type="primary">查询</Button>
+              
               </span>
+              <div style={{
+              marginTop:'20px',
+              marginBottom:'30px',
+          }}>
+            <Form layout="inline">
+                        <FormItem key="name" {...this.formLayout} label="canal名称">
+                        {form.getFieldDecorator('name', {
+                            rules: [{ required: false, message: 'canal名称' }],
+                            initialValue: '',
+                        })(
+                          <Input placeholder="canal名称" />
+                        )} 
+                       </FormItem>
+                        <FormItem key="sourceId" {...this.formLayout} label="数据源名称">
+                        {form.getFieldDecorator('sourceId', {
+                            rules: [{ required: false, message: '数据源' }],
+                            initialValue: '',
+                        })(
+                            <Select style={{ width: 300 }} mode="single" placeholder="数据源类型">
+                                {
+                                    mediasources&&mediasources.map(item=>(
+                                        <Option key={item.id} value={item.id}>
+                                             {item.id}-{item.name}-{item.url}
+                                        </Option>
+                                    ))
+                                }
+
+                            </Select>
+                        )} 
+                        </FormItem>
+                       
+                        <Button style={{
+                            marginTop:'5px',
+                            marginLeft:'20px'
+                        }} type='primary' icon='search' onClick={()=>this.search()}>查询</Button>
+                          <Button
+                            style={{
+                              marginTop:'5px',
+                              marginLeft:'20px'
+                            }}
+                            icon="plus"
+                            type="primary"
+                            onClick={() => this.handleModalVisible(true, {}, false)}
+                          >
+                             新建canal
+                      </Button>
+                </Form>
+            
+          </div>
             </div>
           </div>
           <StandardTable

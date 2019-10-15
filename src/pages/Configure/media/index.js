@@ -23,6 +23,7 @@ import {
 import StandardTable from '@/components/StandardTable';
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
 import styles from '../../styles/Manage.less';
+import MediaForm from './component/MediaForm'
 const FormItem = Form.Item;
 const { Option } = Select;
 const getValue = obj =>
@@ -40,7 +41,14 @@ class Media extends React.Component {
   columns = [
     { title: '编号', dataIndex: 'id' },
     { title: 'schema name', dataIndex: 'namespace' },
-    { title: 'table name', dataIndex: 'name' },
+    { title: 'table name', render:(text,record)=>(
+      record.name
+            .split(';')
+            .filter(item => item != '')
+            .map(item => (
+              <div key={item}>{item}</div>
+            ))
+    ) },
     { title: 'topic name', dataIndex: 'topic' },
     {
       title: '数据源',
@@ -56,11 +64,19 @@ class Media extends React.Component {
       key: 'action',
       render: (text, record) => (
         <span>
-          <a>查看</a>
+          <a onClick={()=>this.handleModalVisible(true,record,true)}>编辑</a>
           <Divider type="vertical"></Divider>
-          <a>编辑</a>
-          <Divider type="vertical"></Divider>
-          <a>删除</a>
+          {record.used === false ? (
+            <Popconfirm
+              placement="top"
+              title="确实删除"
+              onConfirm={() => this.handleDelete(record)}
+            >
+              <a>删除</a>
+            </Popconfirm>
+          ) : (
+            <span>删除</span>
+          )}
         </span>
       ),
     },
@@ -105,6 +121,14 @@ class Media extends React.Component {
       },
     });
   };
+
+  // 重新加载数据
+  reloadData = () => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'media/fetch'
+    });
+  };
   handleAdd = fields => {
     const { dispatch } = this.props;
     dispatch({
@@ -118,6 +142,7 @@ class Media extends React.Component {
       },
     });
   };
+  
   handleUpdate = fields => {
     const { dispatch } = this.props;
 
@@ -176,7 +201,10 @@ class Media extends React.Component {
       form,
     } = this.props;
     const {
-      mediasources
+      modalVisible,
+      mediasources,
+      recordValue,
+      isEditForm,
     } = this.state;
   
     const parentMethods = {
@@ -254,7 +282,8 @@ class Media extends React.Component {
                         }} type='primary' icon='search' onClick={()=>this.search()}>查询</Button>
                           <Button
                             style={{
-                              marginTop:'5px'
+                              marginTop:'5px',
+                              marginLeft:'20px'
                             }}
                             icon="plus"
                             type="primary"
@@ -274,6 +303,15 @@ class Media extends React.Component {
             rowKey={record => record.id}
             onChange={this.handleStandardTableChange}
           />
+           {modalVisible && (
+          <MediaForm
+            {...parentMethods}
+            isEdit={isEditForm}
+            values={recordValue}
+            modalVisible={modalVisible}
+          />
+        )}
+
         </Card>
       </PageHeaderWrapper>
     );

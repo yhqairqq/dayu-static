@@ -1,4 +1,4 @@
-import { queryMedia } from '@/services/media';
+import { queryMedia,addMedia,updateMedia } from '@/services/media';
 export default {
   namespace: 'media',
   state: {
@@ -18,7 +18,7 @@ export default {
       }
     },
     *update({ payload, callback }, { call }) {
-      const resp = yield call(updateMediaPair, payload);
+      const resp = yield call(updateMedia, payload);
       const { state, data } = resp;
       if (resp && state == 0 && callback) {
         callback();
