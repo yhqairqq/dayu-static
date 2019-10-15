@@ -163,6 +163,7 @@ class OverMonitor extends React.Component {
         },
       },
     };
+    console.log(window.innerWidth)
 
     return (
       <div>
@@ -195,7 +196,7 @@ class OverMonitor extends React.Component {
                         formatter: val => moment(parseInt(val)).format('HH:mm:ss'),
                       },
                     }}
-                    padding={[20, 80, 80, 80]}
+                    // padding={[20, 80, 8, 80]}
                     forceFit
                   >
                     <Axis
@@ -271,7 +272,7 @@ class OverMonitor extends React.Component {
                     <div
                       style={{
                         // height: '450px',
-                        width: '70%',
+                        width:  window.innerWidth > 1080?window.innerWidth>1440?'70%':'80%':'100%' ,
                         
                       }}
                     >
@@ -359,38 +360,73 @@ class OverMonitor extends React.Component {
                       </div>
                 
                     </div>
-                    <div style={{
-                        width:'30%'
+                    {window.innerWidth > 1080&&<div style={{
+                        width: window.innerWidth>1440?'30%':'20%'
                     }}>
-                    <Descriptions title={item.otherResult.node.name} column={1} size="small">
-                      <Descriptions.Item label="机器序号">
-                        {item.otherResult.node.id}
-                      </Descriptions.Item>
-                      <Descriptions.Item label="地址端口">
-                        {item.otherResult.node.port}
-                      </Descriptions.Item>
-                      <Descriptions.Item label="下载端口">
-                        {item.otherResult.node.parameters.downloadPort}
-                      </Descriptions.Item>
-                      <Descriptions.Item label="MBean端口">
-                        {' '}
-                        {item.otherResult.node.parameters.mbeanPort}
-                      </Descriptions.Item>
-                      <Descriptions.Item label="外部IP">
-                        {item.otherResult.node.parameters.externalIp}
-                      </Descriptions.Item>
-                      <Descriptions.Item label="运行状态">
-                        {item.otherResult.node.status}
-                      </Descriptions.Item>
-                      <Descriptions.Item label="线程使用状况">{`${item.otherResult.threadActiveSize}/${item.otherResult.threadPoolSize}`}</Descriptions.Item>
-                      <Descriptions.Item label="实际运行的Pipeline数统计">
-                        {item.otherResult.runningPipelines!=0&&item.otherResult.runningPipelines.reduce((pre, val) => pre + ',' + val)}
-                      </Descriptions.Item>
-                      <Descriptions.Item label="操作系统信息">
-                        {item.otherResult.systemInfo}
-                      </Descriptions.Item>
-                    </Descriptions>
-                    </div>
+                      <div style={{
+                          fontSize:'8px'
+                        }}>
+                        <div style={{marginBottom:'5x'}}>
+                        <span >名称</span> :<span> {item.otherResult.node.name} </span>
+                        </div>
+                      </div>
+                      <div style={{
+                          fontSize:'8px'
+                        }}>
+                        <div style={{marginBottom:'5x'}}>
+                        <span >机器序号</span> :<span> {item.otherResult.node.id}</span>
+                        </div>
+                      </div>
+                      <div style={{
+                          fontSize:'8px'
+                        }}>
+                        <div style={{marginBottom:'5x'}}>
+                        <span >地址端口</span> :<span>  {item.otherResult.node.port}</span>
+                        </div>
+                      </div>
+                      <div style={{
+                          fontSize:'8px'
+                        }}>
+                        <div style={{marginBottom:'5x'}}>
+                        <span >下载端口</span> :<span>   {item.otherResult.node.parameters.downloadPort}</span>
+                        </div>
+                      </div>
+                      <div style={{
+                          fontSize:'8px'
+                        }}>
+                        <div style={{marginBottom:'5x'}}>
+                        <span >MBean端口</span> :<span> {item.otherResult.node.parameters.mbeanPort}</span>
+                        </div>
+                      </div>
+                      <div style={{
+                          fontSize:'8px'
+                        }}>
+                        <div style={{marginBottom:'5x'}}>
+                        <span >运行状态</span> :<span>  {item.otherResult.node.status}</span>
+                        </div>
+                      </div>
+                      <div style={{
+                          fontSize:'8px'
+                        }}>
+                        <div style={{marginBottom:'5x'}}>
+                        <span >线程使用状况</span> :<span>{`${item.otherResult.threadActiveSize}/${item.otherResult.threadPoolSize}`}</span>
+                        </div>
+                      </div>
+                      <div style={{
+                          fontSize:'8px'
+                        }}>
+                        <div style={{marginBottom:'5x'}}>
+                        <span >实际运行的Pipeline数统计</span> :<span> {item.otherResult.runningPipelines!=0&&item.otherResult.runningPipelines.reduce((pre, val) => pre + ',' + val)}</span>
+                        </div>
+                      </div>
+                      <div style={{
+                          fontSize:'8px'
+                        }}>
+                        <div style={{marginBottom:'5x'}}>
+                        <span >操作系统信息</span> :<span>  {item.otherResult.systemInfo}</span>
+                        </div>
+                      </div>
+                    </div>}
                 </div>
               )}
             />
