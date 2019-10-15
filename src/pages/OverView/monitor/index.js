@@ -168,6 +168,10 @@ class OverMonitor extends React.Component {
       <div>
         <Row gutter={20}>
           <Col span={14}>
+          <div style={{
+              textAlign:'center',
+              fontWeight: 'bold',
+            }}>流量监控</div>
             <List
               className="demo-loadmore-list"
               // loading={initLoading}
@@ -177,7 +181,7 @@ class OverMonitor extends React.Component {
               renderItem={item => (
                 <div>
                   <Chart
-                    // height={200}
+                    height={200}
                     data={item && item.plotCells}
                     scale={{
                       size: {
@@ -249,17 +253,26 @@ class OverMonitor extends React.Component {
             ></List>
           </Col>
           <Col span={10}>
+            <div style={{
+              textAlign:'center',
+              fontWeight: 'bold',
+            }}>计算节点</div>
             <List
               className="demo-loadmore-list"
               // loading={initLoading}
               dataSource={nodeInfos}
               renderItem={item => (
-                <div>
-                    <div>
+                <div style={{
+                  display:"flex",
+                  marginTop:'20px',
+                  justifyContent:'space-between'
+                }}>
+                 
                     <div
                       style={{
                         // height: '450px',
-                        // width: '550px',
+                        width: '70%',
+                        
                       }}
                     >
                       <div
@@ -278,8 +291,8 @@ class OverMonitor extends React.Component {
                       </div>
                       {item.otherResult.heapMemoryUsage!=0 && (
                         <Chart
-                          height={400}
-                          width={600}
+                          height={window.innerWidth>1440?250:100}
+                          width={200}
                           data={this.getDataView(
                             this.renderNodeData(item.otherResult.heapMemoryUsage)
                           )}
@@ -289,7 +302,7 @@ class OverMonitor extends React.Component {
                         >
                           <Coord type={'theta'} radius={0.75} innerRadius={0.6} />
                           <Axis name="percent" />
-                          <Legend position="right" offsetY={-350 / 2} offsetX={-100} />
+                          <Legend position="right" offsetY={-350 / 2} offsetX={-200} />
                           <Tooltip
                             showTitle={false}
                             itemTpl='<li><span style="background-color:{color};" class="g2-tooltip-marker"></span>{name}: {value}</li>'
@@ -344,10 +357,12 @@ class OverMonitor extends React.Component {
                         </span>
                         {item.otherResult.node.name}
                       </div>
+                
                     </div>
-                    </div>
-                    <div>
-                    <Descriptions title={item.otherResult.node.name} column={1}>
+                    <div style={{
+                        width:'30%'
+                    }}>
+                    <Descriptions title={item.otherResult.node.name} column={1} size="small">
                       <Descriptions.Item label="机器序号">
                         {item.otherResult.node.id}
                       </Descriptions.Item>
