@@ -145,6 +145,22 @@ class DataMediaPair extends React.Component {
   }
   componentDidMount() {
     const { dispatch, recordValue } = this.props;
+   
+    if(recordValue&&recordValue.channel){
+       if(recordValue.channel.status == 'STOP'){
+         this.setState({
+            addBottomActive:true
+         })
+       }else{
+         this.setState({
+          addBottomActive:false
+         })
+       }
+    }else{
+      this.setState({
+        addBottomActive:true
+     })
+    }
 
     if (recordValue != null) {
       dispatch({
@@ -290,6 +306,7 @@ class DataMediaPair extends React.Component {
       rowRecord,
       mediaPairRecord,
       analysisModalVisible,
+      addBottomActive,
     } = this.state;
     const parentMethods = {
       handleAdd: this.handleAdd,
@@ -297,7 +314,6 @@ class DataMediaPair extends React.Component {
       handleUpdate: this.handleUpdate,
       analysisHandleModalVisible: this.analysisHandleModalVisible,
     };
-    // console.log(recordValue)
     return (
       <div style={{
         overflowX:'auto',
@@ -308,6 +324,7 @@ class DataMediaPair extends React.Component {
           type="primary"
           size="small"
           icon="plus"
+          disabled = {!addBottomActive}
           onClick={() => this.handleModalVisible(true, {}, false)}
         >
           添加数据映射
