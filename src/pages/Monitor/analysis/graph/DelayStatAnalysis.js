@@ -135,7 +135,7 @@ class DelayStatAnalysis extends React.Component {
         </div>
         {/* analysisResult&&analysisResult. */}
         <Chart
-          // height={200}
+          height={200}
           data={analysisResult && analysisResult.plotCells}
           scale={{
             avgDelayTime: {
@@ -167,7 +167,7 @@ class DelayStatAnalysis extends React.Component {
               type: 'y',
             }}
           />
-          <Geom type="line" position="time*avgDelayTime" size={2} shape={'smooth'} />
+          <Geom type="line" position="time*avgDelayTime" size={1} shape={'smooth'}  color={'l (270) 0:rgba(255, 146, 136, 1) .5:rgba(100, 268, 255, 1) 1:rgba(215, 0, 255, 1)'} />
           <Geom
             type="point"
             position="time*avgDelayTime"

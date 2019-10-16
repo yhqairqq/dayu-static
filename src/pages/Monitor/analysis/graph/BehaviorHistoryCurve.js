@@ -30,7 +30,7 @@ import {
   Facet,
   Util,
 } from 'bizcharts';
-
+import numeral from 'numeral';
 const FormItem = Form.Item;
 const { TextArea } = Input;
 const { Option } = Select;
@@ -114,33 +114,36 @@ class BehaviorHistoryCurve extends React.Component {
             style={{
               paddingLeft: '30px',
               fontWeight: 'bold',
+              marginRight:'10px',
             }}
           >
             insert总:
           </span>
-          {otherResult && otherResult.totalInsert}
+          {otherResult && numeral(otherResult.totalInsert).format('0,0')}
           <span
             style={{
               paddingLeft: '30px',
               fontWeight: 'bold',
+              marginRight:'10px',
             }}
           >
             delete总:
           </span>
-          {otherResult && otherResult.totalDelete}
+          {otherResult && numeral(otherResult.totalDelete).format('0,0')}
           <span
             style={{
               paddingLeft: '30px',
               fontWeight: 'bold',
+              marginRight:'10px',
             }}
           >
             update总:
           </span>
-          {otherResult && otherResult.totalUpdate}
+          {otherResult && numeral(otherResult.totalUpdate).format('0,0')}
         </div>
 
         <Chart
-          // height={200}
+          height={200}
           data={analysisResult && analysisResult.plotCells}
           scale={{
             num: {
@@ -175,7 +178,11 @@ class BehaviorHistoryCurve extends React.Component {
               type: 'y',
             }}
           />
-          <Geom type="line" position="time*num" size={2} color={'type'} shape={'smooth'} />
+          <Geom type="line" 
+          position="time*num" 
+          size={1} 
+          color={'l (270) 0:rgba(255, 146, 136, 1) .5:rgba(100, 268, 255, 1) 1:rgba(215, 0, 255, 1)'}
+          shape={'smooth'} />
           <Geom
             type="point"
             position="time*num"

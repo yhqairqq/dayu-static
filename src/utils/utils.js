@@ -228,3 +228,16 @@ export function formatSizeUnit(val){
       return `${numeral(val/1024).format('0,0')} KB`; 
     }
 }
+
+export function formatTimeUnit(val){
+  // if(!val){
+  //   return ''
+  // }
+  if(val/1024/1024/1024 > 1){
+     return `${numeral(val/1024/1024/1024).format('0,0')} GB`;
+  }else if(val/1024/1024 > 1){
+    return `${numeral(val/1024/1014).format('0,0')} MB`; 
+  }else if(val/1024 > 1){
+    return `${numeral(val/1024).format('0,0')} KB`; 
+  }
+}

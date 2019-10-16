@@ -13,7 +13,7 @@ import {
   Divider,
   Descriptions,
 } from 'antd';
-import { formatGroupDbAddress } from '@/utils/utils';
+import { formatGroupDbAddress,formatSizeUnit } from '@/utils/utils';
 
 import {
   G2,
@@ -30,7 +30,7 @@ import {
   Facet,
   Util,
 } from 'bizcharts';
-
+import numeral from 'numeral';
 const FormItem = Form.Item;
 const { TextArea } = Input;
 const { Option } = Select;
@@ -134,24 +134,16 @@ class PipelineAnalysis extends React.Component {
             style={{
               paddingLeft: '30px',
               fontWeight: 'bold',
+              marginRight:'10px'
             }}
           >
             总记录数:
           </span>
-          {otherResult && otherResult.totalRecord1}
-          <span
-            style={{
-              paddingLeft: '30px',
-              fontWeight: 'bold',
-            }}
-          >
-            总大小:
-          </span>
-          {otherResult && otherResult.totalSize1}
+          {otherResult && numeral(otherResult.totalRecord1).format('0,0')}
         </div>
 
         <Chart
-          // height={200}
+          height={200}
           data={analysisResult && analysisResult.plotCells}
           scale={{
             num: {
@@ -184,7 +176,11 @@ class PipelineAnalysis extends React.Component {
               type: 'y',
             }}
           />
-          <Geom type="line" position="time*num" size={2} shape={'smooth'} />
+          <Geom type="line" position="time*num" 
+          size={1} 
+          shape={'smooth'} 
+          color={'l (270) 0:rgba(255, 146, 136, 1) .5:rgba(100, 268, 255, 1) 1:rgba(215, 0, 255, 1)'}
+          />
           <Geom
             type="point"
             position="time*num"
@@ -197,9 +193,20 @@ class PipelineAnalysis extends React.Component {
           />
         </Chart>
         <div>
-          <div></div>
+          <div>
+          <span
+            style={{
+              paddingLeft: '30px',
+              fontWeight: 'bold',
+              marginRight:'10px'
+            }}
+          >
+            总大小:
+          </span>
+          {otherResult && formatSizeUnit(otherResult.totalSize1) }
+          </div>
           <Chart
-            // height={200}
+            height={200}
             data={analysisResult && analysisResult.plotCells}
             scale={{
               size: {
@@ -224,7 +231,7 @@ class PipelineAnalysis extends React.Component {
             <Axis
               name="size"
               label={{
-                formatter: val => `${val / 1000} KB`,
+                formatter: val => formatSizeUnit(val),
               }}
             />
             <Tooltip
@@ -232,7 +239,7 @@ class PipelineAnalysis extends React.Component {
                 type: 'y',
               }}
             />
-            <Geom type="line" position="time*size" size={2} shape={'smooth'} color={'green'} />
+            <Geom type="line" position="time*size" size={1} shape={'smooth'}  color={'l (270) 0:rgba(255, 146, 136, 1) .5:rgba(100, 268, 255, 1) 1:rgba(215, 0, 255, 1)'} />
             <Geom
               type="point"
               position="time*size"
