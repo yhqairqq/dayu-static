@@ -3,6 +3,7 @@ import { connect } from 'dva';
 import numeral from 'numeral';
 import { Button, Form, Col, Row, Select, Descriptions, List } from 'antd';
 import moment from 'moment';
+import { formatGroupDbAddress,formatSizeUnit } from '@/utils/utils';
 
 import { Chart, Geom, Axis, Tooltip, Coord, Label, Legend, Guide, Facet, Util } from 'bizcharts';
 import DataSet from '@antv/data-set';
@@ -163,7 +164,6 @@ class OverMonitor extends React.Component {
         },
       },
     };
-    console.log(window.innerWidth)
 
     return (
       <div>
@@ -195,6 +195,10 @@ class OverMonitor extends React.Component {
                         alias: '时间',
                         formatter: val => moment(parseInt(val)).format('HH:mm:ss'),
                       },
+                      
+                    }}
+                    line={{
+                      stroke: "#E6E6E6"
                     }}
                     // padding={[20, 80, 8, 80]}
                     forceFit
@@ -204,12 +208,17 @@ class OverMonitor extends React.Component {
                       // label={{
                       //     formatter:val=>moment(parseInt(val)).format("HH:mm:ss")
                       // }}
+                     
                     />
                     <Axis
                       name="size"
                       label={{
-                        formatter: val => `${val / 1000/1000} MB`,
+                        formatter: val => formatSizeUnit(val),
                       }}
+                      line={false}
+                      tickLine={null}
+                      grid={null}
+                      title={null}
                     />
                     <Tooltip
                       crosshairs={{
@@ -219,9 +228,9 @@ class OverMonitor extends React.Component {
                     <Geom
                       type="line"
                       position="time*size"
-                      size={2}
+                      size={1}
                       shape={'smooth'}
-                      color={'green'}
+                      color={'l (270) 0:rgba(255, 146, 255, 1) .5:rgba(100, 268, 255, 1) 1:rgba(215, 0, 255, 1)'}
                     />
                     <Geom
                       type="point"

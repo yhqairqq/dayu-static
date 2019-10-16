@@ -1,6 +1,7 @@
 import moment from 'moment';
 import React from 'react';
 import nzh from 'nzh/cn';
+import numeral from 'numeral';
 import { parse, stringify } from 'qs';
 
 export function fixedZero(val) {
@@ -214,4 +215,16 @@ export function formatGroupDbAddress(groupDbAddresses) {
     result = `${result};`;
   }
   return result;
+}
+export function formatSizeUnit(val){
+    // if(!val){
+    //   return ''
+    // }
+    if(val/1024/1024/1024 > 1){
+       return `${numeral(val/1024/1024/1024).format('0,0')} GB`;
+    }else if(val/1024/1024 > 1){
+      return `${numeral(val/1024/1014).format('0,0')} MB`; 
+    }else if(val/1024 > 1){
+      return `${numeral(val/1024).format('0,0')} KB`; 
+    }
 }
