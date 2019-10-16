@@ -299,7 +299,11 @@ class DataMediaPair extends React.Component {
     };
     // console.log(recordValue)
     return (
-      <div>
+      <div style={{
+        overflowX:'auto',
+        width:window.innerWidth > 1080?'100%':'780px'
+
+      }}>
         <Button
           type="primary"
           size="small"

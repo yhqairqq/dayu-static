@@ -328,7 +328,11 @@ class Pipeline extends React.PureComponent {
     };
 
     return (
-      <div>
+      <div style={{
+        overflowX:'auto',
+        width:window.innerWidth > 1080?'100%':'780px'
+
+      }}>
         <Button
           size="small"
           disabled={pipelines != null && pipelines.length > 0}

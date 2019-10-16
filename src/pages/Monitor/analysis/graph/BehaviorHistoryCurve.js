@@ -181,7 +181,7 @@ class BehaviorHistoryCurve extends React.Component {
           <Geom type="line" 
           position="time*num" 
           size={1} 
-          color={'l (270) 0:rgba(255, 146, 136, 1) .5:rgba(100, 268, 255, 1) 1:rgba(215, 0, 255, 1)'}
+          color={'type'} 
           shape={'smooth'} />
           <Geom
             type="point"
