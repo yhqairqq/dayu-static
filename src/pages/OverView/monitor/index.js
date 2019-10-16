@@ -230,7 +230,7 @@ class OverMonitor extends React.Component {
                       position="time*size"
                       size={1}
                       shape={'smooth'}
-                      color={'l (270) 0:rgba(255, 146, 255, 1) .5:rgba(100, 268, 255, 1) 1:rgba(215, 0, 255, 1)'}
+                      color={'#483D8B'}
                     />
                     <Geom
                       type="point"
@@ -270,7 +270,7 @@ class OverMonitor extends React.Component {
             <List
               className="demo-loadmore-list"
               // loading={initLoading}
-              dataSource={nodeInfos}
+              dataSource={nodeInfos&&nodeInfos.filter(info=>(info.otherResult.versionInfo != ""))}
               renderItem={item => (
                 <div style={{
                   display:"flex",
@@ -312,7 +312,7 @@ class OverMonitor extends React.Component {
                         >
                           <Coord type={'theta'} radius={0.75} innerRadius={0.6} />
                           <Axis name="percent" />
-                          <Legend position="right" offsetY={-350 / 2} offsetX={-200} />
+                          {/* <Legend position="right" offsetY={-350 / 2} offsetX={-200} /> */}
                           <Tooltip
                             showTitle={false}
                             itemTpl='<li><span style="background-color:{color};" class="g2-tooltip-marker"></span>{name}: {value}</li>'
