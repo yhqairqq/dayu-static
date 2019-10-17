@@ -34,7 +34,7 @@ export async function addMedia(params) {
   });
 }
 
-export async function remove(params) {
+export async function removeMedia(params) {
   return request(`${PRE_URL}/remove`, {
     method: 'POST',
     data: {

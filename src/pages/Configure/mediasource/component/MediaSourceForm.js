@@ -41,7 +41,7 @@ class MediaSourceForm extends React.Component {
 
   componentDidMount() {
     const { dispatch, values, isEdit } = this.props;
-
+    console.log('values',values)
     if (isEdit) {
       dispatch({
         type: 'mediasource/fetchone',
@@ -104,15 +104,16 @@ class MediaSourceForm extends React.Component {
       isEdit,
       modalVisible,
       handleModalVisible,
-
+      values,
       form,
       mediasource: { source },
       //   group: { trees },
       //   report: { types },
     } = this.props;
-    const values = {
-      ...source,
-    };
+    // const values = {
+    //   ...source,
+    // };
+    // console.log(values)
 
     const types = [
       {

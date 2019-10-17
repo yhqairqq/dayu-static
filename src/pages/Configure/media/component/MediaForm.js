@@ -181,13 +181,13 @@ class MediaForm extends React.Component {
                         <FormItem key="sourceId" {...this.formLayout} label="数据源名称">
                         {form.getFieldDecorator('sourceId', {
                             rules: [{ required: true, message: '数据源' }],
-                            initialValue: values&&values.source&&values.source.id || mediasources&&mediasources[0].id,
+                            initialValue: values&&values.source&&values.source.id ,
                         })(
                             <Select style={{ width: 300 }} mode="single" placeholder="数据源类型" onChange = {this.datasourceOnSelect}>
                                 {
                                     mediasources&&mediasources.map(item=>(
                                         <Option key={item.id} value={item.id}>
-                                             {item.url}-{item.id}-{item.name}
+                                             {item.name}-{item.url}
                                         </Option>
                                     ))
                                 }

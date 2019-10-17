@@ -221,6 +221,7 @@ class MediaSource extends React.Component {
     } = this.props;
 
     const { modalVisible, expandForm, recordValue, isEditForm, drawerVisible } = this.state;
+    console.log(recordValue)
     const parentMethods = {
       handleAdd: this.handleAdd,
       handleModalVisible: this.handleModalVisible,
@@ -257,7 +258,7 @@ class MediaSource extends React.Component {
                             rules: [{ required: false, message: '状态' }],
                             initialValue: '',
                         })(
-                            <Select style={{ width: 200 }} mode="single" placeholder="状态">
+                            <Select style={{ width: 150 }} mode="single" placeholder="状态">
                                  <Option key={'MYSQL'} value={'MYSQL'}>
                                  MYSQL
                                 </Option>
@@ -269,6 +270,12 @@ class MediaSource extends React.Component {
                                 </Option>
                             </Select>
                         )}
+                        </FormItem>
+                        <FormItem style={{marginLeft:'20px'}} key="url" {...this.formLayout} label="URL">
+                        {form.getFieldDecorator('url', {
+                            rules: [{ required: false, message: 'URL' }],
+                            initialValue: '',
+                        })(<Input placeholder="URL" />)} 
                         </FormItem>
                     <Button style={{
                       marginTop:'5px',

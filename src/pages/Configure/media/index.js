@@ -233,7 +233,7 @@ class Media extends React.Component {
                                 {
                                     mediasources&&mediasources.map(item=>(
                                         <Option key={item.id} value={item.id}>
-                                             {item.id}-{item.name}-{item.url}
+                                            {item.name}-{item.url}
                                         </Option>
                                     ))
                                 }
@@ -289,7 +289,7 @@ class Media extends React.Component {
                             type="primary"
                             onClick={() => this.handleModalVisible(true, {}, false)}
                           >
-                            新建数据源
+                            新建数据表
                       </Button>
                 </Form>
             

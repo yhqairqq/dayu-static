@@ -251,15 +251,21 @@ class Canal extends React.Component {
                                 {
                                     mediasources&&mediasources.map(item=>(
                                         <Option key={item.id} value={item.id}>
-                                             {item.id}-{item.name}-{item.url}
+                                            {item.name}-{item.url}
                                         </Option>
                                     ))
                                 }
-
                             </Select>
                         )} 
                         </FormItem>
-                       
+                        <FormItem key="url" {...this.formLayout} label="URL">
+                        {form.getFieldDecorator('url', {
+                            rules: [{ required: false, message: 'URL' }],
+                            initialValue: '',
+                        })(
+                          <Input placeholder="URL" />
+                        )} 
+                       </FormItem>
                         <Button style={{
                             marginTop:'5px',
                             marginLeft:'20px'

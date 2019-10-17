@@ -65,6 +65,10 @@ class BasicLayout extends React.Component {
       type: 'menu/getMenuData',
       payload: { routes, path, authority },
     });
+    if(window.innerWidth < 1440){
+      this.handleMenuCollapse(false)
+    }
+
   }
 
   getContext() {
@@ -77,20 +81,32 @@ class BasicLayout extends React.Component {
 
   getLayoutStyle = () => {
     const { fixSiderbar, isMobile, collapsed, layout } = this.props;
+   
+    
     if (fixSiderbar && layout !== 'topmenu' && !isMobile) {
       return {
         paddingLeft: collapsed ? '80px' : '256px',
       };
     }
+   
     return null;
   };
 
   handleMenuCollapse = collapsed => {
+    console.log("collapsed",collapsed)
     const { dispatch } = this.props;
-    dispatch({
-      type: 'global/changeLayoutCollapsed',
-      payload: collapsed,
-    });
+    if(window.innerWidth < 1440){
+      dispatch({
+        type: 'global/changeLayoutCollapsed',
+        payload: true,
+      });
+    }else{
+      dispatch({
+        type: 'global/changeLayoutCollapsed',
+        payload: collapsed,
+      });
+    }
+   
   };
 
   changePwd = e => {

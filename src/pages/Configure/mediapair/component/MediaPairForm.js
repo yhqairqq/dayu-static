@@ -70,6 +70,7 @@ class MediaPairForm extends React.Component {
       mediaModalVisible:false,
       formModalWidth:'1200',
       formType:1,
+      expandedKeys:[],
     };
     this.formLayout = {
       labelCol: { span: 7 },
@@ -194,12 +195,17 @@ class MediaPairForm extends React.Component {
     }
   };
   onSelect = (selectedKeys, info) => {
+    this.setState({
+      expandedKeys:selectedKeys
+    })
+    console.log('selectedKeys',selectedKeys)
     selectedKeys.map(key => this.renderTreeNodes(key));
   };
 
-  onTreeExpand = expandedKeys => {};
+
 
   onCheck = (checkedKeys, info) => {
+    console.log('checkedKeys',checkedKeys)
     const { sourceDataMedia, targetDataMedia, sourceType, radioType } = this.state;
     if (sourceType == 'source') {
       if (checkedKeys.length > 0) {
@@ -270,10 +276,16 @@ class MediaPairForm extends React.Component {
       }
     }
   };
-  onLoadData = treeNode => {};
+  onLoadData = treeNode => {
+    console.log('onLoadData')
+  };
+  onTreeExpand = expandedKeys => {
+
+    console.log('onTreeExpand')
+  };
   renderTreeNodes = key => {
     const { dispatch } = this.props;
-    const { schemaMap, tablesMap, sourceType, radioType } = this.state;
+    const { schemaMap, tablesMap, sourceType, radioType,targteDataSources } = this.state;
 
     let values = key.split('-');
 
@@ -318,6 +330,8 @@ class MediaPairForm extends React.Component {
       },
       callback: data => {
         schemaMap.set(key, data);
+        console.log("schemaMap",schemaMap)
+        console.log("targteDataSources",targteDataSources)
         this.setState({
           schemaMap,
         });
@@ -404,7 +418,7 @@ class MediaPairForm extends React.Component {
         })
       }
     }
-    console.log(item)
+    // console.log(item)
   }
 
   handleMediaModalVisible = (flag,inputType)=>{
@@ -445,6 +459,7 @@ class MediaPairForm extends React.Component {
       selectedTargetMedia,
       formType,
       searchKey,
+      expandedKeys,
     } = this.state;
     const {
       isEdit,
@@ -459,7 +474,11 @@ class MediaPairForm extends React.Component {
     const parentMethods = {
       selectMedia:this.selectMedia
     };
+    // console.log(sourceType)
+    // console.log('schemaMap',schemaMap)
+    // console.log('tablesMap',tablesMap)
 
+   
     return (
       <Modal
         destroyOnClose
@@ -493,7 +512,7 @@ class MediaPairForm extends React.Component {
                   </Button>
                 </FormItem>
                 {!(radioType == 'MQ' && sourceType == 'target') && (
-                  <FormItem key="targetDataMedia" {...this.formLayout} label="目标数据表">
+                <FormItem key="targetDataMedia" {...this.formLayout} label="目标数据表">
                     {form.getFieldDecorator('targetDataMedia', {
                       rules: [{ required: false, message: '目标数据表' }],
                       initialValue: targetDataMedia,
@@ -534,13 +553,17 @@ class MediaPairForm extends React.Component {
                     })(<Input disabled={isEdit ? true : false} placeholder="topic" />)}
                   </FormItem>
                 )}
-                <FormItem key="pushWeight" {...this.formLayout} label="权重">
+                <FormItem style={{
+                  display:'none'
+                }} key="pushWeight" {...this.formLayout} label="权重">
                   {form.getFieldDecorator('pushWeight', {
                     rules: [{ required: true, message: '权重' }],
                     initialValue: 5,
                   })(<Input disabled />)}
                 </FormItem>
-                <FormItem key="filterType" {...this.formLayout} label="EventProcessor类型">
+                <FormItem style={{
+                  display:'none'
+                }} key="filterType" {...this.formLayout} label="EventProcessor类型">
                   {form.getFieldDecorator('filterType', {
                     initialValue: 'SOURCE',
                   })(
@@ -559,15 +582,15 @@ class MediaPairForm extends React.Component {
                 </FormItem>
               </div>
               {metaModalVisible && (
-                <div style={{width:"40%"}}>
+                <div style={{width:"40%",marginBottom:'10px'}}>
                   <div
                     style={{
                       fontSize: '20px',
                       fontWeight: 'bold',
+                      marginBottom:'10px',
                     }}
                   >
                     {sourceType == 'source' ? '数据源' : '目标源'}
-
                     {sourceType == 'source' ? (
                       ''
                     ) : (
@@ -589,15 +612,20 @@ class MediaPairForm extends React.Component {
                  {sourceType == 'source' ? (
                     <Tree
                       checkable
+                      expandedKeys = {expandedKeys}
+                      autoExpandParent={true}
                       onLoadData={this.onLoadData}
-                      autoExpandParent
                       showIcon={true}
                       onSelect={this.onSelect}
                       onCheck={this.onCheck}
                     >
                       {datasources &&
                         datasources.map(datasource => (
-                          <TreeNode title={datasource.name} key={datasource.id} selectable={true}>
+                          <TreeNode 
+                          title={datasource.name} 
+                          key={datasource.id} 
+                          selectable={true}
+                          >
                             {schemaMap &&
                               schemaMap.get(datasource.id) &&
                               schemaMap.get(datasource.id).map(schema => (
@@ -610,11 +638,13 @@ class MediaPairForm extends React.Component {
                                    {tablesMap&&
                                       tablesMap.get(datasource.id + schema) &&
                                       tablesMap
-                                        .get(datasource.id + schema).filter(item=>{
+                                        .get(datasource.id + schema)
+                                        .filter(item=>{
                                           if(searchKey == null || searchKey==''){
                                                return true
                                           }else{
-                                            return (item.indexOf(searchKey) == 0)
+                                          
+                                            return (item&&item.indexOf(searchKey) == 0)
                                           }
                                         })
                                         .map(table => (
@@ -634,7 +664,8 @@ class MediaPairForm extends React.Component {
                   ) : (
                     <Tree
                       checkable
-                      defaultCheckedKeys={[]}
+                      expandedKeys = {expandedKeys}
+                      autoExpandParent={true}
                       onLoadData={this.onLoadData}
                       showIcon={true}
                       onSelect={this.onSelect}
@@ -647,10 +678,11 @@ class MediaPairForm extends React.Component {
                             key={datasource.id}
                             selectable={radioType == 'MYSQL'}
                           >
-                            {radioType == 'MYSQL'
-                              ? schemaMap &&
+                            {radioType == 'MYSQL'&& schemaMap &&
                                 schemaMap.get(datasource.id) &&
                                 schemaMap.get(datasource.id).map(schema => (
+                                  // console.log(schema)
+                                 
                                   <TreeNode
                                     title={schema}
                                     key={`${datasource.id}-${schema}`}
@@ -660,6 +692,14 @@ class MediaPairForm extends React.Component {
                                       tablesMap.get(datasource.id + schema) &&
                                       tablesMap
                                         .get(datasource.id + schema)
+                                        .filter(item=>{
+                                          if(searchKey == null || searchKey==''){
+                                               return true
+                                          }else{
+                                          
+                                            return (item&&item.indexOf(searchKey) == 0)
+                                          }
+                                        })
                                         .map(table => (
                                           <TreeNode
                                             title={table}
@@ -669,8 +709,8 @@ class MediaPairForm extends React.Component {
                                           ></TreeNode>
                                         ))}
                                   </TreeNode>
-                                ))
-                              : ''}
+                            ))
+                              }
                           </TreeNode>
                         ))}
                     </Tree>
@@ -716,13 +756,17 @@ class MediaPairForm extends React.Component {
                     })(<Input disabled={isEdit ? true : false} placeholder="topic" />)}
                   </FormItem>
                 )}
-                 <FormItem key="pushWeight" {...this.formLayout} label="权重">
+                 <FormItem style={{
+                  display:'none'
+                }} key="pushWeight" {...this.formLayout} label="权重">
                  {form.getFieldDecorator('pushWeight', {
                    rules: [{ required: true, message: '权重' }],
                    initialValue: 5,
                  })(<Input disabled />)}
                </FormItem>
-               <FormItem key="filterType" {...this.formLayout} label="EventProcessor类型">
+               <FormItem style={{
+                  display:'none'
+                }} key="filterType" {...this.formLayout} label="EventProcessor类型">
                  {form.getFieldDecorator('filterType', {
                    initialValue: 'SOURCE',
                  })(
@@ -733,11 +777,11 @@ class MediaPairForm extends React.Component {
                  )}
                </FormItem>
 
-               <FormItem key="filterText" {...this.formLayout} label="EventProcessor脚本">
+               <FormItem  key="filterText" {...this.formLayout} label="EventProcessor脚本">
                  {form.getFieldDecorator('filterText', {
                    rules: [{ required: false, message: 'processor' }],
                    initialValue: (mediaPair.filterData && mediaPair.filterData.sourceText) || '',
-                 })(<Input.TextArea autosize={{ minRows: 50}}
+                 })(<Input.TextArea autosize={{ minRows: 10}}
                    placeholder="" />)}
                </FormItem>
                </div>
@@ -748,7 +792,7 @@ class MediaPairForm extends React.Component {
         {mediaModalVisible&&<Modal
             destroyOnClose
             maskClosable={false}
-            width={formModalWidth}
+            width={window.innerWidth >1080?window.innerWidth/2:window.innerWidth/4*3}
             style={{ top: 20 }}
             bodyStyle={{ padding: '10px 10px' }}
             title={isEdit ? '修改数据映射信息' : '新增数据映射信息'}

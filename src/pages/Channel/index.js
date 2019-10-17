@@ -20,6 +20,7 @@ import {
   Descriptions,
   Dropdown,
   Menu,
+  Spin,
 } from 'antd';
 
 import StandardTable from '@/components/StandardTable';
@@ -49,6 +50,9 @@ class Channel extends React.Component {
     isEditForm: false,
     recordValue: {},
     historyVisible: false,
+    syching:false,
+    closing:false,
+    statusMap:new Map()
   };
   columns = [
     { title: '编号', dataIndex: 'id' },
@@ -82,11 +86,12 @@ class Channel extends React.Component {
       title: '操作',
       key: 'action',
       align: 'center',
-      render: (text, record) => (
-        <span>
+      render: (text, record) => {
+        const {statusMap} = this.state;
+        return <span>
           {record.ready ? (
             record.status === 'STOP' ? (
-              <Dropdown
+              statusMap&&statusMap.get(record.id)=='starting'?<Spin size="small" />:<Dropdown
                 overlay={
                   <Menu>
                     <Menu.Item>
@@ -149,7 +154,8 @@ class Channel extends React.Component {
                   this.switch(record.id, record.status === 'STOP' ? 'start' : 'stop', 'customize')
                 }
               >
-                <a>关闭</a>
+                {statusMap&&statusMap.get(record.id)=='stoping'?<Spin size="small" />: <a>关闭</a>}
+              
               </Popconfirm>
             )
           ) : record.status === 'STOP' ? (
@@ -182,7 +188,7 @@ class Channel extends React.Component {
             <span>删除</span>
           )}
         </span>
-      ),
+      },
     },
   ];
   renderTitle = record => {
@@ -239,6 +245,14 @@ class Channel extends React.Component {
   };
   switch = (channelId, status, start) => {
     const { dispatch } = this.props;
+    const {statusMap} = this.state;
+
+    if(status == 'start'){
+        statusMap.set(channelId,'starting')
+    }else{
+      statusMap.set(channelId,'stoping')
+    }
+    
     dispatch({
       type: 'channel/doStatus',
       payload: {
@@ -248,6 +262,11 @@ class Channel extends React.Component {
       },
       callback: data => {
         this.reloadData();
+        if(status == 'start'){
+          statusMap.set(channelId,'started')
+        }else{
+          statusMap.set(channelId,'stoped')
+        }
       },
     });
   };
@@ -408,6 +427,7 @@ class Channel extends React.Component {
       drawerVisible,
       historyVisible,
       selectedRecord,
+      syching,
     } = this.state;
     const pipelines = recordValue.pipelines || [];
     const parentMethods = {
