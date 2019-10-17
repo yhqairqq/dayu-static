@@ -64,6 +64,11 @@ class MediaForm extends React.Component {
             data&&data.forEach(source=>{  
                 datasourceMap.set(source.id,source)
             });
+            this.datasourceOnSelect(values&&values.source.id)
+            this.setState({
+                sourceId:values.source.id
+            })
+            this.namespaceOnSelect(values&&values.namespace)
             const sourceType =values.source&&values.source.type ||
             datasourceMap.get(data[0].id)&&datasourceMap.get(data[0].id).type
             if(sourceType == 'MYSQL'){
@@ -78,7 +83,6 @@ class MediaForm extends React.Component {
            
         }
       });
-
   }
   datasourceOnSelect = (key) =>{
     const {dispatch} = this.props;
@@ -215,7 +219,7 @@ class MediaForm extends React.Component {
                         <FormItem key="names" {...this.formLayout} label="表名">
                         {form.getFieldDecorator('names', {
                             rules: [{ required: true, message: '表名' }],
-                            initialValue: values&&values.name || tables&&tables[0] || ".*",
+                            initialValue: values&&values.name.split(";").filter(item=>(item!="")) || tables&&tables[0] || ".*",
                         })(
                             sourceType ==  "MYSQL" ?
                             <Select style={{ width: 300 }} mode="multiple" placeholder="表名" >
