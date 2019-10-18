@@ -44,7 +44,10 @@ class OverMonitor extends React.Component {
     dispatch({
       type: 'analysis/fetchAllBehaviorHistory',
       callback: data => {
-        let behaviorList = data.map(item => {
+        data&&data.sort((a,b)=>{
+         return  b.plotCells.length  - a.plotCells.length
+        })
+        let behaviorList = data.filter(item=>(item != null)).map(item => {
           let cells =
             item.plotCells &&
             item.plotCells.map(cell => {
