@@ -19,9 +19,7 @@ import {
   Table,
 } from 'antd';
 import datasource from '@/models/datasource';
-import MediaList from '../../media/component/MediaList'
-import InfiniteScroll from 'react-infinite-scroller';
-
+import MediaList from '../../Configure//media/component/MediaList'
 const FormItem = Form.Item;
 const { TextArea } = Input;
 const { Option } = Select;
@@ -30,13 +28,12 @@ const { TabPane } = Tabs;
 const { SHOW_PARENT } = TreeSelect;
 
 @Form.create()
-@connect(({ mediasource, mediapair, zookeeper, loading }) => ({
+@connect(({ mediasource,  zookeeper, loading }) => ({
   mediasource,
-  mediapair,
   zookeeper,
-  loading: loading.models.mediapair,
+  loading: loading.models.mediasource,
 }))
-class MediaPairForm extends React.Component {
+class TransPairForm extends React.Component {
   static defaultProps = {
     values: {},
     isEdit: false,
@@ -45,13 +42,7 @@ class MediaPairForm extends React.Component {
     handleUpdate: () => {},
     handleModalVisible: () => {},
   };
-  pairsColumns = [
-    { title: '数据源schema' },
-    { title: '数据源tables' },
-    { title: '目标源schema' },
-    { title: '目标源tables' },
-    { title: '扩展处理器' },
-  ];
+
   constructor(props) {
     super(props);
     const { values, isEdit, mediaPair } = props;
@@ -82,7 +73,6 @@ class MediaPairForm extends React.Component {
     const { values, isEdit, mediaPair } = this.props;
 
     const { datasourceMap } = this.state;
-    console.log(mediaPair)
 
     if (isEdit && mediaPair) {
       //获取原表namespace
@@ -139,9 +129,8 @@ class MediaPairForm extends React.Component {
     });
   };
   okHandle = () => {
-    const { values, isEdit = false, form, handleAdd, handleUpdate, mediaPair } = this.props;
+    const {  isEdit = false, form, handleAdd, handleUpdate, mediaPair } = this.props;
     const { isHand, type, targetId, sourceId,selectedSourceMedia,selectedTargetMedia,formType } = this.state;
-    console.log(formType)
     if(formType == 1){
       form.validateFields((err, fieldsValue) => {
         if (err) return;
@@ -149,8 +138,6 @@ class MediaPairForm extends React.Component {
         if (isEdit) {
           handleUpdate({
             id: mediaPair.id,
-            filterType: fieldsValue.filterType,
-            filterText: fieldsValue.filterText,
   
             // sourceDataMedia:fieldsValue.sourceDataMedia.split('\n'),
             // targetDataMedia:fieldsValue.targetDataMedia.split('\n'),
@@ -158,7 +145,7 @@ class MediaPairForm extends React.Component {
         } else {
           handleAdd({
             ...fieldsValue,
-            pipelineId: values.id,
+         
             sourceDataMedia: fieldsValue.sourceDataMedia.split('\n'),
             targetDataMedia:
               (fieldsValue.targetDataMedia && fieldsValue.targetDataMedia.split('\n')) || '',
@@ -176,17 +163,14 @@ class MediaPairForm extends React.Component {
           handleUpdate({
             id: mediaPair.id,
             ...fieldsValue,
-            pipelineId: values.id,
+           
             sourceMediaId:selectedSourceMedia.id,
             targetMediaId:selectedTargetMedia.id,
   
-            // sourceDataMedia:fieldsValue.sourceDataMedia.split('\n'),
-            // targetDataMedia:fieldsValue.targetDataMedia.split('\n'),
           });
         } else {
           handleAdd({
             ...fieldsValue,
-            pipelineId: values.id,
             sourceMediaId:selectedSourceMedia.id,
             targetMediaId:selectedTargetMedia.id,
           });
@@ -198,7 +182,6 @@ class MediaPairForm extends React.Component {
     this.setState({
       expandedKeys:selectedKeys
     })
-    console.log('selectedKeys',selectedKeys)
     selectedKeys.map(key => this.renderTreeNodes(key));
   };
 
@@ -533,52 +516,6 @@ class MediaPairForm extends React.Component {
                     </Button>
                   </FormItem>
                 )}
-                {radioType == 'MQ' && sourceType == 'target' && (
-                  <FormItem key="brokers" {...this.formLayout} label="brokers">
-                    {form.getFieldDecorator('brokers', {
-                      rules: [{ required: false, message: '' }],
-                      initialValue:
-                        datasourceMap &&
-                        datasourceMap.get(targetId) &&
-                        datasourceMap.get(targetId).url,
-                    })(<Input disabled placeholder="MQ" />)}
-                  </FormItem>
-                )}
-                {radioType == 'MQ' && sourceType == 'target' && (
-                  <FormItem key="topic" {...this.formLayout} label="topic">
-                    {form.getFieldDecorator('topic', {
-                      rules: [{ required: false, message: 'topic' }],
-                      initialValue: topic,
-                    })(<Input disabled={isEdit ? true : false} placeholder="topic" />)}
-                  </FormItem>
-                )}
-                <FormItem style={{
-                  display:'none'
-                }} key="pushWeight" {...this.formLayout} label="权重">
-                  {form.getFieldDecorator('pushWeight', {
-                    rules: [{ required: true, message: '权重' }],
-                    initialValue: 5,
-                  })(<Input disabled />)}
-                </FormItem>
-                <FormItem style={{
-                  display:'none'
-                }} key="filterType" {...this.formLayout} label="EventProcessor类型">
-                  {form.getFieldDecorator('filterType', {
-                    initialValue: 'SOURCE',
-                  })(
-                    <Radio.Group disabled>
-                      <Radio.Button value="CLAZZ">CLAZZ</Radio.Button>
-                      <Radio.Button value="SOURCE">SOURCE</Radio.Button>
-                    </Radio.Group>
-                  )}
-                </FormItem>
-
-                <FormItem key="filterText" {...this.formLayout} label="EventProcessor脚本">
-                  {form.getFieldDecorator('filterText', {
-                    rules: [{ required: false, message: 'processor' }],
-                    initialValue: (mediaPair.filterData && mediaPair.filterData.sourceText) || '',
-                  })(<Input.TextArea placeholder="" />)}
-                </FormItem>
               </div>
               {metaModalVisible && (
                 <div style={{width:"40%",marginBottom:'10px'}}>
@@ -739,50 +676,7 @@ class MediaPairForm extends React.Component {
                      .split(";").reduce((prev,val)=>(`${prev}\n${val}`)),
                    })(<Input.TextArea  autosize={{ minRows: 10 }} onFocus={()=>this.handleMediaModalVisible(true,'target')} placeholder="请输入" />)}
                  </FormItem>
-                 {selectedTargetMedia&&selectedTargetMedia.source.type  == 'ROCKETMQ' && (
-                  <FormItem key="brokers" {...this.formLayout} label="brokers">
-                    {form.getFieldDecorator('brokers', {
-                      rules: [{ required: false, message: '' }],
-                      initialValue:selectedTargetMedia&&selectedTargetMedia.source.url || ''
-                    })(<Input disabled placeholder="MQ" />)}
-                  </FormItem>
-                )}
-                {selectedTargetMedia&&selectedTargetMedia.source.type  == 'ROCKETMQ' && (
-                  <FormItem key="topic" {...this.formLayout} label="topic">
-                    {form.getFieldDecorator('topic', {
-                      rules: [{ required: false, message: 'topic' }],
-                      initialValue: selectedTargetMedia&&selectedTargetMedia.topic ||'',
-                    })(<Input disabled={isEdit ? true : false} placeholder="topic" />)}
-                  </FormItem>
-                )}
-                 <FormItem style={{
-                  display:'none'
-                }} key="pushWeight" {...this.formLayout} label="权重">
-                 {form.getFieldDecorator('pushWeight', {
-                   rules: [{ required: true, message: '权重' }],
-                   initialValue: 5,
-                 })(<Input disabled />)}
-               </FormItem>
-               <FormItem style={{
-                  display:'none'
-                }} key="filterType" {...this.formLayout} label="EventProcessor类型">
-                 {form.getFieldDecorator('filterType', {
-                   initialValue: 'SOURCE',
-                 })(
-                   <Radio.Group disabled>
-                     <Radio.Button value="CLAZZ">CLAZZ</Radio.Button>
-                     <Radio.Button value="SOURCE">SOURCE</Radio.Button>
-                   </Radio.Group>
-                 )}
-               </FormItem>
-
-               <FormItem  key="filterText" {...this.formLayout} label="EventProcessor脚本">
-                 {form.getFieldDecorator('filterText', {
-                   rules: [{ required: false, message: 'processor' }],
-                   initialValue: (mediaPair.filterData && mediaPair.filterData.sourceText) || '',
-                 })(<Input.TextArea autosize={{ minRows: 10}}
-                   placeholder="" />)}
-               </FormItem>
+             
                </div>
          </div>
             }
@@ -810,4 +704,4 @@ class MediaPairForm extends React.Component {
   }
 }
 
-export default MediaPairForm;
+export default TransPairForm;

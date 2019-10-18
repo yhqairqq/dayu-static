@@ -1,4 +1,4 @@
-import sync from '@/services/full';
+import {sync,pairSync} from '@/services/full';
 export default {
   namespace: 'full',
   state: {
@@ -14,6 +14,13 @@ export default {
       });
       if (resp && state === 0 && callback) {
         callback();
+      }
+    },
+    *pairSync({ payload, callback }, { call }) {
+      const resp = yield call(pairSync, payload);
+      const { state, data } = resp;
+      if (resp && state === 0 && callback) {
+        callback(data);
       }
     },
   },

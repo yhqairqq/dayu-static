@@ -64,11 +64,13 @@ class MediaForm extends React.Component {
             data&&data.forEach(source=>{  
                 datasourceMap.set(source.id,source)
             });
-            this.datasourceOnSelect(values&&values.source.id)
-            this.setState({
+            if(values.source){
+                this.datasourceOnSelect(values&&values.source.id)
+                this.setState({
                 sourceId:values.source.id
             })
             this.namespaceOnSelect(values&&values.namespace)
+            }
             const sourceType =values.source&&values.source.type ||
             datasourceMap.get(data[0].id)&&datasourceMap.get(data[0].id).type
             if(sourceType == 'MYSQL'){
@@ -187,7 +189,7 @@ class MediaForm extends React.Component {
                             rules: [{ required: true, message: '数据源' }],
                             initialValue: values&&values.source&&values.source.id ,
                         })(
-                            <Select style={{ width: 300 }} mode="single" placeholder="数据源类型" onChange = {this.datasourceOnSelect}>
+                            <Select style={{ width: 200 }} mode="single" placeholder="数据源类型" onChange = {this.datasourceOnSelect}>
                                 {
                                     mediasources&&mediasources.map(item=>(
                                         <Option key={item.id} value={item.id}>
@@ -204,7 +206,7 @@ class MediaForm extends React.Component {
                             initialValue: values&&values.namespace || schemas&&schemas[0] || '',
                         })(
                             sourceType ==  "MYSQL" ?
-                            <Select style={{ width: 300 }} mode="single" placeholder="数据库名称" onChange = {this.namespaceOnSelect}>
+                            <Select style={{ width: 200 }} mode="single" placeholder="数据库名称" onChange = {this.namespaceOnSelect}>
                                 {
                                     schemas&&schemas.map(item=>(
                                         <Option key={item} value={item}>
@@ -219,10 +221,10 @@ class MediaForm extends React.Component {
                         <FormItem key="names" {...this.formLayout} label="表名">
                         {form.getFieldDecorator('names', {
                             rules: [{ required: true, message: '表名' }],
-                            initialValue: values&&values.name.split(";").filter(item=>(item!="")) || tables&&tables[0] || ".*",
+                            initialValue: values&&values.name&&values.name.split(";").filter(item=>(item!="")) || tables&&tables[0] || ".*",
                         })(
                             sourceType ==  "MYSQL" ?
-                            <Select style={{ width: 300 }} mode="multiple" placeholder="表名" >
+                            <Select style={{ width: 200 }} mode="multiple" placeholder="表名" >
                                 {
                                     tables&&tables.map(item=>(
                                         <Option key={item} value={item}>

@@ -52,7 +52,8 @@ class Channel extends React.Component {
     historyVisible: false,
     syching:false,
     closing:false,
-    statusMap:new Map()
+    statusMap:new Map(),
+    pagination:{},
   };
   columns = [
     { title: '编号', dataIndex: 'id' },
@@ -343,13 +344,20 @@ class Channel extends React.Component {
 
   reloadData = () => {
     const { dispatch } = this.props;
+    const {pagination} = this.state;
     dispatch({
       type: 'channel/fetch',
-      payload: {},
+      payload: {
+        currentPage: pagination.current,
+        pageSize: pagination.pageSize,
+      },
     });
   };
   // 分页、过滤、排序处理
   handleStandardTableChange = (pagination, filtersArg, sorter) => {
+    this.setState({
+      pagination
+    })
     const { dispatch } = this.props;
     const { formValues } = this.state;
     const filters = Object.keys(filtersArg).reduce((obj, key) => {
@@ -420,6 +428,7 @@ class Channel extends React.Component {
       channel: { data },
       form,
     } = this.props;
+    
     const {
       modalVisible,
       isEditForm,
