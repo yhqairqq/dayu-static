@@ -132,7 +132,8 @@ class FullSync extends React.Component {
     dispatch({
       type:"full/pairSync",
       payload:{
-        mediaPairid:record.id
+        mediaPairid:record.id,
+        writeMode:'update'
       },
       callback:data=>{
 
