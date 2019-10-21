@@ -19,6 +19,8 @@ import {
   Drawer,
   Tabs,
   Popover,
+  Progress,
+  Spin,
 } from 'antd';
 
 import StandardTable from '@/components/StandardTable';
@@ -48,7 +50,9 @@ class FullSync extends React.Component {
     pagination:{
       current: 1,
       pageSize: 10,
-    }
+    },
+    callbackReq:new Map(),
+    timerMap:new Map(),
   };
   pairColumn = [
     { title: '序号', dataIndex: 'id' },
@@ -87,18 +91,35 @@ class FullSync extends React.Component {
       ),
     },
     {
+      title: '进度',
+      render: (text, record) => {
+        const {statusMap} = this.state;
+        return <div> <Progress
+        strokeColor={{
+          from: '#108ee9',
+          to: '#87d068',
+        }}
+        
+        percent={statusMap.get(record.id).percent} status="active" /></div>
+      },
+    },
+    {
       title: '操作',
       key: 'action',
-      render: (text, record) => (
-        <span>
+      render: (text, record) => {
+        const {statusMap} = this.state;
+        return  <span>
+         {
+           statusMap&&statusMap.get(record.id).status == 'processing'?
          
-          <Popconfirm
+         <Spin size="small" />:<Popconfirm
               placement="top"
               title="确实开启同步"
               onConfirm={() => this.pairSync(record)}
             >
               <a>同步</a>
             </Popconfirm>
+             }
             <Divider type="vertical"></Divider>
           <a onClick={() => this.handleModalVisible(true, record, true)}>编辑</a>
           <Divider type="vertical"></Divider>
@@ -109,8 +130,9 @@ class FullSync extends React.Component {
             >
               <a>删除</a>
             </Popconfirm>
+           
         </span>
-      ),
+    },
     },
   ];
   componentDidMount() {
@@ -119,8 +141,14 @@ class FullSync extends React.Component {
     dispatch({
       type:'transpair/fetch',
       callback:(data)=>{
+        console.log(data)
+        let statusMap = new Map()
+        data.list.forEach(item=>(
+          statusMap.set(item.id,{status:"stop",percent:0})
+        ))
         this.setState({
-          mediaPairTrans:data
+          mediaPairTrans:data,
+          statusMap
         })
       }
     })
@@ -128,7 +156,8 @@ class FullSync extends React.Component {
 
   pairSync  = (record)=>{
     const {dispatch}  = this.props;
-    
+    const {statusMap,callbackReq} = this.state;
+    console.log(record)
     dispatch({
       type:"full/pairSync",
       payload:{
@@ -136,10 +165,52 @@ class FullSync extends React.Component {
         writeMode:'update'
       },
       callback:data=>{
-
+        console.log(data)
+        //获取reqid 并放到本地map中，然后然后启动回调访问定时器
+        callbackReq.set(record.id,data)
+        this.callbackResult(record)
+        statusMap.set(record.id,{status:'processing',percent:0})
       }
     })
+    
   }
+
+   closeTimers = (record)=>{
+    const {timerMap} = this.state;
+    clearInterval(timerMap.get(record.id))
+
+   }
+
+
+   callbackResult = (record) =>{
+    const {statusMap,callbackReq,timerMap} = this.state;
+    const {dispatch} = this.props;
+    let timer = setInterval(() => {
+      console.log('定时器')
+      dispatch({
+        type:'full/syncCallback',
+        payload:{
+          requestId:callbackReq.get(record.id)
+        },
+        callback:data=>{
+          console.log(data)
+          if(data == 'finish')
+          {
+          statusMap.set(record.id,{status:'finish',percent:100})
+          this.closeTimers(record)
+          }else{
+            let params =  statusMap&&statusMap.get(record.id)
+            params.percent += 25
+            statusMap&&statusMap.set(record.id,params)
+            
+          }
+        }
+      })
+
+     }, 5000);
+     timerMap.set(record.id,timer)
+   }
+
   jsonChange = e => {};
   sync = fields => {
     // console.log(fields);
@@ -251,7 +322,7 @@ class FullSync extends React.Component {
   };
   reloadData = () => {
     const { dispatch, recordValue } = this.props;
-    const {pagination} = this.state
+    const {pagination,statusMap} = this.state
     dispatch({
       type: 'transpair/fetch',
       payload: {
@@ -259,6 +330,9 @@ class FullSync extends React.Component {
         pageSize: pagination.pageSize,
       },
       callback: data => {
+        data.list.forEach(item=>(
+          statusMap.set(item.id,{status:"stop",percent:0})
+        ))
         this.setState({
           mediaPairTrans: data,
         });

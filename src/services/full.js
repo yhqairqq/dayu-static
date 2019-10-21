@@ -23,3 +23,13 @@ export  async function pairSync(params) {
     },
   });
 }
+
+export  async function syncCallback(params) {
+  return request(`${PRE_URL}/syncCallback`, {
+    method: 'POST',
+    data: {
+      ...params,
+    },
+  });
+}
+

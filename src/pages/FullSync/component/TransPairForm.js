@@ -313,8 +313,8 @@ class TransPairForm extends React.Component {
       },
       callback: data => {
         schemaMap.set(key, data);
-        console.log("schemaMap",schemaMap)
-        console.log("targteDataSources",targteDataSources)
+        // console.log("schemaMap",schemaMap)
+        // console.log("targteDataSources",targteDataSources)
         this.setState({
           schemaMap,
         });
@@ -341,7 +341,7 @@ class TransPairForm extends React.Component {
       type: 'mediasource/fetchAll',
       payload: {
         type: type,
-        destinationName: values && values.parameters.destinationName,
+        destinationName: values && values.parameters&&values.parameters.destinationName,
       },
       callback: data => {
         let datasourceMap = new Map();
