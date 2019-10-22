@@ -67,9 +67,13 @@ class MediaForm extends React.Component {
             if(values.source){
                 this.datasourceOnSelect(values&&values.source.id)
                 this.setState({
-                sourceId:values.source.id
-            })
-            this.namespaceOnSelect(values&&values.namespace)
+                        sourceId:values.source.id
+                 })
+                 console.log(values)
+                 if(values.source.type == 'MYSQL'){
+                    this.namespaceOnSelect(values&&values.namespace)
+                 }
+                     
             }
             const sourceType =values.source&&values.source.type ||
             datasourceMap.get(data[0].id)&&datasourceMap.get(data[0].id).type
