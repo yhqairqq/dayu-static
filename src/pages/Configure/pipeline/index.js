@@ -98,7 +98,7 @@ class Pipeline extends React.PureComponent {
       render: (text, record) =>
         record.alarmRules && (
           <a onClick={() => this.alarmRulehandleModalVisible(true, record)}>
-            {record.alarmRules.length} <Icon type="bell" theme="twoTone" />
+            监控配置 <Icon type="bell" theme="twoTone" />
           </a>
         ),
     },
