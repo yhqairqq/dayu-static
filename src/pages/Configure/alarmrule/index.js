@@ -23,6 +23,7 @@ import {
 import StandardTable from '@/components/StandardTable';
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
 import styles from '../../styles/Manage.less';
+import AlarmRuleForm from './component/AlarmRuleForm'
 const FormItem = Form.Item;
 const { Option } = Select;
 const getValue = obj =>
@@ -52,7 +53,7 @@ class AlarmRuleList extends React.Component {
       dataIndex: 'status',
       render: text => (
         <span>
-          {text === 'DISABLE' ? (
+          {(text === 'DISABLE' || text ==='PAUSED') ? (
             <Badge status="error" text="停止"></Badge>
           ) : (
             <Badge status="processing" text="开启"></Badge>
@@ -74,15 +75,15 @@ class AlarmRuleList extends React.Component {
           <Divider type="vertical"></Divider>
           <a
             onClick={() =>
-              this.doSwtchStatus(record, record.status == 'DISABLE' ? 'ENABLE' : 'PAUSE')
+              this.doSwtchStatus(record, record.status == 'ENABLE' ? 'PAUSED':'ENABLE')
             }
           >
-            {record.status == 'DISABLE' ? '开启' : '暂停'}
+            {(record.status == 'DISABLE'  || record.status ==='PAUSED') ? '开启' : '暂停'}
           </a>
           <Divider type="vertical"></Divider>
-          <a>编辑</a>
+          <a onClick={()=>this.handleModalVisible(true,record)}>编辑</a>
           <Divider type="vertical"></Divider>
-          <a>删除</a>
+          <a onClick={()=>this.handleDelete(record)}>删除</a>
         </span>
       ),
     },
@@ -111,7 +112,7 @@ class AlarmRuleList extends React.Component {
     dispatch({
       type: 'rule/doSwitchStatus',
       payload: {
-        id: record.id,
+        ...record,
         status,
       },
       callback: () => {
@@ -140,16 +141,43 @@ class AlarmRuleList extends React.Component {
       recordValue: record || {},
     });
   };
+  handleUpdate = fields=>{
+
+    const {dispatch} = this.props;
+    dispatch({
+      type:'rule/update',
+      payload: fields,
+      callback:data=>{
+        message.success("更新成功")
+        this.handleModalVisible()
+        this.reloadData()
+      }
+    })
+  }
+  handleDelete = fields=>{
+
+    const {dispatch} = this.props;
+    dispatch({
+      type:'rule/remove',
+      payload: fields,
+      callback:data=>{
+        message.success("删除成功")
+        this.handleModalVisible()
+        this.reloadData()
+      }
+    })
+  }
 
   // 重新加载数据
   reloadData = () => {
     const { dispatch, values } = this.props;
     dispatch({
-      type: 'alarmrule/fetchByPipelineId',
+      type: 'rule/fetchByPipelineId',
       payload: {
         pipelineId: values.id,
       },
       callback: data => {
+        console.log(data);
         this.setState({
           alarmRules: data,
         });
@@ -165,7 +193,17 @@ class AlarmRuleList extends React.Component {
       alarmRulemodalVisible,
     } = this.props;
 
-    const { alarmRules } = this.state;
+    const {
+           alarmRules ,
+           modalVisible,
+           recordValue,
+           } = this.state;
+    
+    const parentMethods = {
+      handleUpdate:this.handleUpdate,
+      handleModalVisible:this.handleModalVisible,
+      handleDelete:this.handleDelete,
+    }
 
     return (
       <Modal
@@ -190,8 +228,17 @@ class AlarmRuleList extends React.Component {
             dataSource={alarmRules}
             columns={this.columns}
             rowKey={record => record.id}
+            scroll={{x:window.innerWidth/2+20}}
+            size={window.innerWidth < 1280 ?'small':'default'}
+            pagination={false}
           />
         </div>
+
+        {modalVisible&&<AlarmRuleForm
+        modalVisible={modalVisible}
+        {...parentMethods}
+        values={recordValue}
+        ></AlarmRuleForm>}
       </Modal>
     );
   }

@@ -32,6 +32,23 @@ export async function addAlarmRules(params) {
     },
   });
 }
+export async function update(params) {
+  return request(`${PRE_URL}/update`, {
+    method: 'POST',
+    data: {
+      ...params,
+    },
+  });
+}
+export async function remove(params) {
+  return request(`${PRE_URL}/remove`, {
+    method: 'POST',
+    data: {
+      ...params,
+    },
+  });
+}
+
 export async function doSwitchStatus(params) {
   return request(`${PRE_URL}/doSwitchStatus`, {
     method: 'POST',

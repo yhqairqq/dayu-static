@@ -1,4 +1,4 @@
-import { queryAlarm, findByPipelineId, addAlarmRules, doSwitchStatus } from '@/services/alarmrule';
+import { queryAlarm, findByPipelineId, addAlarmRules, doSwitchStatus ,update,remove} from '@/services/alarmrule';
 export default {
   namespace: 'rule',
   state: {
@@ -31,6 +31,21 @@ export default {
         callback(data);
       }
     },
+    *update({ payload, callback }, { call }) {
+      const resp = yield call(update, payload);
+      const { state, data } = resp;
+      if (resp && state == 0 && callback) {
+        callback(data);
+      }
+    },
+    *remove({ payload, callback }, { call }) {
+      const resp = yield call(remove, payload);
+      const { state, data } = resp;
+      if (resp && state == 0 && callback) {
+        callback(data);
+      }
+    },
+
     *doSwitchStatus({ payload, callback }, { call }) {
       const resp = yield call(doSwitchStatus, payload);
       const { state, data } = resp;

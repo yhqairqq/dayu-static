@@ -162,7 +162,7 @@ class FullSync extends React.Component {
       type:"full/pairSync",
       payload:{
         mediaPairid:record.id,
-        writeMode:'update'
+        writeMode:'insert'
       },
       callback:data=>{
         console.log(data)
