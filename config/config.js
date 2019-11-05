@@ -53,9 +53,9 @@ export default {
   define: {
     APP_TYPE: APP_TYPE || '',
     // 'process.env.apiUrl': 'http://127.0.0.1:8081',
-    'process.env.apiUrl': 'http://172.16.52.5:8081',
+    // 'process.env.apiUrl': 'http://172.16.52.5:8081',
     // 'process.env.apiUrl': 'http://10.111.31.239:8081',
-    // 'process.env.apiUrl': 'http://10.111.43.235:8081',
+    'process.env.apiUrl': 'http://10.111.43.235:8081',
         // 'process.env.apiUrl': 'http://10.111.7.153:8081',
     // 'process.env.apiUrl': 'http://ladon.api.caicaivip.com',
   },
