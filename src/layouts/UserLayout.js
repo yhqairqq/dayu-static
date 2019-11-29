@@ -12,14 +12,14 @@ import getPageTitle from '@/utils/getPageTitle';
 const links = [
   {
     key: 'company',
-    title: '安徽菜菜电子商务有限公司',
-    href: 'https://dailuobo.com',
+    title: 'xx有限公司',
+    href: '#',
   },
 ];
 
 const copyright = (
   <Fragment>
-    Copyright <Icon type="copyright" /> 2019 呆萝卜大数据部出品
+    Copyright <Icon type="copyright" /> 2019 xxx出品
   </Fragment>
 );
 

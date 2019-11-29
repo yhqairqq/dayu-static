@@ -8,15 +8,15 @@ const FooterView = () => (
     <GlobalFooter
       links={[
         {
-          key: '安徽菜菜电子商务有限公司',
-          title: '安徽菜菜电子商务有限公司',
-          href: 'https://www.dailuobo.com/',
+          key: 'xx有限公司',
+          title: 'xx有限公司',
+          href: '#',
           blankTarget: true,
         },
       ]}
       copyright={
         <Fragment>
-          Copyright <Icon type="copyright" /> 2019 呆萝卜大数据出品
+          Copyright <Icon type="copyright" /> 2019 xx出品
         </Fragment>
       }
     />

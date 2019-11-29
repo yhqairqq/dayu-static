@@ -63,7 +63,7 @@ class CereBrumManage extends React.Component {
       dataIndex: 'type',
       render(text) {
         const str = text;
-        if (str === 0) return `呆萝卜`;
+        if (str === 0) return `xxx`;
         if (str === 1) return `合伙人`;
         return ``;
       },
@@ -296,7 +296,7 @@ class CereBrumManage extends React.Component {
               {getFieldDecorator('type')(
                 <Select key="type" placeholder="请选择应用类型">
                   <Option value="0" key="0">
-                    呆萝卜
+                    xxx
                   </Option>
                   <Option value="1" key="1">
                     合伙人

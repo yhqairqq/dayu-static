@@ -85,7 +85,7 @@ class AppInfoOptForm extends React.Component {
             initialValue: values.type,
           })(
             <Radio.Group disabled={isEdit}>
-              <Radio value={0}>呆萝卜</Radio>
+              <Radio value={0}>xxx</Radio>
               <Radio value={1}>合伙人</Radio>
             </Radio.Group>
           )}
